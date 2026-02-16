@@ -44,8 +44,8 @@ class MyApp extends StatelessWidget {
       builder: (context, themeProvider, child) {
         return MaterialApp(
           title: 'Pétanque Scoreboard',
-          theme: AppThemes.lightTheme,
-          darkTheme: AppThemes.darkTheme,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
           home: const PartieSelectionScreen(),
         );

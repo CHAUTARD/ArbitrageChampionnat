@@ -1,4 +1,4 @@
-
+// feature/scoring/game_model.dart
 import 'package:flutter/foundation.dart';
 import 'package:myapp/src/features/match_selection/player_model.dart';
 

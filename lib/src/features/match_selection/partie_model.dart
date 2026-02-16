@@ -6,11 +6,13 @@ class Partie {
   final String name;
   final List<Player> team1Players;
   final List<Player> team2Players;
+  final Player? arbitre; // Added umpire
 
   Partie({
     required this.numero,
     required this.name,
     required this.team1Players,
     required this.team2Players,
+    this.arbitre, // Make it optional
   });
 }

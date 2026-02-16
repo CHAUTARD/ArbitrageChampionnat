@@ -2,35 +2,37 @@
 
 ## Vue d'ensemble
 
-Cette application permet de suivre les scores d'un match de tennis de table. Elle est conçue pour être simple et intuitive, avec une interface claire et facile à utiliser, et elle sauvegarde la progression pour pouvoir reprendre une partie interrompue.
+Je souhaite un écran de pointage pour le tennis de table qui fonctionne comme une table d'arbitrage numérique et intelligente. Il doit être unifié et afficher toutes les informations essentielles sur un seul écran pour une gestion de match fluide et intuitive.
 
 ## Style et Design
 
-L'application utilise Material Design 3, avec un thème de couleurs bleu et blanc. La police principale est Roboto, avec Oswald pour les titres.
+L'application utilise Material Design 3, avec une palette de couleurs centrée sur le vert (table), le bleu et le rouge (joueurs), et des tons neutres. La police principale est Roboto, avec Oswald pour les titres et les scores pour une meilleure lisibilité.
 
-## Fonctionnalités
+## Fonctionnalités Clés de l'Écran de Pointage
 
-*   **Identification claire du service :**
-    *   Le joueur qui sert a un fond **vert**.
-    *   Le joueur qui reçoit a un fond **orange**.
-    *   Cette mise en évidence visuelle facilite le suivi de la rotation automatique du service.
-*   **Affichage de la manche en cours :** Le numéro de la manche actuelle est affiché au-dessus des équipes.
-*   **Gestion des manches :** L'application détecte la fin d'une manche (à 11 points avec 2 points d'écart) et archive le score.
-*   **Affichage des scores des manches :** Un cartouche affiche les scores des manches terminées.
-*   **Automatisation du service :** Le service change automatiquement tous les deux points.
-*   **Sélection de la partie :** Affiche la liste des parties possibles (simples et doubles).
-*   **Persistance des données :** L'état de la partie est sauvegardé et restauré automatiquement.
-*   **Écran de jeu unifié (`TableScreen`) :** Pointage, équipes et table sur un seul écran.
-*   **Verrouillage de la configuration :** Les options se bloquent dès que la partie commence.
-*   **Inversion des joueurs :** Un bouton "swap" permet d'inverser les équipes avant le match.
+### 1. Affichage de la partie en cours
+L'en-tête de l'écran affiche clairement le nom de la partie sélectionnée (ex: "Partie N° 1").
 
-## Historique des changements récents
+### 2. Disposition des Joueurs et Contrôles
+Un tableau horizontal en haut de l'écran affiche les joueurs et le bouton de changement de côté en trois colonnes :
+*   **Colonne 1 (Joueur 1) :** Un bouton affichant le nom du joueur. Si ce joueur est le serveur, le bouton a un fond vert clair et une icône de raquette.
+*   **Colonne 2 (Action) :** Un bouton "Changer de côté" qui inverse la position des équipes à l'écran.
+*   **Colonne 3 (Joueur 2) :** Idem que la colonne 1, pour le deuxième joueur (ou la deuxième équipe).
 
-*   **Amélioration visuelle du service :** Le receveur est maintenant mis en évidence avec un fond orange, en plus du fond vert pour le serveur.
-*   **Affichage du numéro de manche :** Le numéro de la manche en cours est maintenant affiché à l'écran.
-*   **Ajout de la gestion des manches :** La logique de fin de manche est implémentée dans le `GameModel`.
-*   **Création du cartouche des scores :** Un nouveau widget affiche les scores des manches terminées.
-*   **Automatisation du service :** La logique de rotation du service est maintenant gérée par le `GameModel`.
-*   **Implémentation de la persistance :** L'état de chaque partie est sauvegardé et restauré automatiquement.
-*   **Verrouillage de la configuration :** La position des joueurs et le choix du premier serveur sont bloqués dès que la partie commence.
-*   **Refonte de l'interface de jeu :** L'écran de pointage a été fusionné avec l'écran de présentation de la partie pour une expérience unifiée.
+### 3. Représentation Visuelle de la Table
+Sous les noms des joueurs, une représentation graphique d'une table de tennis de table est affichée : un rectangle vert avec une bordure blanche, un trait blanc au milieu, et une ligne représentant le filet.
+
+### 4. Gestion du Pointage
+*   Sous la table visuelle, les contrôles de score sont alignés sur les deux moitiés de la table.
+*   Chaque côté dispose d'un affichage proéminent du score actuel et de boutons `+` et `-` pour l'ajuster.
+
+### 5. Tableau des Scores des Manches
+En bas de l'écran, un tableau affiche les résultats des manches terminées, avec une capacité de 5 manches.
+
+### 6. Logique de Jeu Automatisée
+*   **Suivi Intelligent du Service :** L'application sait en permanence qui sert et qui reçoit. Le service change automatiquement tous les deux points.
+*   **Gestion des Manches :** L'application détecte la fin d'une manche (à 11 points avec 2 points d'écart), enregistre le score dans le tableau des manches, et réinitialise le pointage pour la nouvelle manche.
+
+## Résumé de l'Objectif
+
+L'objectif est d'avoir un écran de pointage **unifié et intelligent**. Il ne se contente pas de compter les points ; il comprend les règles du service, simule la disposition d'une vraie table et présente l'information de manière claire pour rendre l'arbitrage aussi simple et sans erreur que possible.

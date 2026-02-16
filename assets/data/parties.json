@@ -2,86 +2,70 @@
 [
   {
     "numero": 1,
-    "nom": "Simple A vs W",
+    "nom": "Partie N° 1",
     "equipe1": ["A"],
-    "equipe2": ["W"]
+    "equipe2": ["X"],
+    "arbitre": "C"
   },
   {
     "numero": 2,
-    "nom": "Simple B vs X",
+    "nom": "Partie N° 2",
     "equipe1": ["B"],
-    "equipe2": ["X"]
+    "equipe2": ["Y"],
+    "arbitre": "D"
   },
   {
     "numero": 3,
-    "nom": "Simple C vs Y",
+    "nom": "Partie N° 3",
     "equipe1": ["C"],
-    "equipe2": ["Y"]
+    "equipe2": ["Z"],
+    "arbitre": "A"
   },
   {
     "numero": 4,
-    "nom": "Simple D vs Z",
+    "nom": "Partie N° 4",
     "equipe1": ["D"],
-    "equipe2": ["Z"]
+    "equipe2": ["W"],
+    "arbitre": "B"
   },
   {
     "numero": 5,
-    "nom": "Simple A vs X",
-    "equipe1": ["A"],
-    "equipe2": ["X"]
-  },
-  {
-    "numero": 6,
-    "nom": "Simple B vs W",
-    "equipe1": ["B"],
-    "equipe2": ["W"]
-  },
-  {
-    "numero": 7,
-    "nom": "Simple D vs Y",
-    "equipe1": ["D"],
-    "equipe2": ["Y"]
-  },
-  {
-    "numero": 8,
-    "nom": "Simple C vs Z",
-    "equipe1": ["C"],
-    "equipe2": ["Z"]
-  },
-  {
-    "numero": 9,
-    "nom": "Double A,B vs X,Y",
+    "nom": "Double N° 1",
     "equipe1": ["A", "B"],
     "equipe2": ["X", "Y"]
   },
   {
-    "numero": 10,
-    "nom": "Double C,D vs Z,W",
+    "numero": 6,
+    "nom": "Double N° 2",
     "equipe1": ["C", "D"],
-    "equipe2": ["Z", "W"]
+    "equipe2": ["W", "Z"]
   },
   {
-    "numero": 11,
-    "nom": "Simple A vs Y",
+    "numero": 7,
+    "nom": "Partie N° 5",
     "equipe1": ["A"],
-    "equipe2": ["Y"]
+    "equipe2": ["Y"],
+    "arbitre": "Z"
   },
   {
-    "numero": 12,
-    "nom": "Simple C vs Z",
-    "equipe1": ["C"],
-    "equipe2": ["Z"]
-  },
-  {
-    "numero": 13,
-    "nom": "Simple D vs X",
-    "equipe1": ["D"],
-    "equipe2": ["X"]
-  },
-  {
-    "numero": 14,
-    "nom": "Simple B vs Z",
+    "numero": 8,
+    "nom": "Partie N° 6",
     "equipe1": ["B"],
-    "equipe2": ["Z"]
+    "equipe2": ["X"],
+    "arbitre": "W"
+  },
+  {
+    "numero": 9,
+    "nom": "Partie N° 7",
+    "equipe1": ["C"],
+    "equipe2": ["W"],
+    "arbitre": "Y"
+  },
+  {
+    "numero": 10,
+    "nom": "Partie N° 8",
+    "equipe1": ["D"],
+    "equipe2": ["Z"],
+    "arbitre": "X"
   }
 ]

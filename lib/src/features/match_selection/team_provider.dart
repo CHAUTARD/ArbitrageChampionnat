@@ -1,10 +1,9 @@
 
-// lib/src/features/match_selection/team_provider.dart
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:myapp/src/features/match_selection/player_model.dart';
-import 'package:myapp/src/features/match_selection/team_model.dart'; // Assurez-vous que ce modèle existe
+import 'package:myapp/src/features/match_selection/team_model.dart'; 
 
 class TeamProvider with ChangeNotifier {
   List<Team> _teams = [];
@@ -13,6 +12,10 @@ class TeamProvider with ChangeNotifier {
   List<Team> get teams => _teams;
   List<Player> get players => _teams.expand((team) => team.players).toList();
   bool get isLoading => _isLoading;
+
+  // Getters for each team
+  List<Player> get equipe1 => _teams.isNotEmpty ? _teams[0].players : [];
+  List<Player> get equipe2 => _teams.length > 1 ? _teams[1].players : [];
 
   TeamProvider() {
     loadTeams();

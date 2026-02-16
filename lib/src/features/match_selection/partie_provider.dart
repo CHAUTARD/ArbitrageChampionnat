@@ -1,5 +1,4 @@
 
-// lib/src/features/match_selection/partie_provider.dart
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -59,13 +58,22 @@ class PartieProvider with ChangeNotifier {
                   _findPlayerByLetter(playerLetter.toString(), allPlayers))
               .toList();
 
+          Player? arbitre;
+          if (json['arbitre'] != null) {
+            arbitre = _findPlayerByLetter(json['arbitre'].toString(), allPlayers);
+          }
+
           return Partie(
             numero: json['numero'] as int,
             name: json['nom'] as String,
             team1Players: team1,
             team2Players: team2,
+            arbitre: arbitre,
           );
         }).toList();
+        if (kDebugMode) {
+          print('PartieProvider: ${_parties.length} parties chargées.');
+        }
       }
     } catch (e) {
       if (kDebugMode) {
@@ -88,5 +96,39 @@ class PartieProvider with ChangeNotifier {
         return Player(id: 'unknown', name: 'Joueur inconnu', letter: letter);
       },
     );
+  }
+
+  void updateDoublesComposition(
+    List<Player> double1Team1,
+    List<Player> double1Team2,
+  ) {
+    final allTeam1 = _teamProvider.equipe1;
+    final allTeam2 = _teamProvider.equipe2;
+
+    final double2Team1 = allTeam1.where((p) => !double1Team1.contains(p)).toList();
+    final double2Team2 = allTeam2.where((p) => !double1Team2.contains(p)).toList();
+
+    final double1Index = _parties.indexWhere((p) => p.name == 'Double N° 1');
+    final double2Index = _parties.indexWhere((p) => p.name == 'Double N° 2');
+
+    if (double1Index != -1) {
+      _parties[double1Index] = Partie(
+        numero: _parties[double1Index].numero,
+        name: _parties[double1Index].name,
+        team1Players: double1Team1,
+        team2Players: double1Team2,
+      );
+    }
+
+    if (double2Index != -1) {
+      _parties[double2Index] = Partie(
+        numero: _parties[double2Index].numero,
+        name: _parties[double2Index].name,
+        team1Players: double2Team1,
+        team2Players: double2Team2,
+      );
+    }
+
+    notifyListeners();
   }
 }
