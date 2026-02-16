@@ -1,0 +1,22 @@
+{
+  "teams": [
+    {
+      "name": "Équipe A",
+      "players": [
+        {"name": "Joueur A1", "letter": "A"},
+        {"name": "Joueur A2", "letter": "B"},
+        {"name": "Joueur A3", "letter": "C"},
+        {"name": "Joueur A4", "letter": "D"}
+      ]
+    },
+    {
+      "name": "Équipe B",
+      "players": [
+        {"name": "Joueur B1", "letter": "X"},
+        {"name": "Joueur B2", "letter": "Y"},
+        {"name": "Joueur B3", "letter": "Z"},
+        {"name": "Joueur B4", "letter": "W"}
+      ]
+    }
+  ]
+}

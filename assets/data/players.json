@@ -1,0 +1,22 @@
+{
+  "teams": [
+    {
+      "nom": "Equipe 1",
+      "players": [
+        {"nom": "Alain", "lettre": "A"},
+        {"nom": "Bernard", "lettre": "B"},
+        {"nom": "Charles", "lettre": "C"},
+        {"nom": "David", "lettre": "D"}
+      ]
+    },
+    {
+      "nom": "Equipe 2",
+      "players": [
+        {"nom": "Williams", "lettre": "W"},
+        {"nom": "Xavier", "lettre": "X"},
+        {"nom": "Yves", "lettre": "Y"},
+        {"nom": "Zoe", "lettre": "Z"}
+      ]
+    }
+  ]
+}

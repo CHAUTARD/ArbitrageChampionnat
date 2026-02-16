@@ -1,0 +1,87 @@
+
+[
+  {
+    "numero": 1,
+    "nom": "Simple A vs W",
+    "equipe1": ["A"],
+    "equipe2": ["W"]
+  },
+  {
+    "numero": 2,
+    "nom": "Simple B vs X",
+    "equipe1": ["B"],
+    "equipe2": ["X"]
+  },
+  {
+    "numero": 3,
+    "nom": "Simple C vs Y",
+    "equipe1": ["C"],
+    "equipe2": ["Y"]
+  },
+  {
+    "numero": 4,
+    "nom": "Simple D vs Z",
+    "equipe1": ["D"],
+    "equipe2": ["Z"]
+  },
+  {
+    "numero": 5,
+    "nom": "Simple A vs X",
+    "equipe1": ["A"],
+    "equipe2": ["X"]
+  },
+  {
+    "numero": 6,
+    "nom": "Simple B vs W",
+    "equipe1": ["B"],
+    "equipe2": ["W"]
+  },
+  {
+    "numero": 7,
+    "nom": "Simple D vs Y",
+    "equipe1": ["D"],
+    "equipe2": ["Y"]
+  },
+  {
+    "numero": 8,
+    "nom": "Simple C vs Z",
+    "equipe1": ["C"],
+    "equipe2": ["Z"]
+  },
+  {
+    "numero": 9,
+    "nom": "Double A,B vs X,Y",
+    "equipe1": ["A", "B"],
+    "equipe2": ["X", "Y"]
+  },
+  {
+    "numero": 10,
+    "nom": "Double C,D vs Z,W",
+    "equipe1": ["C", "D"],
+    "equipe2": ["Z", "W"]
+  },
+  {
+    "numero": 11,
+    "nom": "Simple A vs Y",
+    "equipe1": ["A"],
+    "equipe2": ["Y"]
+  },
+  {
+    "numero": 12,
+    "nom": "Simple C vs Z",
+    "equipe1": ["C"],
+    "equipe2": ["Z"]
+  },
+  {
+    "numero": 13,
+    "nom": "Simple D vs X",
+    "equipe1": ["D"],
+    "equipe2": ["X"]
+  },
+  {
+    "numero": 14,
+    "nom": "Simple B vs Z",
+    "equipe1": ["B"],
+    "equipe2": ["Z"]
+  }
+]
