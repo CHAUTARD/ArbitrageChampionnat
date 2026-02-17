@@ -5,41 +5,80 @@
 *.swp
 .DS_Store
 .atom/
-.build/
 .buildlog/
 .history
 .svn/
-.swiftpm/
-migrate_working_dir/
 
-# IntelliJ related
+# IntelliJ
 *.iml
 *.ipr
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
+# Flutter
+.flutter-plugins
 .flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
 /build/
-/coverage/
 
-# Symbolication related
-app.*.symbols
+# Android
+/android/app/src/main/assets/flutter_assets/
+/android/app/build/
+/android/build/
+/android/app/build/
+/android/.gradle/
+/android/.idea/
+/android/gradle.properties
+/android/local.properties
+/android/key.properties
 
-# Obfuscation related
-app.*.map.json
+# iOS
+/ios/Pods/
+/ios/Runner/Assets.xcassets/AppIcon.appiconset/
+/ios/Flutter/App.framework
+/ios/Flutter/Debug-iphonesimulator.xcconfig
+/ios/Flutter/Debug.xcconfig
+/ios/Flutter/Release.xcconfig
+/ios/Flutter/app.flx
+/ios/Flutter/app.zip
+/ios/Flutter/flutter_assets/
+/ios/Flutter/snapshot_blob.bin
+/ios/Flutter/vm_snapshot_data
+/ios/ServiceDefinitions.json
+/ios/Runner.xcworkspace/
+/ios/Runner/GeneratedPluginRegistrant.h
+/ios/Runner/GeneratedPluginRegistrant.m
+/ios/Runner/Info.plist
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Dart
+/lib/generated_plugin_registrant.dart
+/lib/main.dart.dill
+/lib/main.dart.snapshot.d
+/lib/main.dart.snapshot.S
+/lib/main.dart.snapshot.T
+/lib/main.dart.snapshot.d.d
+/lib/main.dart.snapshot.d.S
+/lib/main.dart.snapshot.d.T
+/lib/main.dart.snapshot.d.d.d
+/lib/main.dart.snapshot.d.d.S
+/lib/main.dart.snapshot.d.d.T
+/lib/main.dart.snapshot.d.d.d.d
+/lib/main.dart.snapshot.d.d.d.S
+/lib/main.dart.snapshot.d.d.d.T
+/lib/main.dart.snapshot.d.d.d.d.d
+/lib/main.dart.snapshot.d.d.d.d.S
+/lib/main.dart.snapshot.d.d.d.d.T
+/lib/main.dart.snapshot.d.d.d.d.d.d
+/lib/main.dart.snapshot.d.d.d.d.d.S
+/lib/main.dart.snapshot.d.d.d.d.d.T
+/lib/main.dart.snapshot.d.d.d.d.d.d.d
+/lib/main.dart.snapshot.d.d.d.d.d.d.S
+/lib/main.dart.snapshot.d.d.d.d.d.d.T
+/lib/main.dart.snapshot.d.d.d.d.d.d.d.d
+/lib/main.dart.snapshot.d.d.d.d.d.d.d.S
+/lib/main.dart.snapshot.d.d.d.d.d.d.d.T
+/lib/main.dart.snapshot.d.d.d.d.d.d.d.d.d
+/lib/main.dart.snapshot.d.d.d.d.d.d.d.d.S
+/lib/main.dart.snapshot.d.d.d.d.d.d.d.d.T

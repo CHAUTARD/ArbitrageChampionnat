@@ -33,6 +33,15 @@ class AppTheme {
           textStyle: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.w500),
         ),
       ),
+      tabBarTheme: TabBarThemeData(
+        unselectedLabelColor: Colors.deepPurple.shade100,
+        labelColor: Colors.white,
+        labelStyle: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.bold),
+        unselectedLabelStyle: GoogleFonts.roboto(fontSize: 16),
+        indicator: const UnderlineTabIndicator(
+          borderSide: BorderSide(width: 4.0, color: Colors.amberAccent),
+        ),
+      ),
     );
   }
 
@@ -64,6 +73,15 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           textStyle: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+      ),
+      tabBarTheme: TabBarThemeData(
+        unselectedLabelColor: Colors.grey.shade500,
+        labelColor: Colors.deepPurple.shade200,
+        labelStyle: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.bold),
+        unselectedLabelStyle: GoogleFonts.roboto(fontSize: 16),
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(width: 4.0, color: Colors.deepPurple.shade200),
         ),
       ),
     );

@@ -12,14 +12,17 @@ class DoubleCompositionScreen extends StatefulWidget {
       _DoubleCompositionScreenState();
 }
 
-class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
+class _DoubleCompositionScreenState extends State<DoubleCompositionScreen>
+    with SingleTickerProviderStateMixin {
   late List<Player> _team1Selection;
   late List<Player> _team2Selection;
   final Map<String, String> _updatedPlayerNames = {};
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     final partieProvider = Provider.of<PartieProvider>(context, listen: false);
 
     final doubles = partieProvider.parties
@@ -41,6 +44,12 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
 
     _team1Selection = List.from(double1.team1Players);
     _team2Selection = List.from(double1.team2Players);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _showEditPlayerNameDialog(BuildContext context, Player player) {
@@ -84,43 +93,63 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
     final partieProvider = Provider.of<PartieProvider>(context);
     final team1Players = partieProvider.equipe1;
     final team2Players = partieProvider.equipe2;
-    const team1Name = 'Équipe 1';
-    const team2Name = 'Équipe 2';
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Composition des Doubles'),
         backgroundColor: Colors.blue[800],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Column(
-            children: [
-              _buildTeamColumn(context, team1Name, team1Players, _team1Selection),
-              const SizedBox(height: 12),
-              const Divider(thickness: 1),
-              const SizedBox(height: 12),
-              _buildTeamColumn(context, team2Name, team2Players, _team2Selection),
-              const SizedBox(height: 16),
-              _buildActionButtons(context),
-            ],
-          ),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Équipe 1'),
+            Tab(text: 'Équipe 2'),
+          ],
         ),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: _buildTeamColumn(
+                        context, team1Players, _team1Selection),
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: _buildTeamColumn(
+                        context, team2Players, _team2Selection),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: _buildActionButtons(context),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildTeamColumn(
     BuildContext context,
-    String teamName,
     List<Player> allPlayers,
     List<Player> selectedPlayers,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('$teamName / Double 1',
+        const SizedBox(height: 16),
+        Text('Double 1',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold, color: Colors.blue[800])),
         const Divider(height: 4),
@@ -157,8 +186,8 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
             contentPadding: EdgeInsets.zero,
           );
         }),
-        const SizedBox(height: 12),
-        Text('$teamName / Double 2 (Automatique)',
+        const SizedBox(height: 16),
+        Text('Double 2 (Automatique)',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: Colors.grey[700], fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
