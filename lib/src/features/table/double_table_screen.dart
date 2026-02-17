@@ -1,4 +1,4 @@
-// features/table/table_screen.dart
+// features/table/double_table_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
@@ -7,16 +7,16 @@ import 'package:myapp/src/features/scoring/match_provider.dart';
 import 'package:myapp/src/features/scoring/manche_table.dart';
 import 'package:provider/provider.dart';
 
-class TableScreen extends StatefulWidget {
+class DoubleTableScreen extends StatefulWidget {
   final Partie partie;
 
-  const TableScreen({super.key, required this.partie});
+  const DoubleTableScreen({super.key, required this.partie});
 
   @override
-  State<TableScreen> createState() => _TableScreenState();
+  State<DoubleTableScreen> createState() => _DoubleTableScreenState();
 }
 
-class _TableScreenState extends State<TableScreen> {
+class _DoubleTableScreenState extends State<DoubleTableScreen> {
   bool _isDialogShown = false;
 
   @override
@@ -104,18 +104,9 @@ class _TableScreenState extends State<TableScreen> {
     final matchProvider = Provider.of<MatchProvider>(context);
     final theme = Theme.of(context);
 
-    String appBarSubtitle;
-    if (widget.partie.team1Players.length > 1) {
-      final team1Names = widget.partie.team1Players.map((p) => p.name).join(' & ');
-      final team2Names = widget.partie.team2Players.map((p) => p.name).join(' & ');
-      appBarSubtitle = '$team1Names vs $team2Names';
-    } else {
-      if (widget.partie.arbitre != null) {
-        appBarSubtitle = 'Arbitrage : ${widget.partie.arbitre!.name}';
-      } else {
-        appBarSubtitle = 'Arbitrage';
-      }
-    }
+    final team1Names = widget.partie.team1Players.map((p) => p.name).join(' & ');
+    final team2Names = widget.partie.team2Players.map((p) => p.name).join(' & ');
+    final appBarSubtitle = '$team1Names vs $team2Names';
 
     return Scaffold(
       appBar: AppBar(
@@ -154,25 +145,17 @@ class _TableScreenState extends State<TableScreen> {
   }
 
   Widget _buildPlayersRow(BuildContext context, MatchProvider matchProvider) {
-    final isDouble = widget.partie.team1Players.length > 1;
-
-    Widget buildTeamWidget(List<dynamic> players) {
-      if (players.isEmpty) return Container();
-      if (!isDouble) {
-        final player = players.first;
-        return _buildPlayerButton(context, player.name, matchProvider.joueurAuService == player.name, matchProvider.joueurReceveur == player.name);
-      } else {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: players.map((player) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: _buildPlayerButton(context, player.name, matchProvider.joueurAuService == player.name, matchProvider.joueurReceveur == player.name),
-            );
-          }).toList(),
-        );
-      }
+    Widget buildTeamWidget(List<Player> players) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: players.map((player) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: _buildPlayerButton(context, player.name, matchProvider.joueurAuService == player.name, matchProvider.joueurReceveur == player.name),
+          );
+        }).toList(),
+      );
     }
 
     Widget team1Widget = buildTeamWidget(widget.partie.team1Players);
@@ -310,7 +293,7 @@ class _TableScreenState extends State<TableScreen> {
     bool isTappable = true;
     if (carton != Carton.blanc) {
       if (isSelected) {
-        isTappable = true; // Can always un-select the current card
+        isTappable = true;
       } else {
         switch (carton) {
           case Carton.jaune:

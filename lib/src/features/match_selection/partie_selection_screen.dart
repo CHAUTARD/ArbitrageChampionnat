@@ -76,7 +76,7 @@ class PartieSelectionScreen extends StatelessWidget {
                         leading: CircleAvatar(
                           backgroundColor:
                               isDouble ? Colors.orangeAccent : Colors.blueAccent,
-                          child: Text('${partie.numero}',
+                          child: Text(partie.id, // Corrected from partie.numero
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold)),

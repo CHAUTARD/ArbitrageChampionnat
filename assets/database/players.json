@@ -1,0 +1,43 @@
+
+[
+  {
+    "id": 1,
+    "name": "Jean-Philippe",
+    "letter": "A"
+  },
+  {
+    "id": 2,
+    "name": "Lucas",
+    "letter": "B"
+  },
+  {
+    "id": 3,
+    "name": "Antoine",
+    "letter": "C"
+  },
+  {
+    "id": 4,
+    "name": "Maxime",
+    "letter": "D"
+  },
+  {
+    "id": 5,
+    "name": "Thomas",
+    "letter": "A"
+  },
+  {
+    "id": 6,
+    "name": "Éric",
+    "letter": "B"
+  },
+  {
+    "id": 7,
+    "name": "Julien",
+    "letter": "C"
+  },
+  {
+    "id": 8,
+    "name": "Stéphane",
+    "letter": "D"
+  }
+]

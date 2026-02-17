@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
 import 'package:myapp/src/features/match_selection/partie_provider.dart';
@@ -10,7 +9,8 @@ class DoubleCompositionScreen extends StatefulWidget {
   const DoubleCompositionScreen({super.key});
 
   @override
-  State<DoubleCompositionScreen> createState() => _DoubleCompositionScreenState();
+  State<DoubleCompositionScreen> createState() =>
+      _DoubleCompositionScreenState();
 }
 
 class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
@@ -22,8 +22,16 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
     super.initState();
     final partieProvider = Provider.of<PartieProvider>(context, listen: false);
     final double1 = partieProvider.parties.firstWhere(
-        (p) => p.name == 'Double N° 1',
-        orElse: () => Partie(numero: 0, name: '', team1Players: [], team2Players: []), // Safe fallback
+      (p) => p.name == 'Double N° 1',
+      orElse: () => Partie(
+        id: 'temp-double',
+        name: 'Double N° 1',
+        horaire: DateTime.now(),
+        table: 'A définir',
+        team1Players: [],
+        team2Players: [],
+        manchesGagnantes: 3, // Default value
+      ), // Safe fallback
     );
 
     _team1Selection = List.from(double1.team1Players);
@@ -35,9 +43,12 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
     final team1Players = teamProvider.equipe1;
     final team2Players = teamProvider.equipe2;
-    final team1Name = teamProvider.teams.isNotEmpty ? teamProvider.teams[0].name : 'Équipe 1';
-    final team2Name = teamProvider.teams.length > 1 ? teamProvider.teams[1].name : 'Équipe 2';
-
+    final team1Name = teamProvider.teams.isNotEmpty
+        ? teamProvider.teams[0].name
+        : 'Équipe 1';
+    final team2Name = teamProvider.teams.length > 1
+        ? teamProvider.teams[1].name
+        : 'Équipe 2';
 
     return Scaffold(
       appBar: AppBar(
@@ -54,11 +65,13 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: _buildTeamColumn(context, team1Name, team1Players, _team1Selection),
+                    child: _buildTeamColumn(
+                        context, team1Name, team1Players, _team1Selection),
                   ),
                   const VerticalDivider(width: 24, thickness: 1),
                   Expanded(
-                    child: _buildTeamColumn(context, team2Name, team2Players, _team2Selection),
+                    child: _buildTeamColumn(
+                        context, team2Name, team2Players, _team2Selection),
                   ),
                 ],
               ),
@@ -80,7 +93,9 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(teamName, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.blue[800])),
+        Text(teamName,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold, color: Colors.blue[800])),
         const Divider(),
         Text('Double N° 1', style: Theme.of(context).textTheme.titleLarge),
         ...allPlayers.map((player) {
@@ -89,13 +104,14 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
             value: selectedPlayers.contains(player),
             onChanged: (bool? value) {
               setState(() {
-                 if (value == true) {
+                if (value == true) {
                   if (selectedPlayers.length < 2) {
                     selectedPlayers.add(player);
                   } else {
-                     ScaffoldMessenger.of(context).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Décochez un joueur avant d\'en sélectionner un nouveau.'),
+                        content: Text(
+                            'Décochez un joueur avant d\'en sélectionner un nouveau.'),
                         duration: Duration(seconds: 2),
                       ),
                     );
@@ -109,11 +125,18 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
           );
         }),
         const SizedBox(height: 24),
-        Text('Double N° 2 (Automatique)', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.grey[700])),
+        Text('Double N° 2 (Automatique)',
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(color: Colors.grey[700])),
         const SizedBox(height: 8),
         Text(
           _getRemainingPlayers(allPlayers, selectedPlayers),
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontStyle: FontStyle.italic, fontSize: 16),
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.copyWith(fontStyle: FontStyle.italic, fontSize: 16),
         ),
       ],
     );
@@ -121,7 +144,10 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
 
   String _getRemainingPlayers(List<Player> all, List<Player> selected) {
     if (selected.length != 2) return 'En attente de sélection...';
-    final remaining = all.where((p) => !selected.contains(p)).map((p) => p.name).join(' & ');
+    final remaining = all
+        .where((p) => !selected.contains(p))
+        .map((p) => p.name)
+        .join(' & ');
     return remaining.isNotEmpty ? remaining : 'Aucun';
   }
 
