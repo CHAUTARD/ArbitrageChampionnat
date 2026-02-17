@@ -1,60 +1,45 @@
+// feature/match_selection/partie_provider.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 
 import 'package:myapp/src/features/match_selection/partie_model.dart';
 import 'package:myapp/src/features/match_selection/player_model.dart';
-import 'package:myapp/src/features/match_selection/team_provider.dart';
 
 class PartieProvider with ChangeNotifier {
-  final TeamProvider _teamProvider;
   List<Partie> _parties = [];
   bool _isLoading = true;
+
+  List<Player> _allPlayers = [];
+  List<Player> get allPlayers => _allPlayers;
+
+  List<Player> get equipe1 => _allPlayers.length >= 4 ? _allPlayers.sublist(0, 4) : [];
+  List<Player> get equipe2 => _allPlayers.length >= 8 ? _allPlayers.sublist(4, 8) : [];
 
   List<Partie> get parties => _parties;
   bool get isLoading => _isLoading;
 
-  PartieProvider(this._teamProvider) {
-    // Schedule _loadParties to run after the current build cycle is complete.
-    Future.microtask(() => _loadParties());
+  PartieProvider() {
+    _loadParties();
   }
 
   Future<void> _loadParties() async {
     _isLoading = true;
+    notifyListeners();
 
     try {
-      // Wait for the TeamProvider to finish loading if it hasn't already.
-      if (_teamProvider.isLoading) {
-        // This creates a temporary listener to await the change.
-        await Future.doWhile(() async {
-          await Future.delayed(const Duration(milliseconds: 10)); // Prevent busy-waiting
-          return _teamProvider.isLoading;
-        });
-      }
-
-      if (_teamProvider.teams.isEmpty) {
-        // Handle case where team loading might have failed.
-        throw Exception("Teams could not be loaded, so parties cannot be determined.");
-      }
-
       final playersJsonString =
-          await rootBundle.loadString('assets/database/players.json');
+          await rootBundle.loadString('assets/data/players.json');
       final playersJson = json.decode(playersJsonString) as List;
-      final List<Player> allPlayers = playersJson.asMap().entries.map((entry) {
-        int idx = entry.key;
-        Map<String, dynamic> playerJson = entry.value;
-        return Player(
-          id: playerJson['id'] as int? ?? idx,
-          name: playerJson['name'],
-          letter: playerJson['letter'],
-        );
+      _allPlayers = playersJson.map((playerJson) {
+        return Player.fromJson(playerJson);
       }).toList();
 
       final partiesJsonString =
-          await rootBundle.loadString('assets/database/parties.json');
+          await rootBundle.loadString('assets/data/parties.json');
       final partiesJson = json.decode(partiesJsonString) as List;
       _parties = partiesJson
-          .map((partieJson) => Partie.fromJson(partieJson, allPlayers))
+          .map((partieJson) => Partie.fromJson(partieJson, _allPlayers))
           .toList();
     } catch (e) {
       if (kDebugMode) {
@@ -66,37 +51,36 @@ class PartieProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+    void updatePlayerName(String playerId, String newName) {
+    final playerIndex = _allPlayers.indexWhere((p) => p.id == playerId);
+    if (playerIndex != -1) {
+      _allPlayers[playerIndex].name = newName;
+      notifyListeners();
+    }
+  }
 
   void updateDoublesComposition(
       List<Player> team1Double1, List<Player> team2Double1) {
-    final allTeam1Players = _teamProvider.equipe1;
-    final allTeam2Players = _teamProvider.equipe2;
+    final allTeam1Players = equipe1;
+    final allTeam2Players = equipe2;
 
     final team1Double2 =
         allTeam1Players.where((p) => !team1Double1.contains(p)).toList();
     final team2Double2 =
         allTeam2Players.where((p) => !team2Double1.contains(p)).toList();
 
-    _parties.removeWhere((p) => p.name == 'Double N° 1' || p.name == 'Double N° 2');
+    _parties.removeWhere((p) => p.id == 9 || p.id == 10);
 
     _parties.addAll([
       Partie(
-        id: 'double1',
-        name: 'Double N° 1',
-        horaire: DateTime.now(),
-        table: 'A définir',
+        id: 9,
         team1Players: team1Double1,
         team2Players: team2Double1,
-        manchesGagnantes: 3,
       ),
       Partie(
-        id: 'double2',
-        name: 'Double N° 2',
-        horaire: DateTime.now(),
-        table: 'A définir',
+        id: 10,
         team1Players: team1Double2,
         team2Players: team2Double2,
-        manchesGagnantes: 3,
       ),
     ]);
 

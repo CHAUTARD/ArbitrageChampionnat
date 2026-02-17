@@ -113,7 +113,7 @@ class _DoubleTableScreenState extends State<DoubleTableScreen> {
         title: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(widget.partie.name, style: GoogleFonts.oswald(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
+            Text('Partie #${widget.partie.id}', style: GoogleFonts.oswald(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
             Text(appBarSubtitle, style: GoogleFonts.roboto(fontSize: 14, color: Colors.white.withAlpha(204))),
           ],
         ),
@@ -136,7 +136,6 @@ class _DoubleTableScreenState extends State<DoubleTableScreen> {
             _buildScoresRow(context, matchProvider),
             const SizedBox(height: 16),
             _buildActionsRow(context, matchProvider),
-            const Spacer(),
             const MancheTable(),
           ],
         ),
@@ -194,7 +193,6 @@ class _DoubleTableScreenState extends State<DoubleTableScreen> {
 
   Widget _buildPingPongTable(BuildContext context) {
     return Expanded(
-      flex: 2,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16.0),
         decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 2.0), borderRadius: BorderRadius.circular(8.0)),

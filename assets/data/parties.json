@@ -1,98 +1,16 @@
 [
-  {
-    "numero": 1,
-    "nom": "Partie N° 1",
-    "equipe1": ["A"],
-    "equipe2": ["W"],
-    "arbitre": "D"
-  },
-  {
-    "numero": 2,
-    "nom": "Partie N° 2",
-    "equipe1": ["B"],
-    "equipe2": ["X"],
-    "arbitre": "Z"
-  },
-  {
-    "numero": 3,
-    "nom": "Partie N° 3",
-    "equipe1": ["C"],
-    "equipe2": ["Y"],
-    "arbitre": "B"
-  },
-  {
-    "numero": 4,
-    "nom": "Partie N° 4",
-    "equipe1": ["D"],
-    "equipe2": ["Z"],
-    "arbitre": "W"
-  },
-  {
-    "numero": 5,
-    "nom": "Partie N° 5",
-    "equipe1": ["A"],
-    "equipe2": ["X"],
-    "arbitre": "C"
-  },
-  {
-    "numero": 6,
-    "nom": "Partie N° 6",
-    "equipe1": ["B"],
-    "equipe2": ["W"],
-    "arbitre": "Y"
-  },
-  {
-    "numero": 7,
-    "nom": "Partie N° 7",
-    "equipe1": ["D"],
-    "equipe2": ["Y"],
-    "arbitre": "X"
-  },
-  {
-    "numero": 8,
-    "nom": "Partie N° 8",
-    "equipe1": ["C"],
-    "equipe2": ["Z"],
-    "arbitre": "A"
-  },
-  {
-    "numero": 9,
-    "nom": "Double N° 1",
-    "equipe1": ["A", "B"],
-    "equipe2": ["X", "Y"]
-  },
-  {
-    "numero": 10,
-    "nom": "Double N° 2",
-    "equipe1": ["C", "D"],
-    "equipe2": ["W", "Z"]
-  },
-  {
-    "numero": 11,
-    "nom": "Partie N° 11",
-    "equipe1": ["A"],
-    "equipe2": ["Y"],
-    "arbitre": "Z"
-  },
-  {
-    "numero": 12,
-    "nom": "Partie N° 12",
-    "equipe1": ["C"],
-    "equipe2": ["Z"],
-    "arbitre": "B"
-  },
-  {
-    "numero": 13,
-    "nom": "Partie N° 13",
-    "equipe1": ["D"],
-    "equipe2": ["X"],
-    "arbitre": "W"
-  },
-  {
-    "numero": 14,
-    "nom": "Partie N° 14",
-    "equipe1": ["B"],
-    "equipe2": ["Z"],
-    "arbitre": "C"
-  }
+  {"numero":1,"equipe1":["A"],"equipe2":["W"],"arbitre":"D"},
+  {"numero":2,"equipe1":["B"],"equipe2":["X"],"arbitre":"Z"},
+  {"numero":3,"equipe1":["C"],"equipe2":["Y"],"arbitre":"B"},
+  {"numero":4,"equipe1":["D"],"equipe2":["Z"],"arbitre":"W"},
+  {"numero":5,"equipe1":["A"],"equipe2":["X"],"arbitre":"C"},
+  {"numero":6,"equipe1":["B"],"equipe2":["W"],"arbitre":"Y"},
+  {"numero":7,"equipe1":["D"],"equipe2":["Y"],"arbitre":"X"},
+  {"numero":8,"equipe1":["C"],"equipe2":["Z"],"arbitre":"A"},
+  {"numero":9,"equipe1":["A","B"],"equipe2":["X","Y"]},
+  {"numero":10,"equipe1":["C","D"],"equipe2":["W","Z"]},
+  {"numero":11,"equipe1":["A"],"equipe2":["Y"],"arbitre":"Z"},
+  {"numero":12,"equipe1":["C"],"equipe2":["Z"],"arbitre":"B"},
+  {"numero":13,"equipe1":["D"],"equipe2":["X"],"arbitre":"W"},
+  {"numero":14,"equipe1":["B"],"equipe2":["Z"],"arbitre":"C"}
 ]

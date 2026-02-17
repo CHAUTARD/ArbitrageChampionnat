@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:myapp/src/features/doubles_composition/double_composition_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:myapp/src/features/match_selection/partie_card.dart';
@@ -21,6 +22,19 @@ class MatchSelectionScreen extends StatelessWidget {
         ),
         backgroundColor: Theme.of(context).primaryColorDark,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const DoubleCompositionScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Consumer<PartieProvider>(
         builder: (context, partieProvider, child) {

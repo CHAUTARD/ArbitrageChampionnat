@@ -1,42 +1,54 @@
+// features/match_selection/partie_model.dart
+import 'package:flutter/foundation.dart';
 import 'package:myapp/src/features/match_selection/player_model.dart';
 
 class Partie {
-  final String id;
-  final String name;
-  final DateTime horaire;
-  final String table;
+  final int id;
   final List<Player> team1Players;
   final List<Player> team2Players;
   final Player? arbitre;
-  final int manchesGagnantes;
+  bool isPlayed;
+  String? score;
 
   Partie({
     required this.id,
-    required this.name,
-    required this.horaire,
-    required this.table,
     required this.team1Players,
     required this.team2Players,
     this.arbitre,
-    required this.manchesGagnantes,
+    this.isPlayed = false,
+    this.score,
   });
 
   factory Partie.fromJson(Map<String, dynamic> json, List<Player> allPlayers) {
+    final numero = json['numero'];
+
+    Player? findPlayer(dynamic playerId) {
+      if (playerId == null) return null;
+      // Ensure the ID to find is a string for consistent comparison.
+      final String idToFind = playerId;
+      try {
+        return allPlayers.firstWhere((p) => p.id == idToFind);
+      } catch (e) {
+        if (kDebugMode) {
+          print('Player with ID $idToFind not found.');
+        }
+        return null;
+      }
+    }
+
     return Partie(
-      id: json['id'],
-      name: json['name'],
-      horaire: DateTime.parse(json['horaire']), // Correctly parse the datetime string
-      table: json['table'],
-      team1Players: (json['team1_players'] as List)
-          .map((playerId) => allPlayers.firstWhere((p) => p.id == playerId))
+      id: numero,
+      team1Players: (json['equipe1'] as List)
+          .map(findPlayer)
+          .whereType<Player>()
           .toList(),
-      team2Players: (json['team2_players'] as List)
-          .map((playerId) => allPlayers.firstWhere((p) => p.id == playerId))
+      team2Players: (json['equipe2'] as List)
+          .map(findPlayer)
+          .whereType<Player>()
           .toList(),
-      arbitre: json['arbitre'] != null
-          ? allPlayers.firstWhere((p) => p.id == json['arbitre'])
-          : null,
-      manchesGagnantes: json['manches_gagnantes'] ?? 3, // Default to 3 if not specified
+      arbitre: findPlayer(json['arbitre']),
+      isPlayed: json['isPlayed'] ?? false,
+      score: json['score'],
     );
   }
 }

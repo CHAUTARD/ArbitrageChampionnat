@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
-import 'package:myapp/src/features/match_selection/player_model.dart';
 import 'package:myapp/src/features/scoring/match_provider.dart';
 import 'package:myapp/src/features/scoring/manche_table.dart';
 import 'package:provider/provider.dart';
@@ -71,11 +70,19 @@ class _TableScreenState extends State<TableScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                       const SizedBox(height: 12),
+                      Text(
+                        'Score : ${widget.partie.score}',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.roboto(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-                const MancheTable(),
                 const Divider(height: 24),
                 const Text(
                   "Après validation des scores, veuillez ramener la tablette à la table d'arbitrage.",
@@ -122,7 +129,7 @@ class _TableScreenState extends State<TableScreen> {
         title: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(widget.partie.name, style: GoogleFonts.oswald(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
+            Text('Partie #${widget.partie.id}', style: GoogleFonts.oswald(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
             Text(appBarSubtitle, style: GoogleFonts.roboto(fontSize: 14, color: Colors.white.withAlpha(204))),
           ],
         ),
@@ -143,9 +150,6 @@ class _TableScreenState extends State<TableScreen> {
             _buildPingPongTable(context),
             const SizedBox(height: 16),
             _buildScoresRow(context, matchProvider),
-            const SizedBox(height: 16),
-            _buildActionsRow(context, matchProvider),
-            const Spacer(),
             const MancheTable(),
           ],
         ),
@@ -155,12 +159,13 @@ class _TableScreenState extends State<TableScreen> {
 
   Widget _buildPlayersRow(BuildContext context, MatchProvider matchProvider) {
     final isDouble = widget.partie.team1Players.length > 1;
+    final bool isGameStarted = matchProvider.scoreTeam1 > 0 || matchProvider.scoreTeam2 > 0 || matchProvider.manche > 1;
 
     Widget buildTeamWidget(List<dynamic> players) {
       if (players.isEmpty) return Container();
       if (!isDouble) {
         final player = players.first;
-        return _buildPlayerButton(context, player.name, matchProvider.joueurAuService == player.name, matchProvider.joueurReceveur == player.name);
+        return _buildPlayerButton(context, player.name, matchProvider.joueurAuService == player.name, matchProvider.joueurReceveur == player.name, isGameStarted);
       } else {
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -168,7 +173,7 @@ class _TableScreenState extends State<TableScreen> {
           children: players.map((player) {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: _buildPlayerButton(context, player.name, matchProvider.joueurAuService == player.name, matchProvider.joueurReceveur == player.name),
+              child: _buildPlayerButton(context, player.name, matchProvider.joueurAuService == player.name, matchProvider.joueurReceveur == player.name, isGameStarted),
             );
           }).toList(),
         );
@@ -177,7 +182,7 @@ class _TableScreenState extends State<TableScreen> {
 
     Widget team1Widget = buildTeamWidget(widget.partie.team1Players);
     Widget team2Widget = buildTeamWidget(widget.partie.team2Players);
-    final bool isGameStarted = matchProvider.scoreTeam1 > 0 || matchProvider.scoreTeam2 > 0 || matchProvider.manche > 1;
+
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -187,7 +192,7 @@ class _TableScreenState extends State<TableScreen> {
     );
   }
 
-  Widget _buildPlayerButton(BuildContext context, String playerName, bool isServing, bool isReceiving) {
+  Widget _buildPlayerButton(BuildContext context, String playerName, bool isServing, bool isReceiving, bool isGameStarted) {
     Color? backgroundColor;
     if (isServing) {
       backgroundColor = Colors.green.withAlpha(100);
@@ -195,7 +200,7 @@ class _TableScreenState extends State<TableScreen> {
       backgroundColor = Colors.purple.shade100;
     }
     return ElevatedButton.icon(
-      onPressed: () => Provider.of<MatchProvider>(context, listen: false).setServer(playerName),
+      onPressed: isGameStarted ? null : () => Provider.of<MatchProvider>(context, listen: false).setServer(playerName),
       icon: isServing ? const Icon(Icons.sports_cricket) : const SizedBox.shrink(),
       label: Text(playerName),
       style: ElevatedButton.styleFrom(backgroundColor: backgroundColor),
@@ -211,7 +216,6 @@ class _TableScreenState extends State<TableScreen> {
 
   Widget _buildPingPongTable(BuildContext context) {
     return Expanded(
-      flex: 2,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16.0),
         decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 2.0), borderRadius: BorderRadius.circular(8.0)),
@@ -255,98 +259,4 @@ class _TableScreenState extends State<TableScreen> {
       ],
     );
   }
-
-  Widget _buildActionsRow(BuildContext context, MatchProvider matchProvider) {
-    Widget team1Actions = _buildTeamActions(context, matchProvider, 1);
-    Widget team2Actions = _buildTeamActions(context, matchProvider, 2);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: matchProvider.isSideSwapped ? [Expanded(child: team2Actions), Expanded(child: team1Actions)] : [Expanded(child: team1Actions), Expanded(child: team2Actions)],
-    );
-  }
-
-  Widget _buildTeamActions(BuildContext context, MatchProvider matchProvider, int teamNumber) {
-    final teamPlayers = (teamNumber == 1) ? widget.partie.team1Players : widget.partie.team2Players;
-    final isTimeoutUsed = (teamNumber == 1) ? matchProvider.tempsMortTeam1Utilise : matchProvider.tempsMortTeam2Utilise;
-
-    return Card(
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 4),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: teamPlayers.map((player) => _buildPlayerActions(context, matchProvider, player, isTimeoutUsed)).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPlayerActions(BuildContext context, MatchProvider matchProvider, Player player, bool isTimeoutUsed) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Text(player.name, style: const TextStyle(fontWeight: FontWeight.bold)), const SizedBox(height: 4), _buildCardButtons(context, matchProvider, player, isTimeoutUsed)],
-      ),
-    );
-  }
-
-  Widget _buildCardButtons(BuildContext context, MatchProvider matchProvider, Player player, bool isTimeoutUsed) {
-    final currentCard = matchProvider.getCartonForPlayer(player.id);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        _buildCardButton(context, matchProvider, player, Carton.blanc, Colors.white, currentCard, isTimeoutUsed: isTimeoutUsed),
-        _buildCardButton(context, matchProvider, player, Carton.jaune, Colors.yellow.shade700, currentCard),
-        _buildCardButton(context, matchProvider, player, Carton.jauneRouge, Colors.orange.shade700, currentCard),
-        _buildCardButton(context, matchProvider, player, Carton.rouge, Colors.red.shade800, currentCard),
-      ],
-    );
-  }
-
-  Widget _buildCardButton(BuildContext context, MatchProvider matchProvider, Player player, Carton carton, Color color, Carton? currentCard, {bool isTimeoutUsed = false}) {
-    final bool isSelected = (carton == Carton.blanc) ? isTimeoutUsed : (currentCard == carton);
-
-    bool isTappable = true;
-    if (carton != Carton.blanc) {
-      if (isSelected) {
-        isTappable = true; // Can always un-select the current card
-      } else {
-        switch (carton) {
-          case Carton.jaune:
-            isTappable = currentCard == null;
-            break;
-          case Carton.jauneRouge:
-            isTappable = currentCard == Carton.jaune;
-            break;
-          case Carton.rouge:
-            isTappable = currentCard == Carton.jauneRouge;
-            break;
-          default: isTappable = false;
-        }
-      }
-    } else {
-      isTappable = !isTimeoutUsed;
-    }
-
-    return GestureDetector(
-      onTap: isTappable ? () => matchProvider.attribuerCarton(player.id, carton) : null,
-      child: Container(
-        margin: const EdgeInsets.only(right: 8.0),
-        width: 30,
-        height: 40,
-        decoration: BoxDecoration(
-          color: isSelected ? color : (isTappable ? color.withAlpha(64) : Colors.grey.withAlpha(80)),
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: isTappable ? (isSelected ? Colors.black87 : Colors.black26) : Colors.transparent,
-            width: isSelected ? 2.0 : 1.0,
-          ),
-          boxShadow: isSelected ? [const BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(2, 2))] : [],
-        ),
-        child: carton == Carton.blanc && isSelected ? const Icon(Icons.check, color: Colors.black, size: 20) : null,
-      ),
-    );
-  }
-
 }
