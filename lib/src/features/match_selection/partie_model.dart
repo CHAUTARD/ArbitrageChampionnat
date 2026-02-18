@@ -9,6 +9,11 @@ class Partie {
   final Player? arbitre;
   bool isPlayed;
   String? score;
+  String? winner; // Vainqueur de la partie
+  int? manchesGagneesTeam1;
+  int? manchesGagneesTeam2;
+  int? pointsGagnesTeam1;
+  int? pointsGagnesTeam2;
 
   Partie({
     required this.id,
@@ -17,6 +22,11 @@ class Partie {
     this.arbitre,
     this.isPlayed = false,
     this.score,
+    this.winner,
+    this.manchesGagneesTeam1,
+    this.manchesGagneesTeam2,
+    this.pointsGagnesTeam1,
+    this.pointsGagnesTeam2,
   });
 
   factory Partie.fromJson(Map<String, dynamic> json, List<Player> allPlayers) {
@@ -25,7 +35,7 @@ class Partie {
     Player? findPlayer(dynamic playerId) {
       if (playerId == null) return null;
       // Ensure the ID to find is a string for consistent comparison.
-      final String idToFind = playerId;
+      final String idToFind = playerId.toString();
       try {
         return allPlayers.firstWhere((p) => p.id == idToFind);
       } catch (e) {
@@ -49,6 +59,11 @@ class Partie {
       arbitre: findPlayer(json['arbitre']),
       isPlayed: json['isPlayed'] ?? false,
       score: json['score'],
+      winner: json['winner'],
+      manchesGagneesTeam1: json['manchesGagneesTeam1'],
+      manchesGagneesTeam2: json['manchesGagneesTeam2'],
+      pointsGagnesTeam1: json['pointsGagnesTeam1'],
+      pointsGagnesTeam2: json['pointsGagnesTeam2'],
     );
   }
 }

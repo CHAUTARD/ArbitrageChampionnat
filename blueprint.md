@@ -33,8 +33,20 @@ Cette application a pour but de faciliter la gestion des feuilles de matchs lors
 
 ### Plan de Développement Actuel
 
-*   **Tâche en cours :** Finaliser la suppression du `TeamProvider` et le remplacer par le `PartieProvider`.
-*   **Prochaines Étapes :**
-    1.  Nettoyer le code et supprimer les dépendances inutilisées.
-    2.  Améliorer l'interface utilisateur pour une meilleure expérience.
-    3.  Ajouter la persistance des données pour que les modifications soient sauvegardées.
+**Phase 1 : Refactorisation et Amélioration (Terminée)**
+
+*   **Remplacement du `TeamProvider` :** Le `TeamProvider` a été entièrement remplacé par le `PartieProvider` pour une gestion plus centralisée et cohérente des données des matchs.
+*   **Centralisation du Thème :** La gestion du thème de l'application, y compris les couleurs, la typographie et les styles de composants, a été unifiée dans le fichier `main.dart`.
+*   **Intégration des Polices Locales :** La dépendance `google_fonts` a été supprimée au profit de polices locales (`Oswald` et `Roboto`) pour améliorer les performances et garantir la disponibilité des polices hors ligne.
+*   **Nettoyage du Code :** Les références inutilisées à `google_fonts` et les erreurs de thème (comme `TabBarTheme` au lieu de `TabBarThemeData`) ont été corrigées, résultant en un code plus propre et plus stable.
+
+**Phase 2 : Amélioration de l'Expérience Utilisateur (À venir)**
+
+*   **Animations et Feedback Visuel :** Introduire des animations subtiles pour rendre l'interface plus dynamique (par exemple, lors de l'apparition des cartes de match) et améliorer le feedback visuel sur les interactions utilisateur.
+*   **Optimisation de l'Affichage :** Assurer que l'interface s'adapte de manière fluide à différentes tailles d'écran.
+
+**Phase 3 : Nouvelles Fonctionnalités (Futures Idées)**
+
+*   **Mode Sombre :** Ajouter une option pour basculer entre un thème clair et un thème sombre.
+*   **Persistance des Données :** Implémenter une solution de stockage local (comme `shared_preferences` ou une base de données locale) pour sauvegarder l'état de l'application.
+*   **Notifications en Temps Réel :** Explorer l'intégration de notifications pour informer les utilisateurs des événements importants (début de match, résultats, etc.).

@@ -8,13 +8,19 @@ import 'package:myapp/src/features/match_selection/partie_provider.dart';
 import 'package:myapp/src/features/scoring/match_provider.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // GoogleFonts.config.allowRuntimeFetching = false;
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => MatchProvider()),
         ChangeNotifierProvider(create: (context) => PartieProvider()),
+        ChangeNotifierProxyProvider<PartieProvider, MatchProvider>(
+          create: (context) => MatchProvider(context.read<PartieProvider>()),
+          update: (context, partieProvider, matchProvider) =>
+              MatchProvider(partieProvider),
+        ),
       ],
       child: const MyApp(),
     ),

@@ -1,9 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
+import 'package:myapp/src/features/match_selection/partie_provider.dart';
 
 class MatchProvider with ChangeNotifier {
   late Partie _partie;
+  final PartieProvider _partieProvider;
   int _scoreTeam1 = 0;
   int _scoreTeam2 = 0;
   int _manche = 1;
@@ -16,6 +18,8 @@ class MatchProvider with ChangeNotifier {
   final Map<String, Carton> _cartons = {};
   bool _tempsMortTeam1Utilise = false;
   bool _tempsMortTeam2Utilise = false;
+
+  MatchProvider(this._partieProvider);
 
   // Getters
   int get scoreTeam1 => _scoreTeam1;
@@ -117,7 +121,13 @@ class MatchProvider with ChangeNotifier {
 
   void _endMatch() {
     _partie.isPlayed = true;
-    _partie.score = '$_manchesGagneesTeam1 / $_manchesGagneesTeam2';
+    _partie.score = '$_manchesGagneesTeam1/$_manchesGagneesTeam2';
+    if (_manchesGagneesTeam1 > _manchesGagneesTeam2) {
+      _partie.winner = _partie.team1Players.map((p) => p.name).join(' & ');
+    } else {
+      _partie.winner = _partie.team2Players.map((p) => p.name).join(' & ');
+    }
+    _partieProvider.saveMatchResult(_partie);
     notifyListeners();
   }
 

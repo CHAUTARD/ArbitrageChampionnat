@@ -9,13 +9,8 @@
 .history
 .svn/
 
-# IntelliJ
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# Flutter
+# Flutter/Dart
+.dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
 .packages
@@ -23,62 +18,45 @@
 .pub/
 /build/
 
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
 # Android
 /android/app/src/main/assets/flutter_assets/
 /android/app/build/
 /android/build/
 /android/app/build/
 /android/.gradle/
-/android/.idea/
-/android/gradle.properties
-/android/local.properties
-/android/key.properties
+/android/gradle/
+/android/gradlew
+/android/gradlew.bat
 
 # iOS
-/ios/Pods/
-/ios/Runner/Assets.xcassets/AppIcon.appiconset/
+/ios/build/
 /ios/Flutter/App.framework
-/ios/Flutter/Debug-iphonesimulator.xcconfig
-/ios/Flutter/Debug.xcconfig
-/ios/Flutter/Release.xcconfig
-/ios/Flutter/app.flx
-/ios/Flutter/app.zip
+/ios/Flutter/engine.xcframework
 /ios/Flutter/flutter_assets/
-/ios/Flutter/snapshot_blob.bin
-/ios/Flutter/vm_snapshot_data
-/ios/ServiceDefinitions.json
-/ios/Runner.xcworkspace/
-/ios/Runner/GeneratedPluginRegistrant.h
-/ios/Runner/GeneratedPluginRegistrant.m
-/ios/Runner/Info.plist
+/ios/Pods/
+/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/xcschemes/Runner.xcscheme
+/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
 
-# Dart
-/lib/generated_plugin_registrant.dart
-/lib/main.dart.dill
-/lib/main.dart.snapshot.d
-/lib/main.dart.snapshot.S
-/lib/main.dart.snapshot.T
-/lib/main.dart.snapshot.d.d
-/lib/main.dart.snapshot.d.S
-/lib/main.dart.snapshot.d.T
-/lib/main.dart.snapshot.d.d.d
-/lib/main.dart.snapshot.d.d.S
-/lib/main.dart.snapshot.d.d.T
-/lib/main.dart.snapshot.d.d.d.d
-/lib/main.dart.snapshot.d.d.d.S
-/lib/main.dart.snapshot.d.d.d.T
-/lib/main.dart.snapshot.d.d.d.d.d
-/lib/main.dart.snapshot.d.d.d.d.S
-/lib/main.dart.snapshot.d.d.d.d.T
-/lib/main.dart.snapshot.d.d.d.d.d.d
-/lib/main.dart.snapshot.d.d.d.d.d.S
-/lib/main.dart.snapshot.d.d.d.d.d.T
-/lib/main.dart.snapshot.d.d.d.d.d.d.d
-/lib/main.dart.snapshot.d.d.d.d.d.d.S
-/lib/main.dart.snapshot.d.d.d.d.d.d.T
-/lib/main.dart.snapshot.d.d.d.d.d.d.d.d
-/lib/main.dart.snapshot.d.d.d.d.d.d.d.S
-/lib/main.dart.snapshot.d.d.d.d.d.d.d.T
-/lib/main.dart.snapshot.d.d.d.d.d.d.d.d.d
-/lib/main.dart.snapshot.d.d.d.d.d.d.d.d.S
-/lib/main.dart.snapshot.d.d.d.d.d.d.d.d.T
+# macOS
+/macos/build/
+/macos/Flutter/ephemeral/
+
+# Web
+/web/build/
+/web/.dart_tool/
+
+# Linux
+/linux/build/
+
+# Windows
+/windows/build/
+
+# Static files
+assets/fonts/Oswald.zip

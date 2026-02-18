@@ -1,7 +1,7 @@
 // features/table/table_screen.dart
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
+import 'package:myapp/src/features/scoring/manche_indicator.dart';
 import 'package:myapp/src/features/scoring/match_provider.dart';
 import 'package:myapp/src/features/scoring/manche_table.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +45,7 @@ class _TableScreenState extends State<TableScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Match Terminé !', textAlign: TextAlign.center, style: GoogleFonts.oswald(fontWeight: FontWeight.bold)),
+          title: Text('Match Terminé !', textAlign: TextAlign.center, style: theme.textTheme.titleLarge?.copyWith(fontFamily: 'Oswald')),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -54,9 +54,9 @@ class _TableScreenState extends State<TableScreen> {
                     children: [
                       Text(
                         'VAINQUEUR',
-                        style: GoogleFonts.oswald(
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontFamily: 'Oswald',
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
                           letterSpacing: 2,
                           color: theme.primaryColor,
                         ),
@@ -65,16 +65,16 @@ class _TableScreenState extends State<TableScreen> {
                       Text(
                         winnerTeamName,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.roboto(
+                        style: theme.textTheme.titleLarge?.copyWith(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                        const SizedBox(height: 12),
                       Text(
-                        'Score : ${widget.partie.score}',
+                        'Score : ${matchProvider.manchesGagneesTeam1}/${matchProvider.manchesGagneesTeam2}',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.roboto(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
                         ),
@@ -129,11 +129,10 @@ class _TableScreenState extends State<TableScreen> {
         title: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Partie #${widget.partie.id}', style: GoogleFonts.oswald(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white)),
-            Text(appBarSubtitle, style: GoogleFonts.roboto(fontSize: 14, color: Colors.white.withAlpha(204))),
+            Text('Partie #${widget.partie.id}', style: theme.appBarTheme.titleTextStyle?.copyWith(fontSize: 20)),
+            Text(appBarSubtitle, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white.withAlpha(204))),
           ],
         ),
-        backgroundColor: theme.primaryColorDark,
         centerTitle: true,
         toolbarHeight: 65,
       ),
@@ -143,13 +142,19 @@ class _TableScreenState extends State<TableScreen> {
           children: [
             Text(
                 'Manche ${matchProvider.manche}',
-                style: GoogleFonts.oswald(fontSize: 20, fontWeight: FontWeight.bold)),
+                style: theme.textTheme.titleLarge?.copyWith(fontFamily: 'Oswald', fontSize: 20)),
             const SizedBox(height: 16),
             _buildPlayersRow(context, matchProvider),
             const SizedBox(height: 16),
             _buildPingPongTable(context),
             const SizedBox(height: 16),
             _buildScoresRow(context, matchProvider),
+             const SizedBox(height: 16),
+            MancheIndicator(
+                manchesGagneesTeam1: matchProvider.manchesGagneesTeam1,
+                manchesGagneesTeam2: matchProvider.manchesGagneesTeam2,
+                isSideSwapped: matchProvider.isSideSwapped,
+            ),
             const MancheTable(),
           ],
         ),
@@ -240,6 +245,7 @@ class _TableScreenState extends State<TableScreen> {
   }
 
   Widget _buildScoreControl(BuildContext context, int team, int score, MatchProvider matchProvider) {
+    final theme = Theme.of(context);
     return Row(
       children: [
         IconButton(
@@ -249,7 +255,7 @@ class _TableScreenState extends State<TableScreen> {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text('$score', style: GoogleFonts.oswald(fontSize: 60, fontWeight: FontWeight.bold, color: team == 1 ? Colors.blue.withAlpha(178) : Colors.red.withAlpha(178))),
+          child: Text('$score', style: theme.textTheme.displayLarge?.copyWith(fontSize: 60, color: team == 1 ? Colors.blue.withAlpha(178) : Colors.red.withAlpha(178))),
         ),
         IconButton(
           icon: Icon(Icons.add, color: Colors.green.shade800),

@@ -39,6 +39,7 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen>
         id: 9,
         team1Players: [],
         team2Players: [],
+        winner: null,
       );
     }
 

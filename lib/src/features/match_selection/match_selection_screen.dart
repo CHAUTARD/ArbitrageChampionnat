@@ -1,5 +1,5 @@
+// features/match_selection/partie_selection_screen.dart
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/src/features/doubles_composition/double_composition_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -13,14 +13,9 @@ class MatchSelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Sélection des Parties',
-          style: GoogleFonts.oswald(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
         ),
-        backgroundColor: Theme.of(context).primaryColorDark,
         centerTitle: true,
         actions: [
           IconButton(
@@ -29,6 +24,7 @@ class MatchSelectionScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
+                  // Modification du nom des joueurs et composition des doubles
                   builder: (context) => const DoubleCompositionScreen(),
                 ),
               );
@@ -56,7 +52,11 @@ class MatchSelectionScreen extends StatelessWidget {
             child: ListView.builder(
               itemCount: partieProvider.parties.length,
               itemBuilder: (context, index) {
-                return PartieCard(partie: partieProvider.parties[index]);
+                final partie = partieProvider.parties[index];
+                return PartieCard(
+                  partie: partie,
+                  isPlayed: partie.isPlayed,
+                );
               },
             ),
           );
