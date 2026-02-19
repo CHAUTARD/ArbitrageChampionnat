@@ -37,8 +37,16 @@ class PartieCard extends StatelessWidget {
     final theme = Theme.of(context);
     final team1Name = partie.team1Players.map((p) => p.name).join(' & ');
     final team2Name = partie.team2Players.map((p) => p.name).join(' & ');
-    final cardColor =
-        isPlayed ? Colors.grey.shade400 : Colors.green.shade100;
+    final isDouble = partie.team1Players.length > 1;
+
+    final Color cardColor;
+    if (isPlayed) {
+      cardColor = Colors.grey.shade400;
+    } else if (isDouble) {
+      cardColor = Colors.blue.shade100;
+    } else {
+      cardColor = Colors.green.shade100;
+    }
 
     return Card(
       color: cardColor,

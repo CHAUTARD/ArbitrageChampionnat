@@ -18,6 +18,12 @@ class MatchProvider with ChangeNotifier {
   final Map<String, Carton> _cartons = {};
   bool _tempsMortTeam1Utilise = false;
   bool _tempsMortTeam2Utilise = false;
+  bool _isServiceSelectionDone = false;
+
+  // New properties to track server/receiver for subsequent games
+  String? _lastServerOfPrevManche;
+  String? _lastReceiverOfPrevManche;
+
 
   MatchProvider(this._partieProvider);
 
@@ -33,6 +39,11 @@ class MatchProvider with ChangeNotifier {
   List<Game> get games => _games;
   bool get tempsMortTeam1Utilise => _tempsMortTeam1Utilise;
   bool get tempsMortTeam2Utilise => _tempsMortTeam2Utilise;
+  bool get isServiceSelectionDone => _isServiceSelectionDone;
+
+  // Getters for the new properties
+  String? get lastServerOfPrevManche => _lastServerOfPrevManche;
+  String? get lastReceiverOfPrevManche => _lastReceiverOfPrevManche;
 
   String get player1Name => _partie.team1Players.map((p) => p.name).join(' & ');
   String get player2Name => _partie.team2Players.map((p) => p.name).join(' & ');
@@ -57,13 +68,21 @@ class MatchProvider with ChangeNotifier {
     _cartons.clear();
     _tempsMortTeam1Utilise = false;
     _tempsMortTeam2Utilise = false;
-    _joueurAuService = _partie.team1Players.first.name;
-    _joueurReceveur = _partie.team2Players.first.name;
+    _joueurAuService = null;
+    _joueurReceveur = null;
+    _isServiceSelectionDone = false;
+    _lastServerOfPrevManche = null;
+    _lastReceiverOfPrevManche = null;
+    notifyListeners();
+  }
+
+  void completeServiceSelection() {
+    _isServiceSelectionDone = true;
     notifyListeners();
   }
 
   void incrementScore(int team) {
-    if (isMatchFinished) return;
+    if (isMatchFinished || !_isServiceSelectionDone) return;
 
     if (team == 1) {
       _scoreTeam1++;
@@ -76,7 +95,7 @@ class MatchProvider with ChangeNotifier {
   }
 
   void decrementScore(int team) {
-    if (isMatchFinished) return;
+    if (isMatchFinished || !_isServiceSelectionDone) return;
 
     if (team == 1 && _scoreTeam1 > 0) {
       _scoreTeam1--;
@@ -100,6 +119,9 @@ class MatchProvider with ChangeNotifier {
     if (isMancheFinished) {
       _games.add(Game(score1: _scoreTeam1, score2: _scoreTeam2));
       if (!isMatchFinished) {
+        // Store server/receiver before starting new game
+        _lastServerOfPrevManche = _joueurAuService;
+        _lastReceiverOfPrevManche = _joueurReceveur;
         _startNewManche();
       } else {
         _endMatch();
@@ -113,10 +135,10 @@ class MatchProvider with ChangeNotifier {
     _manche++;
     _tempsMortTeam1Utilise = false;
     _tempsMortTeam2Utilise = false;
+    _isServiceSelectionDone = false; // Force re-selection
+    _joueurAuService = null;
+    _joueurReceveur = null;
     changerDeCote();
-    final tempServer = _joueurAuService;
-    _joueurAuService = _joueurReceveur;
-    _joueurReceveur = tempServer;
   }
 
   void _endMatch() {
@@ -158,18 +180,30 @@ class MatchProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setServer(String playerName) {
-    final team1Players = _partie.team1Players.map((p) => p.name).toList();
-    final team2Players = _partie.team2Players.map((p) => p.name).toList();
-
-    if (team1Players.contains(playerName)) {
-      _joueurAuService = playerName;
-      _joueurReceveur = team2Players.first;
-    } else if (team2Players.contains(playerName)) {
-      _joueurAuService = playerName;
-      _joueurReceveur = team1Players.first;
+ void setServer(String playerName) {
+    _joueurAuService = playerName;
+    // For games > 1, the receiver is determined automatically
+    if (_manche > 1 && _lastServerOfPrevManche != null) {
+      final lastServerPartner = _partie.team1Players.any((p) => p.name == _lastServerOfPrevManche) 
+          ? _partie.team1Players.firstWhereOrNull((p) => p.name != _lastServerOfPrevManche)?.name
+          : _partie.team2Players.firstWhereOrNull((p) => p.name != _lastServerOfPrevManche)?.name;
+      _joueurReceveur = lastServerPartner;
+    } else {
+      _joueurReceveur = null; // Reset for game 1
     }
     notifyListeners();
+  }
+
+  void setReceiver(String playerName) {
+    if (_joueurAuService == null) return;
+
+    final serverIsInTeam1 = _partie.team1Players.any((p) => p.name == _joueurAuService);
+    final receiverIsInTeam1 = _partie.team1Players.any((p) => p.name == playerName);
+
+    if (serverIsInTeam1 != receiverIsInTeam1) {
+      _joueurReceveur = playerName;
+      notifyListeners();
+    }
   }
 
   void changerDeCote() {
@@ -177,20 +211,20 @@ class MatchProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void attribuerCarton(String playerId, Carton carton) {
-    if (carton == Carton.blanc) {
-      final playerTeam1 = _partie.team1Players.any((p) => p.id == playerId);
-      if (playerTeam1) {
-        _tempsMortTeam1Utilise = !_tempsMortTeam1Utilise;
-      } else {
-        _tempsMortTeam2Utilise = !_tempsMortTeam2Utilise;
-      }
+  void utiliserTempsMort(int teamNumber) {
+    if (teamNumber == 1) {
+      _tempsMortTeam1Utilise = !_tempsMortTeam1Utilise;
     } else {
-      if (_cartons[playerId] == carton) {
-        _cartons.remove(playerId);
-      } else {
-        _cartons[playerId] = carton;
-      }
+      _tempsMortTeam2Utilise = !_tempsMortTeam2Utilise;
+    }
+    notifyListeners();
+  }
+
+  void attribuerCarton(String playerId, Carton carton) {
+    if (_cartons[playerId] == carton) {
+      _cartons.remove(playerId);
+    } else {
+      _cartons[playerId] = carton;
     }
     notifyListeners();
   }
@@ -203,8 +237,9 @@ class MatchProvider with ChangeNotifier {
 class Game {
   final int score1;
   final int score2;
+  
 
   Game({required this.score1, required this.score2});
 }
 
-enum Carton { blanc, jaune, jauneRouge, rouge }
+enum Carton { jaune, jauneRouge, rouge }

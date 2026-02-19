@@ -40,10 +40,13 @@ Cette application a pour but de faciliter la gestion des feuilles de matchs lors
 *   **Intégration des Polices Locales :** La dépendance `google_fonts` a été supprimée au profit de polices locales (`Oswald` et `Roboto`) pour améliorer les performances et garantir la disponibilité des polices hors ligne.
 *   **Nettoyage du Code :** Les références inutilisées à `google_fonts` et les erreurs de thème (comme `TabBarTheme` au lieu de `TabBarThemeData`) ont été corrigées, résultant en un code plus propre et plus stable.
 
-**Phase 2 : Amélioration de l'Expérience Utilisateur (À venir)**
+**Phase 2 : Amélioration de l'Expérience Utilisateur (Terminée)**
 
-*   **Animations et Feedback Visuel :** Introduire des animations subtiles pour rendre l'interface plus dynamique (par exemple, lors de l'apparition des cartes de match) et améliorer le feedback visuel sur les interactions utilisateur.
-*   **Optimisation de l'Affichage :** Assurer que l'interface s'adapte de manière fluide à différentes tailles d'écran.
+*   **Distinction Visuelle des Matchs :** Les cartes des matchs sur l'écran de sélection ont désormais des couleurs de fond distinctes pour différencier les simples (vert) des doubles (bleu), améliorant ainsi la lisibilité de la liste.
+*   **Interface de Pointage Unifiée :** L'écran de pointage pour les matchs simples inclut désormais l'icône "style" permettant d'afficher/masquer les actions de cartons, harmonisant ainsi l'expérience avec l'écran des doubles.
+*   **Sélection du Service Guidée pour les Doubles :**
+    *   **Première manche :** Un système de boîtes de dialogue modales guide l'arbitre pas à pas pour sélectionner d'abord le serveur, puis le receveur.
+    *   **Manches suivantes :** L'interface affiche un écran de sélection dédié, demandant uniquement de choisir le serveur parmi l'équipe qui doit servir, le receveur étant automatiquement déterminé selon les règles.
 
 **Phase 3 : Nouvelles Fonctionnalités (Futures Idées)**
 

@@ -131,4 +131,18 @@ class PartieProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> resetData() async {
+    await _loadParties();
+    await clearMatchHistory();
+  }
+
+  Future<void> clearMatchHistory() async {
+    for (var partie in _parties) {
+      partie.isPlayed = false;
+      partie.score = null; // Corrected line
+      partie.winner = null;
+    }
+    notifyListeners();
+  }
 }
