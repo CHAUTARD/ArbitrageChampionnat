@@ -1,62 +1,25 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
-
-# Flutter/Dart
+# Mis-generated files.
 .dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
 .packages
 .pub-cache/
-.pub/
-/build/
 
-# IntelliJ
+# Build products.
+build/
+
+# IDE-specific files.
 .idea/
-*.iml
-
-# VS Code
 .vscode/
 
-# Android
-/android/app/src/main/assets/flutter_assets/
-/android/app/build/
-/android/build/
-/android/app/build/
-/android/.gradle/
-/android/gradle/
-/android/gradlew
-/android/gradlew.bat
+# Flutter/Dart-specific files.
+*.iml
+*.metadata
 
-# iOS
-/ios/build/
-/ios/Flutter/App.framework
-/ios/Flutter/engine.xcframework
-/ios/Flutter/flutter_assets/
-/ios/Pods/
-/ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/xcschemes/Runner.xcscheme
-/ios/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+# Log files
+*.log
 
-# macOS
-/macos/build/
-/macos/Flutter/ephemeral/
+# Generated localization files.
+.flutter-localization
 
-# Web
-/web/build/
-/web/.dart_tool/
-
-# Linux
-/linux/build/
-
-# Windows
-/windows/build/
-
-# Static files
-assets/fonts/Oswald.zip
+# Generated Drift files
+*.g.dart
+*.freezed.dart

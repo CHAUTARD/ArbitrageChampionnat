@@ -1,245 +1,182 @@
-import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
-import 'package:myapp/src/features/match_selection/partie_provider.dart';
+import 'package:myapp/src/features/scoring/game_model.dart';
+
+enum Carton { jaune, jauneRouge, rouge }
 
 class MatchProvider with ChangeNotifier {
-  late Partie _partie;
-  final PartieProvider _partieProvider;
-  int _scoreTeam1 = 0;
-  int _scoreTeam2 = 0;
-  int _manche = 1;
-  int _manchesGagneesTeam1 = 0;
-  int _manchesGagneesTeam2 = 0;
-  bool _isSideSwapped = false;
-  String? _joueurAuService;
-  String? _joueurReceveur;
-  final List<Game> _games = [];
-  final Map<String, Carton> _cartons = {};
-  bool _tempsMortTeam1Utilise = false;
-  bool _tempsMortTeam2Utilise = false;
-  bool _isServiceSelectionDone = false;
+  final int nombreManches;
+  final int pointsParManche;
 
-  // New properties to track server/receiver for subsequent games
-  String? _lastServerOfPrevManche;
-  String? _lastReceiverOfPrevManche;
+  int manche = 1;
+  int scoreTeam1 = 0;
+  int scoreTeam2 = 0;
+  int manchesGagneesTeam1 = 0;
+  int manchesGagneesTeam2 = 0;
 
+  String? joueurAuService;
+  bool tempsMortTeam1Utilise = false;
+  bool tempsMortTeam2Utilise = false;
+  Map<String, Carton> cartons = {};
 
-  MatchProvider(this._partieProvider);
+  List<Game> historiqueManches = [];
+  List<Map<String, dynamic>> historiqueActions = [];
 
-  // Getters
-  int get scoreTeam1 => _scoreTeam1;
-  int get scoreTeam2 => _scoreTeam2;
-  int get manche => _manche;
-  int get manchesGagneesTeam1 => _manchesGagneesTeam1;
-  int get manchesGagneesTeam2 => _manchesGagneesTeam2;
-  bool get isSideSwapped => _isSideSwapped;
-  String? get joueurAuService => _joueurAuService;
-  String? get joueurReceveur => _joueurReceveur;
-  List<Game> get games => _games;
-  bool get tempsMortTeam1Utilise => _tempsMortTeam1Utilise;
-  bool get tempsMortTeam2Utilise => _tempsMortTeam2Utilise;
-  bool get isServiceSelectionDone => _isServiceSelectionDone;
+  bool isSideSwapped = false;
+  bool isMatchFinished = false;
+  int? winnerTeam;
 
-  // Getters for the new properties
-  String? get lastServerOfPrevManche => _lastServerOfPrevManche;
-  String? get lastReceiverOfPrevManche => _lastReceiverOfPrevManche;
+  Partie? _currentPartie;
+  Partie? get currentPartie => _currentPartie;
 
-  String get player1Name => _partie.team1Players.map((p) => p.name).join(' & ');
-  String get player2Name => _partie.team2Players.map((p) => p.name).join(' & ');
-
-  bool get isMatchFinished =>
-      _manchesGagneesTeam1 >= 3 || _manchesGagneesTeam2 >= 3;
-
-  int? get winnerTeam {
-    if (!isMatchFinished) return null;
-    return _manchesGagneesTeam1 > _manchesGagneesTeam2 ? 1 : 2;
-  }
+  MatchProvider(this.nombreManches, this.pointsParManche);
 
   void startMatch(Partie partie) {
-    _partie = partie;
-    _scoreTeam1 = 0;
-    _scoreTeam2 = 0;
-    _manche = 1;
-    _manchesGagneesTeam1 = 0;
-    _manchesGagneesTeam2 = 0;
-    _isSideSwapped = false;
-    _games.clear();
-    _cartons.clear();
-    _tempsMortTeam1Utilise = false;
-    _tempsMortTeam2Utilise = false;
-    _joueurAuService = null;
-    _joueurReceveur = null;
-    _isServiceSelectionDone = false;
-    _lastServerOfPrevManche = null;
-    _lastReceiverOfPrevManche = null;
-    notifyListeners();
-  }
-
-  void completeServiceSelection() {
-    _isServiceSelectionDone = true;
+    _currentPartie = partie;
+    manche = 1;
+    scoreTeam1 = 0;
+    scoreTeam2 = 0;
+    manchesGagneesTeam1 = 0;
+    manchesGagneesTeam2 = 0;
+    joueurAuService = null;
+    tempsMortTeam1Utilise = false;
+    tempsMortTeam2Utilise = false;
+    cartons = {};
+    historiqueManches = [];
+    historiqueActions = [];
+    isSideSwapped = false;
+    isMatchFinished = false;
+    winnerTeam = null;
     notifyListeners();
   }
 
   void incrementScore(int team) {
-    if (isMatchFinished || !_isServiceSelectionDone) return;
-
+    _enregistrerAction();
     if (team == 1) {
-      _scoreTeam1++;
+      scoreTeam1++;
     } else {
-      _scoreTeam2++;
+      scoreTeam2++;
     }
-    _checkMancheEnd();
-    _updateService();
+    _verifierFinDeManche();
     notifyListeners();
   }
 
   void decrementScore(int team) {
-    if (isMatchFinished || !_isServiceSelectionDone) return;
-
-    if (team == 1 && _scoreTeam1 > 0) {
-      _scoreTeam1--;
-    } else if (team == 2 && _scoreTeam2 > 0) {
-      _scoreTeam2--;
-    }
-    _updateService();
-    notifyListeners();
-  }
-
-  void _checkMancheEnd() {
-    bool isMancheFinished = false;
-    if (_scoreTeam1 >= 11 && _scoreTeam1 >= _scoreTeam2 + 2) {
-      _manchesGagneesTeam1++;
-      isMancheFinished = true;
-    } else if (_scoreTeam2 >= 11 && _scoreTeam2 >= _scoreTeam1 + 2) {
-      _manchesGagneesTeam2++;
-      isMancheFinished = true;
-    }
-
-    if (isMancheFinished) {
-      _games.add(Game(score1: _scoreTeam1, score2: _scoreTeam2));
-      if (!isMatchFinished) {
-        // Store server/receiver before starting new game
-        _lastServerOfPrevManche = _joueurAuService;
-        _lastReceiverOfPrevManche = _joueurReceveur;
-        _startNewManche();
-      } else {
-        _endMatch();
-      }
-    }
-  }
-
-  void _startNewManche() {
-    _scoreTeam1 = 0;
-    _scoreTeam2 = 0;
-    _manche++;
-    _tempsMortTeam1Utilise = false;
-    _tempsMortTeam2Utilise = false;
-    _isServiceSelectionDone = false; // Force re-selection
-    _joueurAuService = null;
-    _joueurReceveur = null;
-    changerDeCote();
-  }
-
-  void _endMatch() {
-    _partie.isPlayed = true;
-    _partie.score = '$_manchesGagneesTeam1/$_manchesGagneesTeam2';
-    if (_manchesGagneesTeam1 > _manchesGagneesTeam2) {
-      _partie.winner = _partie.team1Players.map((p) => p.name).join(' & ');
+    _enregistrerAction();
+    if (team == 1) {
+      if (scoreTeam1 > 0) scoreTeam1--;
     } else {
-      _partie.winner = _partie.team2Players.map((p) => p.name).join(' & ');
-    }
-    _partieProvider.saveMatchResult(_partie);
-    notifyListeners();
-  }
-
-  void _updateService() {
-    final totalScore = _scoreTeam1 + _scoreTeam2;
-    final isDouble = _partie.team1Players.length > 1;
-
-    if (totalScore % 2 == 0 && totalScore > 0) {
-      if (isDouble) {
-        final currentServerName = _joueurAuService;
-        final currentReceiverName = _joueurReceveur;
-
-        final team1 = _partie.team1Players.map((p) => p.name).toList();
-        final team2 = _partie.team2Players.map((p) => p.name).toList();
-
-        final partnerOfCurrentServer = team1.contains(currentServerName)
-            ? team1.firstWhereOrNull((p) => p != currentServerName)
-            : team2.firstWhereOrNull((p) => p != currentServerName);
-
-        _joueurAuService = currentReceiverName;
-        _joueurReceveur = partnerOfCurrentServer;
-      } else {
-        final tempServer = _joueurAuService;
-        _joueurAuService = _joueurReceveur;
-        _joueurReceveur = tempServer;
-      }
+      if (scoreTeam2 > 0) scoreTeam2--;
     }
     notifyListeners();
   }
 
- void setServer(String playerName) {
-    _joueurAuService = playerName;
-    // For games > 1, the receiver is determined automatically
-    if (_manche > 1 && _lastServerOfPrevManche != null) {
-      final lastServerPartner = _partie.team1Players.any((p) => p.name == _lastServerOfPrevManche) 
-          ? _partie.team1Players.firstWhereOrNull((p) => p.name != _lastServerOfPrevManche)?.name
-          : _partie.team2Players.firstWhereOrNull((p) => p.name != _lastServerOfPrevManche)?.name;
-      _joueurReceveur = lastServerPartner;
+  void _verifierFinDeManche() {
+    if ((scoreTeam1 >= pointsParManche || scoreTeam2 >= pointsParManche) &&
+        (scoreTeam1 - scoreTeam2).abs() >= 2) {
+      int winner = scoreTeam1 > scoreTeam2 ? 1 : 2;
+      _finirManche(winner);
+    }
+  }
+
+  void _finirManche(int winner) {
+    historiqueManches.add(
+        Game(manche: manche, scoreTeam1: scoreTeam1, scoreTeam2: scoreTeam2));
+    if (winner == 1) {
+      manchesGagneesTeam1++;
     } else {
-      _joueurReceveur = null; // Reset for game 1
+      manchesGagneesTeam2++;
     }
-    notifyListeners();
-  }
 
-  void setReceiver(String playerName) {
-    if (_joueurAuService == null) return;
-
-    final serverIsInTeam1 = _partie.team1Players.any((p) => p.name == _joueurAuService);
-    final receiverIsInTeam1 = _partie.team1Players.any((p) => p.name == playerName);
-
-    if (serverIsInTeam1 != receiverIsInTeam1) {
-      _joueurReceveur = playerName;
-      notifyListeners();
-    }
-  }
-
-  void changerDeCote() {
-    _isSideSwapped = !_isSideSwapped;
-    notifyListeners();
-  }
-
-  void utiliserTempsMort(int teamNumber) {
-    if (teamNumber == 1) {
-      _tempsMortTeam1Utilise = !_tempsMortTeam1Utilise;
+    if (manchesGagneesTeam1 > nombreManches / 2 ||
+        manchesGagneesTeam2 > nombreManches / 2) {
+      isMatchFinished = true;
+      winnerTeam = winner;
+      _currentPartie?.isPlayed = true;
+      _currentPartie?.score = '$manchesGagneesTeam1 - $manchesGagneesTeam2';
+      _currentPartie?.winner = winner == 1 ? 'Equipe 1' : 'Equipe 2';
     } else {
-      _tempsMortTeam2Utilise = !_tempsMortTeam2Utilise;
+      manche++;
+      scoreTeam1 = 0;
+      scoreTeam2 = 0;
+      joueurAuService = null;
+      tempsMortTeam1Utilise = false;
+      tempsMortTeam2Utilise = false;
+    }
+    notifyListeners();
+  }
+
+  void setServer(String playerName) {
+    _enregistrerAction();
+    joueurAuService = playerName;
+    notifyListeners();
+  }
+
+  void utiliserTempsMort(int team) {
+    _enregistrerAction();
+    if (team == 1) {
+      tempsMortTeam1Utilise = true;
+    } else {
+      tempsMortTeam2Utilise = true;
     }
     notifyListeners();
   }
 
   void attribuerCarton(String playerId, Carton carton) {
-    if (_cartons[playerId] == carton) {
-      _cartons.remove(playerId);
-    } else {
-      _cartons[playerId] = carton;
+    _enregistrerAction();
+    cartons[playerId] = carton;
+    notifyListeners();
+  }
+
+  void swapSides() {
+    isSideSwapped = !isSideSwapped;
+    notifyListeners();
+  }
+
+  void undoLastPoint() {
+    if (historiqueActions.isNotEmpty) {
+      var derniereAction = historiqueActions.removeLast();
+      manche = derniereAction['manche'];
+      scoreTeam1 = derniereAction['scoreTeam1'];
+      scoreTeam2 = derniereAction['scoreTeam2'];
+      manchesGagneesTeam1 = derniereAction['manchesGagneesTeam1'];
+      manchesGagneesTeam2 = derniereAction['manchesGagneesTeam2'];
+      joueurAuService = derniereAction['joueurAuService'];
+      tempsMortTeam1Utilise = derniereAction['tempsMortTeam1Utilise'];
+      tempsMortTeam2Utilise = derniereAction['tempsMortTeam2Utilise'];
+      cartons = Map<String, Carton>.from(derniereAction['cartons']);
+      isMatchFinished = false;
+      winnerTeam = null;
+      notifyListeners();
     }
+  }
+
+  void resetCurrentManche() {
+    _enregistrerAction();
+    scoreTeam1 = 0;
+    scoreTeam2 = 0;
+    joueurAuService = null;
+    tempsMortTeam1Utilise = false;
+    tempsMortTeam2Utilise = false;
+    cartons.clear();
     notifyListeners();
   }
 
   Carton? getCartonForPlayer(String playerId) {
-    return _cartons[playerId];
+    return cartons[playerId];
+  }
+
+  void _enregistrerAction() {
+    historiqueActions.add({
+      'manche': manche,
+      'scoreTeam1': scoreTeam1,
+      'scoreTeam2': scoreTeam2,
+      'manchesGagneesTeam1': manchesGagneesTeam1,
+      'manchesGagneesTeam2': manchesGagneesTeam2,
+      'joueurAuService': joueurAuService,
+      'tempsMortTeam1Utilise': tempsMortTeam1Utilise,
+      'tempsMortTeam2Utilise': tempsMortTeam2Utilise,
+      'cartons': Map<String, Carton>.from(cartons),
+    });
   }
 }
-
-class Game {
-  final int score1;
-  final int score2;
-  
-
-  Game({required this.score1, required this.score2});
-}
-
-enum Carton { jaune, jauneRouge, rouge }

@@ -1,6 +1,3 @@
-// lib/src/core/theme/theme_provider.dart
-// Fournit un état pour le changement de thème (clair/sombre).
-
 import 'package:flutter/material.dart';
 
 class ThemeProvider with ChangeNotifier {
@@ -8,13 +5,8 @@ class ThemeProvider with ChangeNotifier {
 
   ThemeMode get themeMode => _themeMode;
 
-  void toggleTheme() {
-    _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-    notifyListeners();
-  }
-
-  void setSystemTheme() {
-    _themeMode = ThemeMode.system;
+  void toggleTheme(bool isDark) {
+    _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     notifyListeners();
   }
 }

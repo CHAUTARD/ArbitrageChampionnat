@@ -1,148 +1,115 @@
-// feature/match_selection/partie_provider.dart
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'dart:convert';
-
-import 'package:myapp/src/features/match_selection/partie_model.dart';
-import 'package:myapp/src/features/match_selection/player_model.dart';
+import 'package:myapp/src/features/core/data/database.dart';
+import 'package:drift/drift.dart';
+import 'package:myapp/src/features/partie_detail/partie_model.dart';
 
 class PartieProvider with ChangeNotifier {
-  List<Partie> _parties = [];
+  final AppDatabase db;
+  List<PartieAvecJoueurs> _parties = [];
   bool _isLoading = true;
 
-  List<Player> _allPlayers = [];
-  List<Player> get allPlayers => _allPlayers;
-
-  List<Player> get equipe1 => _allPlayers.length >= 4 ? _allPlayers.sublist(0, 4) : [];
-  List<Player> get equipe2 => _allPlayers.length >= 8 ? _allPlayers.sublist(4, 8) : [];
-
-  List<Partie> get parties => _parties;
-  bool get isLoading => _isLoading;
-
-  PartieProvider() {
-    _loadParties();
+  PartieProvider({required this.db}) {
+    loadData();
   }
 
-  Future<void> _loadParties() async {
+  List<PartieAvecJoueurs> get parties => _parties;
+  bool get isLoading => _isLoading;
+
+  Future<void> loadData() async {
     _isLoading = true;
     notifyListeners();
 
-    try {
-      final playersJsonString = await rootBundle.loadString('assets/data/players.json');
-      final playersJson = json.decode(playersJsonString) as List;
-      _allPlayers = playersJson.map((playerJson) => Player.fromJson(playerJson)).toList();
+    final allParties = await db.select(db.parties).get();
+    final List<PartieAvecJoueurs> loadedParties = [];
 
-      final partiesJsonString = await rootBundle.loadString('assets/data/parties.json');
-      final partiesJson = json.decode(partiesJsonString) as List;
-      _parties = partiesJson.map((partieJson) => Partie.fromJson(partieJson, _allPlayers)).toList();
+    for (final p in allParties) {
+      final team1Players = await _getPlayers(p.joueur1Equipe1Id, p.joueur2Equipe1Id);
+      final team2Players = await _getPlayers(p.joueur1Equipe2Id, p.joueur2Equipe2Id);
+      final arbitre = p.arbitreId == null ? null : await _getPlayer(p.arbitreId!); 
 
-      await _loadMatchResults();
-
-    } catch (e) {
-      if (kDebugMode) {
-        print("Error loading parties: $e");
-      }
-      _parties = [];
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      loadedParties.add(PartieAvecJoueurs(
+        partie: p,
+        team1Players: team1Players,
+        team2Players: team2Players,
+        arbitreName: arbitre?.name,
+        numeroPartie: p.partieNumber,
+      ));
     }
-  }
 
-  Future<void> _loadMatchResults() async {
-    try {
-      final resultsJsonString = await rootBundle.loadString('assets/data/match_results.json');
-      final resultsJson = json.decode(resultsJsonString) as List;
-
-      for (var result in resultsJson) {
-        final partie = _parties.firstWhere((p) => p.id == result['id']);
-        partie.isPlayed = result['isPlayed'];
-        partie.score = result['score'];
-        partie.winner = result['winner'];
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print("Error loading match results: $e");
-      }
-    }
-  }
-
-  Future<void> saveMatchResult(Partie partie) async {
-    try {
-      final resultsJsonString = await rootBundle.loadString('assets/data/match_results.json');
-      final resultsJson = json.decode(resultsJsonString) as List;
-
-      resultsJson.removeWhere((r) => r['id'] == partie.id);
-      resultsJson.add({
-        'id': partie.id,
-        'isPlayed': partie.isPlayed,
-        'score': partie.score,
-        'winner': partie.winner,
-      });
-
-      // This is not a good practice to write directly to the assets folder.
-      // In a real application, you should use a proper storage solution.
-      // For this example, we will just print the JSON to the console.
-      if (kDebugMode) {
-        print(json.encode(resultsJson));
-      }
-
-    } catch (e) {
-      if (kDebugMode) {
-        print("Error saving match result: $e");
-      }
-    }
-  }
-
-  void updatePlayerName(String playerId, String newName) {
-    final playerIndex = _allPlayers.indexWhere((p) => p.id == playerId);
-    if (playerIndex != -1) {
-      _allPlayers[playerIndex].name = newName;
-      notifyListeners();
-    }
-  }
-
-  void updateDoublesComposition(
-      List<Player> team1Double1, List<Player> team2Double1) {
-    final allTeam1Players = equipe1;
-    final allTeam2Players = equipe2;
-
-    final team1Double2 =
-        allTeam1Players.where((p) => !team1Double1.contains(p)).toList();
-    final team2Double2 =
-        allTeam2Players.where((p) => !team2Double1.contains(p)).toList();
-
-    _parties.removeWhere((p) => p.id == 9 || p.id == 10);
-
-    _parties.addAll([
-      Partie(
-        id: 9,
-        team1Players: team1Double1,
-        team2Players: team2Double1,
-        winner: null,
-      ),
-      Partie(
-        id: 10,
-        team1Players: team1Double2,
-        team2Players: team2Double2,
-        winner: null,
-      ),
-    ]);
-
+    _parties = loadedParties;
+    _isLoading = false;
     notifyListeners();
+  }
+
+  Future<Player?> _getPlayer(int id) async {
+    return await (db.select(db.players)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+  }
+
+  Future<List<Player>> _getPlayers(int player1Id, int? player2Id) async {
+    final p1 = await _getPlayer(player1Id);
+    final players = [p1!];
+    if (player2Id != null) {
+      final p2 = await _getPlayer(player2Id);
+      if (p2 != null) players.add(p2);
+    }
+    return players;
+  }
+
+  List<PartieAvecJoueurs> getPartiesForRencontre(int rencontreId) {
+    return _parties.where((p) => p.partie.rencontreId == rencontreId).toList();
   }
 
   Future<void> resetData() async {
-    await _loadParties();
-    await clearMatchHistory();
+    _isLoading = true;
+    notifyListeners();
+
+    await db.delete(db.scores).go();
+    await db.delete(db.parties).go();
+    await db.delete(db.rencontres).go();
+    await db.delete(db.equipes).go();
+    await db.delete(db.players).go();
+
+    _parties = [];
+    _isLoading = false;
+    notifyListeners();
   }
 
-  Future<void> clearMatchHistory() async {
-    for (var partie in _parties) {
-      partie.isPlayed = false;
-      partie.score = null; // Corrected line
-      partie.winner = null;
+  Future<int> createPartieForRencontre(
+    int rencontreId,
+    int partieNumber,
+    int j1e1, int? j2e1,
+    int j1e2, int? j2e2,
+    int? arbitreId,
+  ) async {
+    final partieId = await db.into(db.parties).insert(
+          PartiesCompanion.insert(
+            rencontreId: rencontreId,
+            partieNumber: partieNumber,
+            joueur1Equipe1Id: j1e1,
+            joueur2Equipe1Id: Value(j2e1),
+            joueur1Equipe2Id: j1e2,
+            joueur2Equipe2Id: Value(j2e2),
+            arbitreId: Value(arbitreId),
+          ),
+        );
+    return partieId;
+  }
+
+  Future<Map<String, List<Player>>> getPlayersForRencontre(int rencontreId) async {
+    final partiesOfRencontre = getPartiesForRencontre(rencontreId);
+    if (partiesOfRencontre.isEmpty) return {'equipe1': [], 'equipe2': []};
+
+    final Set<Player> equipe1Players = {};
+    final Set<Player> equipe2Players = {};
+
+    for (final partie in partiesOfRencontre) {
+      equipe1Players.addAll(partie.team1Players);
+      equipe2Players.addAll(partie.team2Players);
     }
-    notifyListeners();
+
+    return {
+      'equipe1': equipe1Players.toList(),
+      'equipe2': equipe2Players.toList(),
+    };
   }
 }

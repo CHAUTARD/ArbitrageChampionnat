@@ -28,8 +28,9 @@ class MatchCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>
-                  isDouble ? DoubleTableScreen(partie: partie) : SimpleTableScreen(partie: partie),
+              builder: (context) => isDouble
+                  ? DoubleTableScreen(partie: partie)
+                  : SimpleTableScreen(partie: partie),
             ),
           );
         },

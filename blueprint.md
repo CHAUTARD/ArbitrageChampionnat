@@ -10,7 +10,7 @@ Cette application a pour but de faciliter la gestion des feuilles de matchs lors
 2.  **Composition des Doubles :** Permet de sélectionner les joueurs qui composeront les équipes de double.
 3.  **Attribution des Tables :** Glisser-déposer pour assigner un match à une table disponible.
 4.  **Saisie des Scores :** Interface dédiée pour entrer les scores des sets pour chaque match.
-5.  **Suivi en Temps Réel :** Mise à jour automatique des informations sur tous les appareils connectés.
+5.  **Persistance des Données Locales :** Les données des parties et des joueurs sont sauvegardées localement sur l'appareil grâce à une base de données SQLite gérée par Drift.
 6.  **Paramètres :** Permet de modifier les noms des joueurs.
 
 ### Structure du Projet
@@ -19,13 +19,13 @@ Cette application a pour but de faciliter la gestion des feuilles de matchs lors
     *   `main.dart` : Point d'entrée de l'application.
     *   `src/`
         *   `features/`
+            *   `core/data/database.dart` : Définition de la base de données locale avec Drift.
             *   `match_selection/` : Contient les modèles, fournisseurs et écrans liés à la sélection des matchs.
             *   `doubles_composition/` : Écran pour la composition des équipes de double.
             *   `table_assignment/` : Logique pour l'assignation des tables.
             *   `score_entry/` : Interface pour la saisie des scores.
             *   `settings/` : Écran des paramètres.
         *   `widgets/` : Widgets réutilisables.
-        *   `services/` : Services pour la gestion des données.
 *   `assets/`
     *   `data/`
         *   `parties.json` : Fichier JSON contenant les données des matchs.
@@ -48,8 +48,13 @@ Cette application a pour but de faciliter la gestion des feuilles de matchs lors
     *   **Première manche :** Un système de boîtes de dialogue modales guide l'arbitre pas à pas pour sélectionner d'abord le serveur, puis le receveur.
     *   **Manches suivantes :** L'interface affiche un écran de sélection dédié, demandant uniquement de choisir le serveur parmi l'équipe qui doit servir, le receveur étant automatiquement déterminé selon les règles.
 
-**Phase 3 : Nouvelles Fonctionnalités (Futures Idées)**
+**Phase 3 : Persistance des données (Terminée)**
+
+*   **Intégration de Drift :** Ajout de la base de données locale Drift pour la persistance des données. Les dépendances `drift`, `sqlite3_flutter_libs`, `path_provider`, `drift_dev`, et `build_runner` ont été ajoutées.
+*   **Définition du schéma :** Création des tables `Players`, `Parties`, et `Manches` dans `lib/src/features/core/data/database.dart`.
+*   **Connexion au Provider :** Le `PartieProvider` a été refactorisé pour utiliser la base de données Drift, permettant le chargement, la sauvegarde et la réinitialisation des données de manière persistante.
+
+**Phase 4 : Nouvelles Fonctionnalités (Futures Idées)**
 
 *   **Mode Sombre :** Ajouter une option pour basculer entre un thème clair et un thème sombre.
-*   **Persistance des Données :** Implémenter une solution de stockage local (comme `shared_preferences` ou une base de données locale) pour sauvegarder l'état de l'application.
-*   **Notifications en Temps Réel :** Explorer l'intégration de notifications pour informer les utilisateurs des événements importants (début de match, résultats, etc.).
+*   **Synchronisation Cloud (Optionnel) :** Explorer l'intégration de Firebase Firestore pour permettre la synchronisation des données entre plusieurs appareils, si cette fonctionnalité redevient une priorité.

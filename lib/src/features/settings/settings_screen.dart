@@ -1,75 +1,63 @@
-// lib/src/features/settings/settings_screen.dart
+// features/settings/settings_screen.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:myapp/src/features/match_selection/player_model.dart';
 import 'package:myapp/src/features/match_selection/partie_provider.dart';
+import 'package:myapp/src/features/match_selection/player_model.dart';
+import 'package:provider/provider.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
   void _showEditPlayerNameDialog(
       BuildContext context, Player player, PartieProvider partieProvider) {
     final controller = TextEditingController(text: player.name);
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Modifier le nom de ${player.name}'),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(labelText: 'Nouveau nom'),
+      builder: (context) => AlertDialog(
+        title: const Text('Modifier le nom du joueur'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
           ),
-          actions: [
-            TextButton(
-              child: const Text('Annuler'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: const Text('Enregistrer'),
-              onPressed: () {
-                // Corrected: Pass player.id (which is a String) and the new name
+          TextButton(
+            onPressed: () {
+              if (controller.text.isNotEmpty) {
                 partieProvider.updatePlayerName(player.id, controller.text);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Enregistrer'),
+          ),
+        ],
+      ),
     );
   }
 
   void _showResetConfirmationDialog(BuildContext context, PartieProvider partieProvider) {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Réinitialiser les données'),
-          content: const Text(
-              'Voulez-vous vraiment effacer l\'historique des parties et restaurer les noms des joueurs d\'origine ?'),
-          actions: [
-            TextButton(
-              child: const Text('Annuler'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: const Text('Confirmer'),
-              onPressed: () {
-                partieProvider.resetData();
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Les données ont été réinitialisées.')),
-                );
-              },
-            ),
-          ],
-        );
-      },
+      builder: (context) => AlertDialog(
+        title: const Text('Réinitialiser les données'),
+        content: const Text(
+            'Voulez-vous vraiment effacer l\'historique des parties et restaurer les noms des joueurs d\'origine ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () {
+              partieProvider.resetData();
+              Navigator.pop(context);
+            },
+            child: const Text('Réinitialiser'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -77,60 +65,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final partieProvider = Provider.of<PartieProvider>(context, listen: true);
     final allPlayers = partieProvider.allPlayers;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Paramètres'),
-        backgroundColor: Colors.indigo,
+        title: const Text('Settings'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Réinitialiser les données',
+            onPressed: () => _showResetConfirmationDialog(context, partieProvider),
+          ),
+        ],
       ),
-      body: Column(
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.history),
-              label: const Text('Réinitialiser les données'),
-              onPressed: () => _showResetConfirmationDialog(context, partieProvider),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                foregroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(50), // make button wider
+          Text('Liste des Joueurs', style: theme.textTheme.headlineSmall),
+          const SizedBox(height: 16),
+          ...allPlayers.map(
+            (player) => ListTile(
+              title: Text(player.name),
+              subtitle: Text('Équipe ${player.id.startsWith('A') ? 'A' : 'B'}'), // CORRECTION
+              trailing: IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () =>
+                    _showEditPlayerNameDialog(context, player, partieProvider),
               ),
             ),
-          ),
-          const Divider(),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'Modifier les noms des joueurs',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            child: allPlayers.isEmpty
-                ? const Center(child: Text('Aucun joueur à afficher.'))
-                : ListView.builder(
-                    itemCount: allPlayers.length,
-                    itemBuilder: (context, index) {
-                      final player = allPlayers[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            child: Text(player.id),
-                          ),
-                          title: Text(player.name,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w500)),
-                          trailing:
-                              const Icon(Icons.edit, color: Colors.blueAccent),
-                          onTap: () => _showEditPlayerNameDialog(
-                              context, player, partieProvider),
-                        ),
-                      );
-                    },
-                  ),
           ),
         ],
       ),
