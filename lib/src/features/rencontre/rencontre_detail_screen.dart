@@ -1,32 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/src/features/match_selection/partie_provider.dart';
 import 'package:myapp/src/features/partie_detail/partie_detail_screen.dart';
 import 'package:myapp/src/features/rencontre/edit_rencontre_screen.dart';
 import 'package:myapp/src/features/rencontre/rencontre_model.dart';
-import 'package:provider/provider.dart';
-import 'package:myapp/src/features/match_selection/partie_model.dart' as model;
 
-class RencontreDetailScreen extends StatelessWidget {
+class RencontreDetailScreen extends ConsumerStatefulWidget {
   final RencontreAvecEquipes rencontreAvecEquipes;
 
   const RencontreDetailScreen({super.key, required this.rencontreAvecEquipes});
 
   @override
-  Widget build(BuildContext context) {
-    final partieProvider = Provider.of<PartieProvider>(context);
-    final parties = partieProvider.getPartiesForRencontre(rencontreAvecEquipes.rencontre.id);
-    parties.sort((a, b) => a.partie.partieNumber.compareTo(b.partie.partieNumber));
+  ConsumerState<RencontreDetailScreen> createState() =>
+      _RencontreDetailScreenState();
+}
 
-    final formattedDate = DateFormat('dd/MM/yyyy').format(rencontreAvecEquipes.date);
+class _RencontreDetailScreenState extends ConsumerState<RencontreDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => ref
+        .read(partieProvider.notifier)
+        .getPartiesForRencontre(widget.rencontreAvecEquipes.rencontre.id));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final partiesUnsorted = ref.watch(partieProvider);
+    final parties = [...partiesUnsorted]
+      ..sort((a, b) => a.numeroPartie.compareTo(b.numeroPartie));
+
+    final formattedDate =
+        DateFormat('dd/MM/yyyy').format(widget.rencontreAvecEquipes.date);
 
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${rencontreAvecEquipes.nomEquipe1} vs ${rencontreAvecEquipes.nomEquipe2}'),
-            Text('Le $formattedDate', style: Theme.of(context).textTheme.bodySmall),
+            Text(
+                '${widget.rencontreAvecEquipes.nomEquipe1} vs ${widget.rencontreAvecEquipes.nomEquipe2}'),
+            Text('Le $formattedDate',
+                style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
         actions: [
@@ -36,7 +52,8 @@ class RencontreDetailScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EditRencontreScreen(rencontre: rencontreAvecEquipes),
+                  builder: (context) =>
+                      EditRencontreScreen(rencontre: widget.rencontreAvecEquipes),
                 ),
               );
             },
@@ -44,31 +61,36 @@ class RencontreDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: partieProvider.isLoading
+      body: parties.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
               itemCount: parties.length,
               itemBuilder: (context, index) {
                 final partieDetails = parties[index];
-                final isDouble = partieDetails.partie.joueur2Equipe1Id != null;
+                final isDouble =
+                    partieDetails.team1Players.length > 1 &&
+                        partieDetails.team2Players.length > 1;
 
                 String title;
                 if (isDouble) {
-                  title = 'Double: ${partieDetails.joueur1Equipe1Name ?? ''} & ${partieDetails.joueur2Equipe1Name ?? ''} vs ${partieDetails.joueur1Equipe2Name ?? ''} & ${partieDetails.joueur2Equipe2Name ?? ''}';
+                  title =
+                      'Double: ${partieDetails.team1Players[0].name} & ${partieDetails.team1Players[1].name} vs ${partieDetails.team2Players[0].name} & ${partieDetails.team2Players[1].name}';
                 } else {
-                  title = 'Simple: ${partieDetails.joueur1Equipe1Name ?? ''} vs ${partieDetails.joueur1Equipe2Name ?? ''}';
+                  title =
+                      'Simple: ${partieDetails.team1Players[0].name} vs ${partieDetails.team2Players[0].name}';
                 }
 
-                String subtitle = 'Partie n°${partieDetails.partie.partieNumber}';
+                String subtitle = 'Partie n°${partieDetails.numeroPartie}';
                 if (!isDouble && partieDetails.arbitreName != null) {
                   subtitle += ' - Arbitre: ${partieDetails.arbitreName}';
                 }
 
                 return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   child: ListTile(
                     leading: CircleAvatar(
-                      child: Text(partieDetails.partie.partieNumber.toString()),
+                      child: Text(partieDetails.numeroPartie.toString()),
                     ),
                     title: Text(title),
                     subtitle: Text(subtitle),
@@ -77,7 +99,8 @@ class RencontreDetailScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PartieDetailScreen(partie: partieDetails.partie as model.Partie),
+                          builder: (context) =>
+                              PartieDetailScreen(partie: partieDetails),
                         ),
                       );
                     },

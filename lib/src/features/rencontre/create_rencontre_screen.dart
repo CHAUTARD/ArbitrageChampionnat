@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/rencontre/rencontre_provider.dart';
-import 'package:provider/provider.dart';
 
-class CreateRencontreScreen extends StatefulWidget {
+class CreateRencontreScreen extends ConsumerStatefulWidget {
   const CreateRencontreScreen({super.key});
 
   @override
-  State<CreateRencontreScreen> createState() => _CreateRencontreScreenState();
+  ConsumerState<CreateRencontreScreen> createState() => _CreateRencontreScreenState();
 }
 
-class _CreateRencontreScreenState extends State<CreateRencontreScreen> {
+class _CreateRencontreScreenState extends ConsumerState<CreateRencontreScreen> {
   final _formKey = GlobalKey<FormState>();
   final _equipe1Controller = TextEditingController();
   final _equipe2Controller = TextEditingController();
@@ -81,7 +81,7 @@ class _CreateRencontreScreenState extends State<CreateRencontreScreen> {
 
   void _createRencontre() async {
     if (_formKey.currentState!.validate()) {
-      final provider = Provider.of<RencontreProvider>(context, listen: false);
+      final provider = ref.read(rencontreProvider.notifier);
       final playerNames = {
         'A1': _joueurA1Controller.text,
         'A2': _joueurA2Controller.text,

@@ -1,14 +1,14 @@
 // features/scoring/manche_table.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/scoring/match_provider.dart';
-import 'package:provider/provider.dart';
 
-class MancheTable extends StatelessWidget {
+class MancheTable extends ConsumerWidget {
   const MancheTable({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final matchProvider = Provider.of<MatchProvider>(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final matchState = ref.watch(matchProvider);
     final theme = Theme.of(context);
 
     return Card(
@@ -23,7 +23,7 @@ class MancheTable extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  '${matchProvider.manchesGagneesTeam1}',
+                  '${matchState.manchesGagneesTeam1}',
                   style: theme.textTheme.headlineSmall,
                 ),
                 Text(
@@ -31,7 +31,7 @@ class MancheTable extends StatelessWidget {
                   style: theme.textTheme.headlineSmall,
                 ),
                 Text(
-                  '${matchProvider.manchesGagneesTeam2}',
+                  '${matchState.manchesGagneesTeam2}',
                   style: theme.textTheme.headlineSmall,
                 ),
               ],

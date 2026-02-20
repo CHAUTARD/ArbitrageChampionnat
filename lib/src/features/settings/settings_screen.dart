@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/core/data/database.dart';
-import 'package:myapp/src/features/match_selection/partie_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:myapp/src/features/rencontre/rencontre_provider.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   void _showEditPlayerNameDialog(
-      BuildContext context, Player player, PartieProvider partieProvider) {
+      BuildContext context, WidgetRef ref, Player player) {
     final controller = TextEditingController(text: player.name);
     showDialog(
       context: context,
@@ -25,7 +25,9 @@ class SettingsScreen extends StatelessWidget {
           TextButton(
             onPressed: () {
               if (controller.text.isNotEmpty) {
-                partieProvider.updatePlayerName(player.id, controller.text);
+                ref
+                    .read(rencontreProvider.notifier)
+                    .updatePlayerNames({player.id: controller.text});
                 Navigator.pop(context);
               }
             },
@@ -36,7 +38,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showResetConfirmationDialog(BuildContext context, PartieProvider partieProvider) {
+  void _showResetConfirmationDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -50,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              partieProvider.resetData();
+              ref.read(rencontreProvider.notifier).resetAndCreateDefault();
               Navigator.pop(context);
             },
             child: const Text('Réinitialiser'),
@@ -61,8 +63,8 @@ class SettingsScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final partieProvider = Provider.of<PartieProvider>(context, listen: false);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final rencontreState = ref.watch(rencontreProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -72,7 +74,7 @@ class SettingsScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Réinitialiser les données',
-            onPressed: () => _showResetConfirmationDialog(context, partieProvider),
+            onPressed: () => _showResetConfirmationDialog(context, ref),
           ),
         ],
       ),
@@ -84,36 +86,22 @@ class SettingsScreen extends StatelessWidget {
             Text('Liste des Joueurs', style: theme.textTheme.headlineSmall),
             const SizedBox(height: 16),
             Expanded(
-              child: FutureBuilder<List<Player>>(
-                future: partieProvider.allPlayers,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Erreur: ${snapshot.error}'));
-                  }
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text('Aucun joueur trouvé.'));
-                  }
-
-                  final players = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: players.length,
-                    itemBuilder: (context, index) {
-                      final player = players[index];
-                      return ListTile(
-                        title: Text(player.name),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () =>
-                              _showEditPlayerNameDialog(context, player, partieProvider),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+              child: rencontreState.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: rencontreState.rencontres.length,
+                      itemBuilder: (context, index) {
+                        final players = [];
+                        return ListTile(
+                          title: Text(players[index].name),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () => _showEditPlayerNameDialog(
+                                context, ref, players[index]),
+                          ),
+                        );
+                      },
+                    ),
             ),
           ],
         ),

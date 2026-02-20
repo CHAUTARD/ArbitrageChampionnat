@@ -9,7 +9,7 @@ part 'database.g.dart';
 @DataClassName('Player')
 class Players extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get letter => text().withLength(min: 1, max: 1)();
+  TextColumn get letter => text().withLength(min: 1, max: 2)();
   TextColumn get name => text()();
   IntColumn get equipeId => integer().references(Equipes, #id)();
 }
@@ -25,13 +25,10 @@ enum Niveau { departemental, regional, national }
 @DataClassName('Rencontre')
 class Rencontres extends Table {
   IntColumn get id => integer().autoIncrement()();
-  @ReferenceName('equipe1')
   IntColumn get equipe1Id => integer().references(Equipes, #id)();
-  @ReferenceName('equipe2')
   IntColumn get equipe2Id => integer().references(Equipes, #id)();
   IntColumn get niveau => intEnum<Niveau>()();
   DateTimeColumn get date => dateTime()();
-  BoolColumn get scoreAcquit => boolean().withDefault(const Constant(false))();
 }
 
 @DataClassName('Partie')
@@ -53,35 +50,35 @@ class Parties extends Table {
   IntColumn get winner => integer().nullable()(); // 1 or 2
 }
 
-@DataClassName('Score')
-class Scores extends Table {
+@DataClassName('Manche')
+class Manches extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get partieId => integer().references(Parties, #id)();
-  IntColumn get setNumber => integer()();
+  IntColumn get mancheNumber => integer().withDefault(const Constant(0))(); // Added this column
   IntColumn get scoreEquipe1 => integer()();
   IntColumn get scoreEquipe2 => integer()();
 }
 
-@DriftDatabase(tables: [Players, Equipes, Rencontres, Parties, Scores])
+
+@DriftDatabase(tables: [Players, Equipes, Rencontres, Parties, Manches])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 3; // Incremented schema version
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
-      onUpgrade: (m, from, to) async {
-        // Recreate all tables
-        for (final table in allTables) {
-          await m.deleteTable(table.actualTableName);
-          await m.createTable(table);
-        }
+      onCreate: (m) async {
+        await m.createAll();
       },
-       beforeOpen: (details) async {
-        if (details.wasCreated) {
-          // Create default data
+      onUpgrade: (m, from, to) async {
+        if (from < 2) {
+           // m.addColumn(parties, parties.winner);
+        }
+        if (from < 3) {
+          await m.addColumn(manches, manches.mancheNumber);
         }
       },
     );

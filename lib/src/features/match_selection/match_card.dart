@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
 import 'package:myapp/src/features/scoring/match_provider.dart';
 import 'package:myapp/src/features/table/double_table_screen.dart';
 import 'package:myapp/src/features/table/simple_table_screen.dart';
-import 'package:provider/provider.dart';
 
-class MatchCard extends StatelessWidget {
+class MatchCard extends ConsumerWidget {
   final Partie partie;
   final bool isDraggable;
 
   const MatchCard({super.key, required this.partie, this.isDraggable = false});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final bool isDouble = partie.team1Players.length > 1;
     final cardColor = isDouble ? Colors.blue.withAlpha(26) : Colors.green.withAlpha(26);
@@ -22,8 +22,7 @@ class MatchCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(12.0),
       child: InkWell(
         onTap: () {
-          final matchProvider = Provider.of<MatchProvider>(context, listen: false);
-          matchProvider.startMatch(partie);
+          ref.read(matchProvider.notifier).startMatch(partie);
 
           Navigator.push(
             context,

@@ -1,95 +1,89 @@
-import 'package:flutter/foundation.dart';
-import 'package:myapp/src/features/core/data/database.dart';
+// features/match_selection/partie_provider.dart
 import 'package:drift/drift.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myapp/src/features/core/data/database.dart' as db;
+import 'package:myapp/src/features/match_selection/partie_model.dart' as model;
 import 'package:myapp/src/features/scoring/game_model.dart';
+import 'package:myapp/src/features/match_selection/player_model.dart'
+    as player_model;
 
-// Nouvelle classe pour contenir les détails complets d'une partie
-class PartieDetails {
-  final Partie partie;
-  final String? joueur1Equipe1Name;
-  final String? joueur2Equipe1Name;
-  final String? joueur1Equipe2Name;
-  final String? joueur2Equipe2Name;
-  final String? arbitreName;
-
-  PartieDetails({
-    required this.partie,
-    this.joueur1Equipe1Name,
-    this.joueur2Equipe1Name,
-    this.joueur1Equipe2Name,
-    this.joueur2Equipe2Name,
-    this.arbitreName,
-  });
-}
-
-class PartieProvider with ChangeNotifier {
-  final AppDatabase db;
-  List<PartieDetails> _partiesDetails = [];
-  bool _isLoading = true;
-
-  PartieProvider({required this.db}) {
-    loadData();
-  }
-
-  List<PartieDetails> get parties => _partiesDetails;
-  bool get isLoading => _isLoading;
-
-  Future<List<Player>> get allPlayers => db.select(db.players).get();
-
-  Future<void> loadData() async {
-    _isLoading = true;
-    notifyListeners();
-
-    final j1e1 = db.alias(db.players, 'j1e1');
-    final j2e1 = db.alias(db.players, 'j2e1');
-    final j1e2 = db.alias(db.players, 'j1e2');
-    final j2e2 = db.alias(db.players, 'j2e2');
-    final arbitre = db.alias(db.players, 'arbitre');
-
-    final query = db.select(db.parties).join([
-      leftOuterJoin(j1e1, j1e1.id.equalsExp(db.parties.joueur1Equipe1Id)),
-      leftOuterJoin(j2e1, j2e1.id.equalsExp(db.parties.joueur2Equipe1Id)),
-      leftOuterJoin(j1e2, j1e2.id.equalsExp(db.parties.joueur1Equipe2Id)),
-      leftOuterJoin(j2e2, j2e2.id.equalsExp(db.parties.joueur2Equipe2Id)),
-      leftOuterJoin(arbitre, arbitre.id.equalsExp(db.parties.arbitreId)),
-    ]);
-
-    final result = await query.get();
-
-    _partiesDetails = result.map((row) {
-      return PartieDetails(
-        partie: row.readTable(db.parties),
-        joueur1Equipe1Name: row.readTableOrNull(j1e1)?.name,
-        joueur2Equipe1Name: row.readTableOrNull(j2e1)?.name,
-        joueur1Equipe2Name: row.readTableOrNull(j1e2)?.name,
-        joueur2Equipe2Name: row.readTableOrNull(j2e2)?.name,
-        arbitreName: row.readTableOrNull(arbitre)?.name,
-      );
-    }).toList();
-
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  List<PartieDetails> getPartiesForRencontre(int rencontreId) {
-    return _partiesDetails
-        .where((p) => p.partie.rencontreId == rencontreId)
-        .toList();
-  }
-
-  Future<void> resetData() async {
-    _isLoading = true;
-    notifyListeners();
-    // Utilise une transaction pour assurer la cohérence
-    await db.transaction(() async {
-      await db.delete(db.parties).go();
-      await db.delete(db.rencontres).go();
-      await db.delete(db.equipes).go();
-      await db.delete(db.players).go();
+final partieProvider =
+    StateNotifierProvider<PartieNotifier, List<model.Partie>>((ref) {
+      return PartieNotifier();
     });
-    _partiesDetails = [];
-    _isLoading = false;
-    notifyListeners();
+
+class PartieNotifier extends StateNotifier<List<model.Partie>> {
+  PartieNotifier() : super([]);
+
+  final _db = db.AppDatabase();
+
+  Future<void> getPartiesForRencontre(int rencontreId) async {
+    final parties = await (_db.select(
+      _db.parties,
+    )..where((p) => p.rencontreId.equals(rencontreId))).get();
+
+    final List<model.Partie> partiesWithPlayers = [];
+
+    for (var p in parties) {
+      final j1e1 = await (_db.select(
+        _db.players,
+      )..where((pl) => pl.id.equals(p.joueur1Equipe1Id))).getSingle();
+      final j2e1 = p.joueur2Equipe1Id == null
+          ? null
+          : await (_db.select(
+              _db.players,
+            )..where((pl) => pl.id.equals(p.joueur2Equipe1Id!))).getSingle();
+      final j1e2 = await (_db.select(
+        _db.players,
+      )..where((pl) => pl.id.equals(p.joueur1Equipe2Id))).getSingle();
+      final j2e2 = p.joueur2Equipe2Id == null
+          ? null
+          : await (_db.select(
+              _db.players,
+            )..where((pl) => pl.id.equals(p.joueur2Equipe2Id!))).getSingle();
+      final arbitre = p.arbitreId == null
+          ? null
+          : await (_db.select(
+              _db.players,
+            )..where((pl) => pl.id.equals(p.arbitreId!))).getSingle();
+
+      partiesWithPlayers.add(
+        model.Partie(
+          id: p.id.toString(),
+          rencontreId: p.rencontreId,
+          numeroPartie: p.partieNumber,
+          team1Players: [
+            player_model.Player(
+              id: j1e1.id.toString(),
+              name: j1e1.name,
+              equipeId: j1e1.equipeId.toString(),
+            ),
+            if (j2e1 != null)
+              player_model.Player(
+                id: j2e1.id.toString(),
+                name: j2e1.name,
+                equipeId: j2e1.equipeId.toString(),
+              ),
+          ],
+          team2Players: [
+            player_model.Player(
+              id: j1e2.id.toString(),
+              name: j1e2.name,
+              equipeId: j1e2.equipeId.toString(),
+            ),
+            if (j2e2 != null)
+              player_model.Player(
+                id: j2e2.id.toString(),
+                name: j2e2.name,
+                equipeId: j2e2.equipeId.toString(),
+              ),
+          ],
+          arbitreId: arbitre?.id.toString(),
+          arbitreName: arbitre?.name,
+        ),
+      );
+    }
+    state = partiesWithPlayers;
   }
 
   Future<int> createPartieForRencontre(
@@ -101,10 +95,10 @@ class PartieProvider with ChangeNotifier {
     int? j2e2,
     int? arbitreId,
   ) async {
-    final partieId = await db
-        .into(db.parties)
+    return await _db
+        .into(_db.parties)
         .insert(
-          PartiesCompanion.insert(
+          db.PartiesCompanion.insert(
             rencontreId: rencontreId,
             partieNumber: partieNumber,
             joueur1Equipe1Id: j1e1,
@@ -114,79 +108,93 @@ class PartieProvider with ChangeNotifier {
             arbitreId: Value(arbitreId),
           ),
         );
-    return partieId;
   }
 
-  Future<Map<String, List<Player>>> getPlayersForRencontre(
+  Future<void> savePartie(
+    int partieId,
+    int winnerTeam,
+    List<Game> manches,
+  ) async {
+    await (_db.update(_db.parties)..where((p) => p.id.equals(partieId))).write(
+      db.PartiesCompanion(winner: Value(winnerTeam)),
+    );
+
+    for (var manche in manches) {
+      await _db
+          .into(_db.manches)
+          .insert(
+            db.ManchesCompanion.insert(
+              partieId: partieId,
+              mancheNumber: Value(manche.manche),
+              scoreEquipe1: manche.scoreTeam1,
+              scoreEquipe2: manche.scoreTeam2,
+            ),
+          );
+    }
+  }
+
+  Future<Map<String, List<db.Player>>> getPlayersForRencontre(
     int rencontreId,
   ) async {
-    final rencontre = await (db.select(
-      db.rencontres,
+    final rencontre = await (_db.select(
+      _db.rencontres,
     )..where((r) => r.id.equals(rencontreId))).getSingleOrNull();
-    if (rencontre == null) return {'equipe1': [], 'equipe2': []};
+    if (rencontre == null) {
+      return {'equipe1': [], 'equipe2': []};
+    }
 
-    final equipe1Players = await (db.select(
-      db.players,
-    )..where((p) => p.equipeId.equals(rencontre.equipe1Id))).get();
-    final equipe2Players = await (db.select(
-      db.players,
-    )..where((p) => p.equipeId.equals(rencontre.equipe2Id))).get();
+    final equipe1 = await (_db.select(
+      _db.equipes,
+    )..where((e) => e.id.equals(rencontre.equipe1Id))).getSingleOrNull();
+    final equipe2 = await (_db.select(
+      _db.equipes,
+    )..where((e) => e.id.equals(rencontre.equipe2Id))).getSingleOrNull();
 
-    return {'equipe1': equipe1Players, 'equipe2': equipe2Players};
-  }
+    if (equipe1 == null || equipe2 == null) {
+      return {'equipe1': [], 'equipe2': []};
+    }
 
-  Future<void> updatePlayerName(int playerId, String newName) async {
-    await (db.update(db.players)..where((p) => p.id.equals(playerId))).write(
-      PlayersCompanion(name: Value(newName)),
-    );
-    await loadData(); // Recharge les données pour refléter le changement
+    final playersE1Data = await (_db.select(
+      _db.players,
+    )..where((p) => p.equipeId.equals(equipe1.id))).get();
+    final playersE2Data = await (_db.select(
+      _db.players,
+    )..where((p) => p.equipeId.equals(equipe2.id))).get();
+
+    return {'equipe1': playersE1Data, 'equipe2': playersE2Data};
   }
 
   Future<void> updateDoublesComposition(
     int partieId,
     int j1e1,
-    int? j2e1,
+    int j2e1,
     int j1e2,
-    int? j2e2,
+    int j2e2,
   ) async {
-    await (db.update(db.parties)..where((p) => p.id.equals(partieId))).write(
-      PartiesCompanion(
-        joueur1Equipe1Id: Value(j1e1),
-        joueur2Equipe1Id: Value(j2e1),
-        joueur1Equipe2Id: Value(j1e2),
-        joueur2Equipe2Id: Value(j2e2),
-      ),
-    );
-    await loadData();
+    final result =
+        await (_db.update(
+          _db.parties,
+        )..where((p) => p.id.equals(partieId))).write(
+          db.PartiesCompanion(
+            joueur1Equipe1Id: Value(j1e1),
+            joueur2Equipe1Id: Value(j2e1),
+            joueur1Equipe2Id: Value(j1e2),
+            joueur2Equipe2Id: Value(j2e2),
+          ),
+        );
+    if (result > 0) {
+      final partie = await (_db.select(
+        _db.parties,
+      )..where((p) => p.id.equals(partieId))).getSingle();
+      await getPartiesForRencontre(partie.rencontreId);
+    }
   }
 
-  Future<void> savePartie(int partieId, int winner, List<Game> sets) async {
-    await db.transaction(() async {
-      // 1. Update the Partie status
-      await (db.update(db.parties)..where((p) => p.id.equals(partieId))).write(
-        PartiesCompanion(isPlayed: const Value(true), winner: Value(winner)),
-      );
-
-      // 2. Delete old scores for this partie to avoid duplicates
-      await (db.delete(
-        db.scores,
-      )..where((s) => s.partieId.equals(partieId))).go();
-
-      // 3. Insert new scores for each set
-      for (final set in sets) {
-        await db
-            .into(db.scores)
-            .insert(
-              ScoresCompanion.insert(
-                partieId: partieId,
-                setNumber: set.manche,
-                scoreEquipe1: set.scoreTeam1,
-                scoreEquipe2: set.scoreTeam2,
-              ),
-            );
-      }
-    });
-
-    await loadData(); // Refresh data to reflect the changes in the UI
+  Future<void> deletePartie(int partieId) async {
+    await (_db.delete(_db.parties)..where((p) => p.id.equals(partieId))).go();
+    state = [
+      for (final partie in state)
+        if (partie.id != partieId.toString()) partie,
+    ];
   }
 }

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/core/data/database.dart';
 import 'package:myapp/src/features/match_selection/partie_provider.dart';
 import 'package:myapp/src/features/rencontre/rencontre_model.dart';
 import 'package:myapp/src/features/rencontre/rencontre_provider.dart';
-import 'package:provider/provider.dart';
 
-class EditRencontreScreen extends StatefulWidget {
+class EditRencontreScreen extends ConsumerStatefulWidget {
   final RencontreAvecEquipes rencontre;
 
   const EditRencontreScreen({super.key, required this.rencontre});
 
   @override
-  State<EditRencontreScreen> createState() => _EditRencontreScreenState();
+  ConsumerState<EditRencontreScreen> createState() => _EditRencontreScreenState();
 }
 
-class _EditRencontreScreenState extends State<EditRencontreScreen> {
+class _EditRencontreScreenState extends ConsumerState<EditRencontreScreen> {
   final _formKey = GlobalKey<FormState>();
   late Future<Map<String, List<Player>>> _playersFuture;
   final Map<int, TextEditingController> _playerControllers = {};
@@ -22,8 +22,7 @@ class _EditRencontreScreenState extends State<EditRencontreScreen> {
   @override
   void initState() {
     super.initState();
-    final partieProvider = Provider.of<PartieProvider>(context, listen: false);
-    _playersFuture = partieProvider.getPlayersForRencontre(widget.rencontre.rencontre.id);
+    _playersFuture = ref.read(partieProvider.notifier).getPlayersForRencontre(widget.rencontre.rencontre.id);
   }
 
   @override
@@ -107,8 +106,7 @@ class _EditRencontreScreenState extends State<EditRencontreScreen> {
       });
 
       try {
-        final rencontreProvider = Provider.of<RencontreProvider>(context, listen: false);
-        await rencontreProvider.updatePlayerNames(playerNames);
+        await ref.read(rencontreProvider.notifier).updatePlayerNames(playerNames);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

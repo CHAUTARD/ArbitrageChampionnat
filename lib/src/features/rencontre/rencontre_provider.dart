@@ -1,25 +1,40 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/core/data/database.dart';
 import 'package:myapp/src/features/match_selection/partie_provider.dart';
 import 'package:myapp/src/features/rencontre/rencontre_model.dart';
 import 'package:drift/drift.dart';
 
-class RencontreProvider with ChangeNotifier {
-  final AppDatabase db;
-  final PartieProvider partieProvider;
-  bool _isLoading = true;
-  List<RencontreAvecEquipes> _rencontres = [];
+final rencontreProvider = StateNotifierProvider<RencontreNotifier, RencontreState>((ref) {
+  return RencontreNotifier(ref.watch(partieProvider.notifier));
+});
 
-  RencontreProvider({required this.db, required this.partieProvider}) {
+class RencontreState {
+  final bool isLoading;
+  final List<RencontreAvecEquipes> rencontres;
+
+  RencontreState({this.isLoading = true, this.rencontres = const []});
+
+  RencontreState copyWith({
+    bool? isLoading,
+    List<RencontreAvecEquipes>? rencontres,
+  }) {
+    return RencontreState(
+      isLoading: isLoading ?? this.isLoading,
+      rencontres: rencontres ?? this.rencontres,
+    );
+  }
+}
+
+class RencontreNotifier extends StateNotifier<RencontreState> {
+  final PartieNotifier _partieNotifier;
+  final AppDatabase db = AppDatabase();
+
+  RencontreNotifier(this._partieNotifier) : super(RencontreState()) {
     loadRencontres();
   }
 
-  List<RencontreAvecEquipes> get rencontres => _rencontres;
-  bool get isLoading => _isLoading;
-
   Future<void> loadRencontres() async {
-    _isLoading = true;
-    notifyListeners();
+    state = state.copyWith(isLoading: true);
 
     final allRencontres = await db.select(db.rencontres).get();
     final List<RencontreAvecEquipes> loadedRencontres = [];
@@ -35,13 +50,10 @@ class RencontreProvider with ChangeNotifier {
       ));
     }
 
-    _rencontres = loadedRencontres;
-
-    if (_rencontres.isEmpty) {
+    if (loadedRencontres.isEmpty) {
       await createDefaultRencontre();
     } else {
-      _isLoading = false;
-      notifyListeners();
+      state = state.copyWith(isLoading: false, rencontres: loadedRencontres);
     }
   }
 
@@ -72,9 +84,8 @@ class RencontreProvider with ChangeNotifier {
         ));
 
     await _createPartiesForRencontre(rencontreId, playerIds);
-
     await loadRencontres();
-    await partieProvider.loadData();
+    await _partieNotifier.getPartiesForRencontre(rencontreId);
   }
 
   Future<void> createDefaultRencontre() async {
@@ -86,20 +97,20 @@ class RencontreProvider with ChangeNotifier {
   }
 
   Future<void> _createPartiesForRencontre(int rencontreId, Map<String, int> players) async {
-    await partieProvider.createPartieForRencontre(rencontreId, 1, players['A1']!, null, players['B1']!, null, players['A2']);
-    await partieProvider.createPartieForRencontre(rencontreId, 2, players['A2']!, null, players['B2']!, null, players['A1']);
-    await partieProvider.createPartieForRencontre(rencontreId, 3, players['A3']!, null, players['B3']!, null, players['A4']);
-    await partieProvider.createPartieForRencontre(rencontreId, 4, players['A4']!, null, players['B4']!, null, players['A3']);
-    await partieProvider.createPartieForRencontre(rencontreId, 5, players['A1']!, null, players['B2']!, null, players['B1']);
-    await partieProvider.createPartieForRencontre(rencontreId, 6, players['A2']!, null, players['B1']!, null, players['B2']);
-    await partieProvider.createPartieForRencontre(rencontreId, 7, players['A3']!, null, players['B4']!, null, players['B3']);
-    await partieProvider.createPartieForRencontre(rencontreId, 8, players['A4']!, null, players['B3']!, null, players['B4']);
-    await partieProvider.createPartieForRencontre(rencontreId, 9, players['A1']!, players['A3'], players['B1']!, players['B3'], null);
-    await partieProvider.createPartieForRencontre(rencontreId, 10, players['A2']!, players['A4'], players['B2']!, players['B4'], null);
-    await partieProvider.createPartieForRencontre(rencontreId, 11, players['A1']!, null, players['B3']!, null, null);
-    await partieProvider.createPartieForRencontre(rencontreId, 12, players['A3']!, null, players['B1']!, null, null);
-    await partieProvider.createPartieForRencontre(rencontreId, 13, players['A2']!, null, players['B4']!, null, null);
-    await partieProvider.createPartieForRencontre(rencontreId, 14, players['A4']!, null, players['B2']!, null, null);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 1, players['A1']!, null, players['B1']!, null, players['A2']);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 2, players['A2']!, null, players['B2']!, null, players['A1']);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 3, players['A3']!, null, players['B3']!, null, players['A4']);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 4, players['A4']!, null, players['B4']!, null, players['A3']);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 5, players['A1']!, null, players['B2']!, null, players['B1']);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 6, players['A2']!, null, players['B1']!, null, players['B2']);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 7, players['A3']!, null, players['B4']!, null, players['B3']);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 8, players['A4']!, null, players['B3']!, null, players['B4']);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 9, players['A1']!, players['A3'], players['B1']!, players['B3'], null);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 10, players['A2']!, players['A4'], players['B2']!, players['B4'], null);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 11, players['A1']!, null, players['B3']!, null, null);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 12, players['A3']!, null, players['B1']!, null, null);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 13, players['A2']!, null, players['B4']!, null, null);
+    await _partieNotifier.createPartieForRencontre(rencontreId, 14, players['A4']!, null, players['B2']!, null, null);
   }
 
   Future<void> deleteRencontre(int rencontreId) async {
@@ -113,13 +124,14 @@ class RencontreProvider with ChangeNotifier {
       await (db.update(db.players)..where((tbl) => tbl.id.equals(entry.key)))
           .write(PlayersCompanion(name: Value(entry.value)));
     }
-    await partieProvider.loadData();
+    final rencontreId = state.rencontres.first.rencontre.id;
+    await _partieNotifier.getPartiesForRencontre(rencontreId);
   }
 
   Future<void> resetAndCreateDefault() async {
-    _isLoading = true;
-    notifyListeners();
-    await partieProvider.resetData();
+    state = state.copyWith(isLoading: true);
+    await (db.delete(db.parties)..where((tbl) => tbl.id.isNotNull())).go();
+    await (db.delete(db.rencontres)..where((tbl) => tbl.id.isNotNull())).go();
     await createDefaultRencontre();
   }
 }

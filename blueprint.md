@@ -31,30 +31,36 @@ Cette application a pour but de faciliter la gestion des feuilles de matchs lors
         *   `parties.json` : Fichier JSON contenant les données des matchs.
         *   `players.json` : Fichier JSON contenant les données des joueurs.
 
-### Plan de Développement Actuel
+### Plan de Développement
 
 **Phase 1 : Refactorisation et Amélioration (Terminée)**
 
 *   **Remplacement du `TeamProvider` :** Le `TeamProvider` a été entièrement remplacé par le `PartieProvider` pour une gestion plus centralisée et cohérente des données des matchs.
 *   **Centralisation du Thème :** La gestion du thème de l'application, y compris les couleurs, la typographie et les styles de composants, a été unifiée dans le fichier `main.dart`.
 *   **Intégration des Polices Locales :** La dépendance `google_fonts` a été supprimée au profit de polices locales (`Oswald` et `Roboto`) pour améliorer les performances et garantir la disponibilité des polices hors ligne.
-*   **Nettoyage du Code :** Les références inutilisées à `google_fonts` et les erreurs de thème (comme `TabBarTheme` au lieu de `TabBarThemeData`) ont été corrigées, résultant en un code plus propre et plus stable.
+*   **Nettoyage du Code :** Les références inutilisées à `google_fonts` et les erreurs de thème (comme `TabBarTheme` au lieu de `TabBarThemeData`) ont été corrigées.
 
 **Phase 2 : Amélioration de l'Expérience Utilisateur (Terminée)**
 
-*   **Distinction Visuelle des Matchs :** Les cartes des matchs sur l'écran de sélection ont désormais des couleurs de fond distinctes pour différencier les simples (vert) des doubles (bleu), améliorant ainsi la lisibilité de la liste.
-*   **Interface de Pointage Unifiée :** L'écran de pointage pour les matchs simples inclut désormais l'icône "style" permettant d'afficher/masquer les actions de cartons, harmonisant ainsi l'expérience avec l'écran des doubles.
-*   **Sélection du Service Guidée pour les Doubles :**
-    *   **Première manche :** Un système de boîtes de dialogue modales guide l'arbitre pas à pas pour sélectionner d'abord le serveur, puis le receveur.
-    *   **Manches suivantes :** L'interface affiche un écran de sélection dédié, demandant uniquement de choisir le serveur parmi l'équipe qui doit servir, le receveur étant automatiquement déterminé selon les règles.
+*   **Distinction Visuelle des Matchs :** Les cartes des matchs sur l'écran de sélection ont désormais des couleurs de fond distinctes pour différencier les simples (vert) des doubles (bleu).
+*   **Interface de Pointage Unifiée :** L'écran de pointage pour les matchs simples inclut désormais l'icône "style" permettant d'afficher/masquer les actions de cartons.
+*   **Sélection du Service Guidée pour les Doubles :** Mise en place de boîtes de dialogue et d'écrans dédiés pour guider la sélection du serveur et du receveur à chaque manche.
 
 **Phase 3 : Persistance des données (Terminée)**
 
-*   **Intégration de Drift :** Ajout de la base de données locale Drift pour la persistance des données. Les dépendances `drift`, `sqlite3_flutter_libs`, `path_provider`, `drift_dev`, et `build_runner` ont été ajoutées.
+*   **Intégration de Drift :** Ajout de la base de données locale Drift pour la persistance des données.
 *   **Définition du schéma :** Création des tables `Players`, `Parties`, et `Manches` dans `lib/src/features/core/data/database.dart`.
-*   **Connexion au Provider :** Le `PartieProvider` a été refactorisé pour utiliser la base de données Drift, permettant le chargement, la sauvegarde et la réinitialisation des données de manière persistante.
+*   **Connexion au Provider :** Le `PartieProvider` a été refactorisé pour utiliser la base de données Drift.
 
-**Phase 4 : Nouvelles Fonctionnalités (Futures Idées)**
+**Phase 4 : Résolution de Bugs et Stabilisation (Terminée)**
+
+*   **Correction Itérative :** Une série de corrections a été apportée pour résoudre de multiples erreurs de compilation liées à la manipulation des données avec Drift.
+*   **Analyse du Schéma :** Après plusieurs tentatives infructueuses, le schéma de la base de données (`database.dart`) a été analysé en détail pour comprendre la source réelle des erreurs.
+*   **Correction de la Logique d'Insertion :** La cause principale des erreurs était une utilisation incohérente des `Companions` de Drift. La logique a été corrigée en adoptant une méthode unifiée : l'utilisation systématique du constructeur `Value()` pour toutes les valeurs insérées dans la base de données.
+*   **Contribution de l'Utilisateur :** La résolution finale a été rendue possible grâce à l'intervention directe de l'utilisateur, qui a lui-même corrigé le code, mettant en évidence l'erreur que l'IA n'arrivait pas à résoudre seule.
+*   **Validation Finale :** Une analyse statique complète (`flutter analyze`) et une regénération des fichiers de la base de données (`build_runner`) ont été effectuées pour garantir l'absence totale d'erreurs et la parfaite synchronisation du code.
+
+**Phase 5 : Nouvelles Fonctionnalités (Futures Idées)**
 
 *   **Mode Sombre :** Ajouter une option pour basculer entre un thème clair et un thème sombre.
-*   **Synchronisation Cloud (Optionnel) :** Explorer l'intégration de Firebase Firestore pour permettre la synchronisation des données entre plusieurs appareils, si cette fonctionnalité redevient une priorité.
+*   **Synchronisation Cloud (Optionnel) :** Explorer l'intégration de Firebase Firestore pour permettre la synchronisation des données entre plusieurs appareils.

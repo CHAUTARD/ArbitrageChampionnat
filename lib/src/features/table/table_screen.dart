@@ -1,41 +1,113 @@
 // features/table/table_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
 import 'package:myapp/src/features/match_selection/player_model.dart';
-import 'package:myapp/src/features/scoring/match_provider.dart';
 import 'package:myapp/src/features/scoring/manche_table.dart';
-import 'package:provider/provider.dart';
+import 'package:myapp/src/features/scoring/match_provider.dart';
 
-class TableScreen extends StatefulWidget {
+class TableScreen extends ConsumerStatefulWidget {
   final Partie partie;
 
   const TableScreen({super.key, required this.partie});
 
   @override
-  State<TableScreen> createState() => _TableScreenState();
+  ConsumerState<TableScreen> createState() => _TableScreenState();
 }
 
-class _TableScreenState extends State<TableScreen> {
+class _TableScreenState extends ConsumerState<TableScreen> {
   bool _isDialogShown = false;
   bool _showCartons = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final matchProvider = Provider.of<MatchProvider>(context);
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(matchProvider.notifier).startMatch(widget.partie);
+    });
+  }
 
-    if (matchProvider.isMatchFinished && !_isDialogShown) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showEndGameDialog(context, matchProvider);
+  @override
+  Widget build(BuildContext context) {
+    final matchState = ref.watch(matchProvider);
+    final matchNotifier = ref.read(matchProvider.notifier);
+
+    ref.listen<MatchState>(matchProvider, (previous, next) {
+      if (next.isMatchFinished && !_isDialogShown) {
+        _showEndGameDialog(context);
         setState(() {
           _isDialogShown = true;
         });
-      });
+      }
+    });
+
+    final isDouble = widget.partie.team1Players.length > 1;
+    final theme = Theme.of(context);
+
+    final String title;
+    if (isDouble) {
+      title = 'Double';
+    } else {
+      title =
+          '${widget.partie.team1Players.first.name} vs ${widget.partie.team2Players.first.name}';
     }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Partie #${widget.partie.id}',
+                style:
+                    theme.appBarTheme.titleTextStyle?.copyWith(fontSize: 20)),
+            Text(title,
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(color: Colors.white.withAlpha(204)))
+          ],
+        ),
+        centerTitle: true,
+        toolbarHeight: 65,
+        actions: [
+          if (!isDouble)
+            IconButton(
+              icon: Icon(_showCartons ? Icons.style : Icons.style_outlined),
+              tooltip: 'Afficher/Masquer les cartons',
+              onPressed: () {
+                setState(() {
+                  _showCartons = !_showCartons;
+                });
+              },
+            ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text('Manche ${matchState.manche}',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontFamily: 'Oswald', fontSize: 20)),
+            const SizedBox(height: 16),
+            _buildPlayersRow(context, matchState, matchNotifier, isDouble),
+            const SizedBox(height: 16),
+            _buildPingPongTable(context),
+            const SizedBox(height: 16),
+            _buildScoresRow(context, matchState, matchNotifier),
+            const SizedBox(height: 16),
+            if (_showCartons && !isDouble)
+              _buildActionsRow(context, matchState, matchNotifier),
+            const MancheTable(),
+          ],
+        ),
+      ),
+    );
   }
 
-  void _showEndGameDialog(BuildContext context, MatchProvider matchProvider) {
-    final winnerTeamNumber = matchProvider.winnerTeam;
+  void _showEndGameDialog(BuildContext context) {
+    final matchState = ref.read(matchProvider);
+    final winnerTeamNumber = matchState.winnerTeam;
     final theme = Theme.of(context);
     final isDouble = widget.partie.team1Players.length > 1;
 
@@ -57,7 +129,8 @@ class _TableScreenState extends State<TableScreen> {
         return AlertDialog(
           title: Text('Match Terminé !',
               textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge?.copyWith(fontFamily: 'Oswald')),
+              style:
+                  theme.textTheme.titleLarge?.copyWith(fontFamily: 'Oswald')),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -84,7 +157,7 @@ class _TableScreenState extends State<TableScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Score : ${matchProvider.manchesGagneesTeam1}/${matchProvider.manchesGagneesTeam2}',
+                        'Score : ${matchState.manchesGagneesTeam1}/${matchState.manchesGagneesTeam2}',
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontSize: 18,
@@ -119,92 +192,46 @@ class _TableScreenState extends State<TableScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final matchProvider = Provider.of<MatchProvider>(context);
-    final isDouble = widget.partie.team1Players.length > 1;
-    final theme = Theme.of(context);
+  Widget _buildPlayersRow(BuildContext context, MatchState matchState,
+      MatchNotifier matchNotifier, bool isDouble) {
+    final isGameStarted = matchState.scoreTeam1 > 0 ||
+        matchState.scoreTeam2 > 0 ||
+        matchState.manche > 1;
 
-    final String title;
-    if (isDouble) {
-      title = 'Double';
-    } else {
-      title = '${widget.partie.team1Players.first.name} vs ${widget.partie.team2Players.first.name}';
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Partie #${widget.partie.id}',
-                style: theme.appBarTheme.titleTextStyle?.copyWith(fontSize: 20)),
-            Text(title, style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white.withAlpha(204)))
-          ],
-        ),
-        centerTitle: true,
-        toolbarHeight: 65,
-        actions: [
-          if (!isDouble)
-            IconButton(
-              icon: Icon(_showCartons ? Icons.style : Icons.style_outlined),
-              tooltip: 'Afficher/Masquer les cartons',
-              onPressed: () {
-                setState(() {
-                  _showCartons = !_showCartons;
-                });
-              },
-            ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text('Manche ${matchProvider.manche}',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontFamily: 'Oswald', fontSize: 20)),
-            const SizedBox(height: 16),
-            _buildPlayersRow(context, matchProvider, isDouble),
-            const SizedBox(height: 16),
-            _buildPingPongTable(context),
-            const SizedBox(height: 16),
-            _buildScoresRow(context, matchProvider),
-            const SizedBox(height: 16),
-            if (_showCartons && !isDouble) _buildActionsRow(context, matchProvider),
-            const MancheTable(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPlayersRow(BuildContext context, MatchProvider matchProvider, bool isDouble) {
-    final isGameStarted =
-        matchProvider.scoreTeam1 > 0 || matchProvider.scoreTeam2 > 0 || matchProvider.manche > 1;
-
-    Widget player1Widget = _buildPlayerButton(context, matchProvider, isGameStarted, 1, isDouble);
-    Widget player2Widget = _buildPlayerButton(context, matchProvider, isGameStarted, 2, isDouble);
+    Widget player1Widget = _buildPlayerButton(
+        context, matchState, matchNotifier, isGameStarted, 1, isDouble);
+    Widget player2Widget = _buildPlayerButton(
+        context, matchState, matchNotifier, isGameStarted, 2, isDouble);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: matchProvider.isSideSwapped
+      children: matchState.isSideSwapped
           ? [
               Expanded(child: player2Widget),
-              if (!isGameStarted && !isDouble) _buildChangeSideButton(matchProvider) else const SizedBox(width: 72),
+              if (!isGameStarted && !isDouble)
+                _buildChangeSideButton(matchNotifier)
+              else
+                const SizedBox(width: 72),
               Expanded(child: player1Widget)
             ]
           : [
               Expanded(child: player1Widget),
-              if (!isGameStarted && !isDouble) _buildChangeSideButton(matchProvider) else const SizedBox(width: 72),
+              if (!isGameStarted && !isDouble)
+                _buildChangeSideButton(matchNotifier)
+              else
+                const SizedBox(width: 72),
               Expanded(child: player2Widget)
             ],
     );
   }
 
-  Widget _buildPlayerButton(BuildContext context, MatchProvider matchProvider, bool isGameStarted, int team, bool isDouble) {
+  Widget _buildPlayerButton(
+      BuildContext context,
+      MatchState matchState,
+      MatchNotifier matchNotifier,
+      bool isGameStarted,
+      int team,
+      bool isDouble) {
     final String playerName;
     if (isDouble) {
       playerName = team == 1
@@ -215,7 +242,7 @@ class _TableScreenState extends State<TableScreen> {
           ? widget.partie.team1Players.first.name
           : widget.partie.team2Players.first.name;
     }
-    final isServing = matchProvider.joueurAuService == playerName;
+    final isServing = matchState.joueurAuService == playerName;
     final canServe = !isGameStarted;
 
     Color? backgroundColor;
@@ -224,7 +251,8 @@ class _TableScreenState extends State<TableScreen> {
     }
 
     return ElevatedButton.icon(
-      onPressed: canServe && !isDouble ? () => matchProvider.setServer(playerName) : null,
+      onPressed:
+          canServe && !isDouble ? () => matchNotifier.setServer(playerName) : null,
       icon: isServing
           ? const Icon(Icons.sports_cricket)
           : const Icon(Icons.sports_cricket, color: Colors.grey),
@@ -235,9 +263,9 @@ class _TableScreenState extends State<TableScreen> {
     );
   }
 
-  Widget _buildChangeSideButton(MatchProvider matchProvider) {
+  Widget _buildChangeSideButton(MatchNotifier matchNotifier) {
     return ElevatedButton(
-      onPressed: () => matchProvider.swapSides(),
+      onPressed: () => matchNotifier.swapSides(),
       child: const Icon(Icons.swap_horiz),
     );
   }
@@ -264,25 +292,28 @@ class _TableScreenState extends State<TableScreen> {
     );
   }
 
-  Widget _buildScoresRow(BuildContext context, MatchProvider matchProvider) {
-    Widget score1Widget = _buildScoreControl(context, 1, matchProvider.scoreTeam1, matchProvider);
-    Widget score2Widget = _buildScoreControl(context, 2, matchProvider.scoreTeam2, matchProvider);
+  Widget _buildScoresRow(BuildContext context, MatchState matchState,
+      MatchNotifier matchNotifier) {
+    Widget score1Widget =
+        _buildScoreControl(context, 1, matchState.scoreTeam1, matchNotifier);
+    Widget score2Widget =
+        _buildScoreControl(context, 2, matchState.scoreTeam2, matchNotifier);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: matchProvider.isSideSwapped
+      children: matchState.isSideSwapped
           ? [score2Widget, score1Widget]
           : [score1Widget, score2Widget],
     );
   }
 
-  Widget _buildScoreControl(
-      BuildContext context, int team, int score, MatchProvider matchProvider) {
+  Widget _buildScoreControl(BuildContext context, int team, int score,
+      MatchNotifier matchNotifier) {
     final theme = Theme.of(context);
     return Row(
       children: [
         IconButton(
           icon: Icon(Icons.remove, color: Colors.red.shade800),
-          onPressed: () => matchProvider.decrementScore(team),
+          onPressed: () => matchNotifier.decrementScore(team),
           style: IconButton.styleFrom(
               backgroundColor: Colors.red.shade100,
               shape: const CircleBorder(),
@@ -299,7 +330,7 @@ class _TableScreenState extends State<TableScreen> {
         ),
         IconButton(
           icon: Icon(Icons.add, color: Colors.green.shade800),
-          onPressed: () => matchProvider.incrementScore(team),
+          onPressed: () => matchNotifier.incrementScore(team),
           style: IconButton.styleFrom(
             backgroundColor: Colors.green.shade100,
             shape: const CircleBorder(),
@@ -310,23 +341,28 @@ class _TableScreenState extends State<TableScreen> {
     );
   }
 
-  Widget _buildActionsRow(BuildContext context, MatchProvider matchProvider) {
-    Widget team1Actions = _buildTeamActions(context, matchProvider, 1);
-    Widget team2Actions = _buildTeamActions(context, matchProvider, 2);
+  Widget _buildActionsRow(
+      BuildContext context, MatchState matchState, MatchNotifier matchNotifier) {
+    Widget team1Actions =
+        _buildTeamActions(context, matchState, matchNotifier, 1);
+    Widget team2Actions =
+        _buildTeamActions(context, matchState, matchNotifier, 2);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: matchProvider.isSideSwapped
+      children: matchState.isSideSwapped
           ? [Expanded(child: team2Actions), Expanded(child: team1Actions)]
           : [Expanded(child: team1Actions), Expanded(child: team2Actions)],
     );
   }
 
-  Widget _buildTeamActions(BuildContext context, MatchProvider matchProvider, int teamNumber) {
+  Widget _buildTeamActions(BuildContext context, MatchState matchState,
+      MatchNotifier matchNotifier, int teamNumber) {
     final player = (teamNumber == 1)
         ? widget.partie.team1Players.first
         : widget.partie.team2Players.first;
-    final isTimeoutUsed =
-        (teamNumber == 1) ? matchProvider.tempsMortTeam1Utilise : matchProvider.tempsMortTeam2Utilise;
+    final isTimeoutUsed = (teamNumber == 1)
+        ? matchState.tempsMortTeam1Utilise
+        : matchState.tempsMortTeam2Utilise;
 
     return Card(
       elevation: 2,
@@ -335,25 +371,27 @@ class _TableScreenState extends State<TableScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            _buildTimeoutButton(context, matchProvider, teamNumber, isTimeoutUsed),
+            _buildTimeoutButton(context, matchNotifier, teamNumber, isTimeoutUsed),
             const Divider(),
-            _buildPlayerActions(context, matchProvider, player),
+            _buildPlayerActions(context, matchNotifier, matchState, player),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTimeoutButton(
-      BuildContext context, MatchProvider matchProvider, int teamNumber, bool isTimeoutUsed) {
+  Widget _buildTimeoutButton(BuildContext context, MatchNotifier matchNotifier,
+      int teamNumber, bool isTimeoutUsed) {
     return InkWell(
-      onTap: () => matchProvider.utiliserTempsMort(teamNumber),
+      onTap: () => matchNotifier.utiliserTempsMort(teamNumber),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(isTimeoutUsed ? Icons.check_box : Icons.check_box_outline_blank),
+            Icon(isTimeoutUsed
+                ? Icons.check_box
+                : Icons.check_box_outline_blank),
             const SizedBox(width: 8),
             const Text('Temps Mort'),
           ],
@@ -362,37 +400,45 @@ class _TableScreenState extends State<TableScreen> {
     );
   }
 
-  Widget _buildPlayerActions(BuildContext context, MatchProvider matchProvider, Player player) {
+  Widget _buildPlayerActions(BuildContext context, MatchNotifier matchNotifier,
+      MatchState matchState, Player player) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(player.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(player.name,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          _buildCardButtons(context, matchProvider, player)
+          _buildCardButtons(context, matchNotifier, matchState, player)
         ],
       ),
     );
   }
 
-  Widget _buildCardButtons(BuildContext context, MatchProvider matchProvider, Player player) {
-    final currentCard = matchProvider.getCartonForPlayer(player.id);
+  Widget _buildCardButtons(BuildContext context, MatchNotifier matchNotifier,
+      MatchState matchState, Player player) {
+    final currentCard = matchNotifier.getCartonForPlayer(player.id);
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        _buildCardButton(
-            context, matchProvider, player, Carton.jaune, Colors.yellow.shade700, currentCard),
-        _buildCardButton(context,
-            matchProvider, player, Carton.jauneRouge, Colors.orange.shade700, currentCard),
-        _buildCardButton(
-            context, matchProvider, player, Carton.rouge, Colors.red.shade800, currentCard),
+        _buildCardButton(context, matchNotifier, player, Carton.jaune,
+            Colors.yellow.shade700, currentCard),
+        _buildCardButton(context, matchNotifier, player, Carton.jauneRouge,
+            Colors.orange.shade700, currentCard),
+        _buildCardButton(context, matchNotifier, player, Carton.rouge,
+            Colors.red.shade800, currentCard),
       ],
     );
   }
 
-  Widget _buildCardButton(BuildContext context, MatchProvider matchProvider, Player player,
-      Carton carton, Color color, Carton? currentCard) {
+  Widget _buildCardButton(
+      BuildContext context,
+      MatchNotifier matchNotifier,
+      Player player,
+      Carton carton,
+      Color color,
+      Carton? currentCard) {
     final bool isSelected = currentCard == carton;
 
     bool isTappable = true;
@@ -413,7 +459,9 @@ class _TableScreenState extends State<TableScreen> {
     }
 
     return GestureDetector(
-      onTap: isTappable ? () => matchProvider.attribuerCarton(player.id, carton) : null,
+      onTap: isTappable
+          ? () => matchNotifier.attribuerCarton(player.id, carton)
+          : null,
       child: Container(
         margin: const EdgeInsets.only(right: 8.0),
         width: 30,
@@ -430,7 +478,12 @@ class _TableScreenState extends State<TableScreen> {
             width: isSelected ? 2.0 : 1.0,
           ),
           boxShadow: isSelected
-              ? [const BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(2, 2))]
+              ? [
+                  const BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 4,
+                      offset: Offset(2, 2))
+                ]
               : [],
         ),
       ),
