@@ -15,7 +15,7 @@ class MatchSelectionScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Feuille de match'),
+        title: const Text('Feuilles de rencontre'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -48,16 +48,24 @@ class MatchSelectionScreen extends ConsumerWidget {
                 return Card(
                   margin: const EdgeInsets.all(8.0),
                   child: ListTile(
-                    leading: const Icon(Icons.sports_tennis, size: 40),
+                    leading: Image.asset(
+                      'assets/icon/Raquette.png',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.contain,
+                    ),
                     title: Text(
                       '${rencontre.nomEquipe1} vs ${rencontre.nomEquipe2}',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     subtitle: Text('Match du $formattedDate'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.delete),
+                          icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () => _showDeleteConfirmationDialog(
                             context,
                             ref,

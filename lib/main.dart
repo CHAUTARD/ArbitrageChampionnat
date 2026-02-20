@@ -79,7 +79,7 @@ class MyApp extends ConsumerWidget {
     );
 
     return MaterialApp(
-      title: 'Feuille de Match Ping-Pong',
+      title: 'Feuilles de rencontre',
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeNotifier.themeMode,
