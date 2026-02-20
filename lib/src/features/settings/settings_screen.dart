@@ -1,7 +1,6 @@
-// features/settings/settings_screen.dart
 import 'package:flutter/material.dart';
+import 'package:myapp/src/features/core/data/database.dart';
 import 'package:myapp/src/features/match_selection/partie_provider.dart';
-import 'package:myapp/src/features/match_selection/player_model.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -63,13 +62,12 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final partieProvider = Provider.of<PartieProvider>(context, listen: true);
-    final allPlayers = partieProvider.allPlayers;
+    final partieProvider = Provider.of<PartieProvider>(context, listen: false);
     final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Paramètres'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -78,23 +76,47 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
-        children: [
-          Text('Liste des Joueurs', style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 16),
-          ...allPlayers.map(
-            (player) => ListTile(
-              title: Text(player.name),
-              subtitle: Text('Équipe ${player.id.startsWith('A') ? 'A' : 'B'}'), // CORRECTION
-              trailing: IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () =>
-                    _showEditPlayerNameDialog(context, player, partieProvider),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Liste des Joueurs', style: theme.textTheme.headlineSmall),
+            const SizedBox(height: 16),
+            Expanded(
+              child: FutureBuilder<List<Player>>(
+                future: partieProvider.allPlayers,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Erreur: ${snapshot.error}'));
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('Aucun joueur trouvé.'));
+                  }
+
+                  final players = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: players.length,
+                    itemBuilder: (context, index) {
+                      final player = players[index];
+                      return ListTile(
+                        title: Text(player.name),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () =>
+                              _showEditPlayerNameDialog(context, player, partieProvider),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

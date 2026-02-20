@@ -46,28 +46,32 @@ class RencontreProvider with ChangeNotifier {
   }
 
   Future<void> createNewRencontre(String nomEquipe1, String nomEquipe2, Map<String, String> playerNames) async {
-    final players = {
-      'A1': await db.into(db.players).insert(PlayersCompanion.insert(name: playerNames['A1']!)),
-      'A2': await db.into(db.players).insert(PlayersCompanion.insert(name: playerNames['A2']!)),
-      'A3': await db.into(db.players).insert(PlayersCompanion.insert(name: playerNames['A3']!)),
-      'A4': await db.into(db.players).insert(PlayersCompanion.insert(name: playerNames['A4']!)),
-      'B1': await db.into(db.players).insert(PlayersCompanion.insert(name: playerNames['B1']!)),
-      'B2': await db.into(db.players).insert(PlayersCompanion.insert(name: playerNames['B2']!)),
-      'B3': await db.into(db.players).insert(PlayersCompanion.insert(name: playerNames['B3']!)),
-      'B4': await db.into(db.players).insert(PlayersCompanion.insert(name: playerNames['B4']!)),
-    };
-
     final equipe1Id = await db.into(db.equipes).insert(EquipesCompanion.insert(name: nomEquipe1));
     final equipe2Id = await db.into(db.equipes).insert(EquipesCompanion.insert(name: nomEquipe2));
 
+    final Map<String, int> playerIds = {};
+    for (var entry in playerNames.entries) {
+      final key = entry.key;
+      final name = entry.value;
+      final equipeId = key.startsWith('A') ? equipe1Id : equipe2Id;
+      final newPlayerId = await db.into(db.players).insert(
+        PlayersCompanion.insert(
+          name: name,
+          letter: key,
+          equipeId: equipeId,
+        ),
+      );
+      playerIds[key] = newPlayerId;
+    }
+
     final rencontreId = await db.into(db.rencontres).insert(RencontresCompanion.insert(
-          equipe1Id: Value(equipe1Id),
-          equipe2Id: Value(equipe2Id),
+          equipe1Id: equipe1Id,
+          equipe2Id: equipe2Id,
           niveau: Niveau.departemental,
-          date: Value(DateTime.now()),
+          date: DateTime.now(),
         ));
 
-    await _createPartiesForRencontre(rencontreId, players);
+    await _createPartiesForRencontre(rencontreId, playerIds);
 
     await loadRencontres();
     await partieProvider.loadData();

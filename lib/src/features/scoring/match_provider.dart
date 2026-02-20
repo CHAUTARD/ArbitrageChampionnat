@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
+import 'package:myapp/src/features/match_selection/partie_provider.dart';
 import 'package:myapp/src/features/scoring/game_model.dart';
 
 enum Carton { jaune, jauneRouge, rouge }
 
 class MatchProvider with ChangeNotifier {
+  final PartieProvider partieProvider;
   final int nombreManches;
   final int pointsParManche;
 
@@ -29,7 +31,7 @@ class MatchProvider with ChangeNotifier {
   Partie? _currentPartie;
   Partie? get currentPartie => _currentPartie;
 
-  MatchProvider(this.nombreManches, this.pointsParManche);
+  MatchProvider(this.nombreManches, this.pointsParManche, {required this.partieProvider});
 
   void startMatch(Partie partie) {
     _currentPartie = partie;
@@ -92,9 +94,7 @@ class MatchProvider with ChangeNotifier {
         manchesGagneesTeam2 > nombreManches / 2) {
       isMatchFinished = true;
       winnerTeam = winner;
-      _currentPartie?.isPlayed = true;
-      _currentPartie?.score = '$manchesGagneesTeam1 - $manchesGagneesTeam2';
-      _currentPartie?.winner = winner == 1 ? 'Equipe 1' : 'Equipe 2';
+      _savePartieToDatabase();
     } else {
       manche++;
       scoreTeam1 = 0;
@@ -104,6 +104,16 @@ class MatchProvider with ChangeNotifier {
       tempsMortTeam2Utilise = false;
     }
     notifyListeners();
+  }
+
+  void _savePartieToDatabase() {
+    if (_currentPartie != null && winnerTeam != null) {
+      partieProvider.savePartie(
+        int.parse(_currentPartie!.id),
+        winnerTeam!,
+        historiqueManches,
+      );
+    }
   }
 
   void setServer(String playerName) {

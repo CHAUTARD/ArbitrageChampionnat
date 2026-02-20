@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/src/features/core/data/database.dart';
 import 'package:myapp/src/features/match_selection/partie_provider.dart';
 import 'package:myapp/src/features/rencontre/rencontre_model.dart';
+import 'package:myapp/src/features/rencontre/rencontre_provider.dart';
 import 'package:provider/provider.dart';
 
 class EditRencontreScreen extends StatefulWidget {
@@ -33,7 +34,7 @@ class _EditRencontreScreenState extends State<EditRencontreScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
-            onPressed: () { /* TODO: Implement save logic */ },
+            onPressed: _saveChanges,
             tooltip: 'Enregistrer',
           ),
         ],
@@ -68,7 +69,7 @@ class _EditRencontreScreenState extends State<EditRencontreScreen> {
                 ...equipe2Players.map((p) => _buildPlayerTextField(p)),
                 const SizedBox(height: 32),
                 ElevatedButton(
-                  onPressed: () { /* TODO: Implement save logic */ },
+                  onPressed: _saveChanges,
                   child: const Text('Enregistrer les modifications'),
                 )
               ],
@@ -92,10 +93,37 @@ class _EditRencontreScreenState extends State<EditRencontreScreen> {
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: TextFormField(
         controller: _playerControllers[player.id],
-        decoration: InputDecoration(labelText: 'Joueur ${player.id}'), // Temporary label
+        decoration: InputDecoration(labelText: 'Joueur ${player.letter}'), // Use player letter for label
         validator: (value) => value!.isEmpty ? 'Nom requis' : null,
       ),
     );
+  }
+
+  void _saveChanges() async {
+    if (_formKey.currentState!.validate()) {
+      final playerNames = <int, String>{};
+      _playerControllers.forEach((id, controller) {
+        playerNames[id] = controller.text;
+      });
+
+      try {
+        final rencontreProvider = Provider.of<RencontreProvider>(context, listen: false);
+        await rencontreProvider.updatePlayerNames(playerNames);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Modifications enregistrées avec succès.')),
+          );
+          Navigator.pop(context);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Erreur lors de l'enregistrement: $e")),
+          );
+        }
+      }
+    }
   }
 
   @override

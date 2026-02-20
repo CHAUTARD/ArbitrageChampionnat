@@ -49,6 +49,8 @@ class Parties extends Table {
   IntColumn get joueur2Equipe2Id => integer().nullable().references(Players, #id)();
   @ReferenceName('arbitre')
   IntColumn get arbitreId => integer().nullable().references(Players, #id)();
+  BoolColumn get isPlayed => boolean().withDefault(const Constant(false))();
+  IntColumn get winner => integer().nullable()(); // 1 or 2
 }
 
 @DataClassName('Score')
@@ -65,15 +67,21 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onUpgrade: (m, from, to) async {
+        // Recreate all tables
         for (final table in allTables) {
           await m.deleteTable(table.actualTableName);
           await m.createTable(table);
+        }
+      },
+       beforeOpen: (details) async {
+        if (details.wasCreated) {
+          // Create default data
         }
       },
     );

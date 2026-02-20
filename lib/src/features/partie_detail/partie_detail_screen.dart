@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
 import 'package:myapp/src/features/partie_detail/manche_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:myapp/src/features/partie_detail/manche_model.dart';
 
 class PartieDetailScreen extends StatefulWidget {
   final Partie partie;
@@ -101,7 +102,7 @@ class _PartieDetailScreenState extends State<PartieDetailScreen> {
     );
   }
 
-    void _showEditScoreDialog(manche) {
+    void _showEditScoreDialog(Manche manche) {
     final score1Controller = TextEditingController(text: manche.scoreTeam1.toString());
     final score2Controller = TextEditingController(text: manche.scoreTeam2.toString());
 

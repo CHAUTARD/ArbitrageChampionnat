@@ -5,6 +5,7 @@ import 'package:myapp/src/features/partie_detail/partie_detail_screen.dart';
 import 'package:myapp/src/features/rencontre/edit_rencontre_screen.dart';
 import 'package:myapp/src/features/rencontre/rencontre_model.dart';
 import 'package:provider/provider.dart';
+import 'package:myapp/src/features/match_selection/partie_model.dart' as model;
 
 class RencontreDetailScreen extends StatelessWidget {
   final RencontreAvecEquipes rencontreAvecEquipes;
@@ -15,7 +16,7 @@ class RencontreDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final partieProvider = Provider.of<PartieProvider>(context);
     final parties = partieProvider.getPartiesForRencontre(rencontreAvecEquipes.rencontre.id);
-    parties.sort((a, b) => a.numeroPartie.compareTo(b.numeroPartie));
+    parties.sort((a, b) => a.partie.partieNumber.compareTo(b.partie.partieNumber));
 
     final formattedDate = DateFormat('dd/MM/yyyy').format(rencontreAvecEquipes.date);
 
@@ -48,23 +49,26 @@ class RencontreDetailScreen extends StatelessWidget {
           : ListView.builder(
               itemCount: parties.length,
               itemBuilder: (context, index) {
-                final partie = parties[index];
-                final isDouble = partie.team1Players.length > 1;
+                final partieDetails = parties[index];
+                final isDouble = partieDetails.partie.joueur2Equipe1Id != null;
 
-                String title = isDouble
-                    ? 'Double: ${partie.team1Players[0].name} & ${partie.team1Players[1].name} vs ${partie.team2Players[0].name} & ${partie.team2Players[1].name}'
-                    : 'Simple: ${partie.team1Players[0].name} vs ${partie.team2Players[0].name}';
+                String title;
+                if (isDouble) {
+                  title = 'Double: ${partieDetails.joueur1Equipe1Name ?? ''} & ${partieDetails.joueur2Equipe1Name ?? ''} vs ${partieDetails.joueur1Equipe2Name ?? ''} & ${partieDetails.joueur2Equipe2Name ?? ''}';
+                } else {
+                  title = 'Simple: ${partieDetails.joueur1Equipe1Name ?? ''} vs ${partieDetails.joueur1Equipe2Name ?? ''}';
+                }
 
-                String subtitle = 'Partie n°${partie.numeroPartie}';
-                if (!isDouble && partie.arbitreName != null) {
-                  subtitle += ' - Arbitre: ${partie.arbitreName}';
+                String subtitle = 'Partie n°${partieDetails.partie.partieNumber}';
+                if (!isDouble && partieDetails.arbitreName != null) {
+                  subtitle += ' - Arbitre: ${partieDetails.arbitreName}';
                 }
 
                 return Card(
                   margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   child: ListTile(
                     leading: CircleAvatar(
-                      child: Text(partie.numeroPartie.toString()),
+                      child: Text(partieDetails.partie.partieNumber.toString()),
                     ),
                     title: Text(title),
                     subtitle: Text(subtitle),
@@ -73,7 +77,7 @@ class RencontreDetailScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PartieDetailScreen(partie: partie),
+                          builder: (context) => PartieDetailScreen(partie: partieDetails.partie as model.Partie),
                         ),
                       );
                     },

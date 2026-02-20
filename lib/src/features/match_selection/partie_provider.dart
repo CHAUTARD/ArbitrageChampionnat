@@ -1,75 +1,93 @@
 import 'package:flutter/foundation.dart';
 import 'package:myapp/src/features/core/data/database.dart';
 import 'package:drift/drift.dart';
-import 'package:myapp/src/features/partie_detail/partie_model.dart';
+import 'package:myapp/src/features/scoring/game_model.dart';
+
+// Nouvelle classe pour contenir les détails complets d'une partie
+class PartieDetails {
+  final Partie partie;
+  final String? joueur1Equipe1Name;
+  final String? joueur2Equipe1Name;
+  final String? joueur1Equipe2Name;
+  final String? joueur2Equipe2Name;
+  final String? arbitreName;
+
+  PartieDetails({
+    required this.partie,
+    this.joueur1Equipe1Name,
+    this.joueur2Equipe1Name,
+    this.joueur1Equipe2Name,
+    this.joueur2Equipe2Name,
+    this.arbitreName,
+  });
+}
 
 class PartieProvider with ChangeNotifier {
   final AppDatabase db;
-  List<PartieAvecJoueurs> _parties = [];
+  List<PartieDetails> _partiesDetails = [];
   bool _isLoading = true;
 
   PartieProvider({required this.db}) {
     loadData();
   }
 
-  List<PartieAvecJoueurs> get parties => _parties;
+  List<PartieDetails> get parties => _partiesDetails;
   bool get isLoading => _isLoading;
+
+  Future<List<Player>> get allPlayers => db.select(db.players).get();
 
   Future<void> loadData() async {
     _isLoading = true;
     notifyListeners();
 
-    final allParties = await db.select(db.parties).get();
-    final List<PartieAvecJoueurs> loadedParties = [];
+    final j1e1 = db.alias(db.players, 'j1e1');
+    final j2e1 = db.alias(db.players, 'j2e1');
+    final j1e2 = db.alias(db.players, 'j1e2');
+    final j2e2 = db.alias(db.players, 'j2e2');
+    final arbitre = db.alias(db.players, 'arbitre');
 
-    for (final p in allParties) {
-      final team1Players = await _getPlayers(p.joueur1Equipe1Id, p.joueur2Equipe1Id);
-      final team2Players = await _getPlayers(p.joueur1Equipe2Id, p.joueur2Equipe2Id);
-      final arbitre = p.arbitreId == null ? null : await _getPlayer(p.arbitreId!); 
+    final query = db.select(db.parties).join([
+      leftOuterJoin(j1e1, j1e1.id.equalsExp(db.parties.joueur1Equipe1Id)),
+      leftOuterJoin(j2e1, j2e1.id.equalsExp(db.parties.joueur2Equipe1Id)),
+      leftOuterJoin(j1e2, j1e2.id.equalsExp(db.parties.joueur1Equipe2Id)),
+      leftOuterJoin(j2e2, j2e2.id.equalsExp(db.parties.joueur2Equipe2Id)),
+      leftOuterJoin(arbitre, arbitre.id.equalsExp(db.parties.arbitreId)),
+    ]);
 
-      loadedParties.add(PartieAvecJoueurs(
-        partie: p,
-        team1Players: team1Players,
-        team2Players: team2Players,
-        arbitreName: arbitre?.name,
-        numeroPartie: p.partieNumber,
-      ));
-    }
+    final result = await query.get();
 
-    _parties = loadedParties;
+    _partiesDetails = result.map((row) {
+      return PartieDetails(
+        partie: row.readTable(db.parties),
+        joueur1Equipe1Name: row.readTableOrNull(j1e1)?.name,
+        joueur2Equipe1Name: row.readTableOrNull(j2e1)?.name,
+        joueur1Equipe2Name: row.readTableOrNull(j1e2)?.name,
+        joueur2Equipe2Name: row.readTableOrNull(j2e2)?.name,
+        arbitreName: row.readTableOrNull(arbitre)?.name,
+      );
+    }).toList();
+
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<Player?> _getPlayer(int id) async {
-    return await (db.select(db.players)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
-  }
-
-  Future<List<Player>> _getPlayers(int player1Id, int? player2Id) async {
-    final p1 = await _getPlayer(player1Id);
-    final players = [p1!];
-    if (player2Id != null) {
-      final p2 = await _getPlayer(player2Id);
-      if (p2 != null) players.add(p2);
-    }
-    return players;
-  }
-
-  List<PartieAvecJoueurs> getPartiesForRencontre(int rencontreId) {
-    return _parties.where((p) => p.partie.rencontreId == rencontreId).toList();
+  List<PartieDetails> getPartiesForRencontre(int rencontreId) {
+    return _partiesDetails
+        .where((p) => p.partie.rencontreId == rencontreId)
+        .toList();
   }
 
   Future<void> resetData() async {
     _isLoading = true;
     notifyListeners();
-
-    await db.delete(db.scores).go();
-    await db.delete(db.parties).go();
-    await db.delete(db.rencontres).go();
-    await db.delete(db.equipes).go();
-    await db.delete(db.players).go();
-
-    _parties = [];
+    // Utilise une transaction pour assurer la cohérence
+    await db.transaction(() async {
+      await db.delete(db.parties).go();
+      await db.delete(db.rencontres).go();
+      await db.delete(db.equipes).go();
+      await db.delete(db.players).go();
+    });
+    _partiesDetails = [];
     _isLoading = false;
     notifyListeners();
   }
@@ -77,11 +95,15 @@ class PartieProvider with ChangeNotifier {
   Future<int> createPartieForRencontre(
     int rencontreId,
     int partieNumber,
-    int j1e1, int? j2e1,
-    int j1e2, int? j2e2,
+    int j1e1,
+    int? j2e1,
+    int j1e2,
+    int? j2e2,
     int? arbitreId,
   ) async {
-    final partieId = await db.into(db.parties).insert(
+    final partieId = await db
+        .into(db.parties)
+        .insert(
           PartiesCompanion.insert(
             rencontreId: rencontreId,
             partieNumber: partieNumber,
@@ -95,21 +117,76 @@ class PartieProvider with ChangeNotifier {
     return partieId;
   }
 
-  Future<Map<String, List<Player>>> getPlayersForRencontre(int rencontreId) async {
-    final partiesOfRencontre = getPartiesForRencontre(rencontreId);
-    if (partiesOfRencontre.isEmpty) return {'equipe1': [], 'equipe2': []};
+  Future<Map<String, List<Player>>> getPlayersForRencontre(
+    int rencontreId,
+  ) async {
+    final rencontre = await (db.select(
+      db.rencontres,
+    )..where((r) => r.id.equals(rencontreId))).getSingleOrNull();
+    if (rencontre == null) return {'equipe1': [], 'equipe2': []};
 
-    final Set<Player> equipe1Players = {};
-    final Set<Player> equipe2Players = {};
+    final equipe1Players = await (db.select(
+      db.players,
+    )..where((p) => p.equipeId.equals(rencontre.equipe1Id))).get();
+    final equipe2Players = await (db.select(
+      db.players,
+    )..where((p) => p.equipeId.equals(rencontre.equipe2Id))).get();
 
-    for (final partie in partiesOfRencontre) {
-      equipe1Players.addAll(partie.team1Players);
-      equipe2Players.addAll(partie.team2Players);
-    }
+    return {'equipe1': equipe1Players, 'equipe2': equipe2Players};
+  }
 
-    return {
-      'equipe1': equipe1Players.toList(),
-      'equipe2': equipe2Players.toList(),
-    };
+  Future<void> updatePlayerName(int playerId, String newName) async {
+    await (db.update(db.players)..where((p) => p.id.equals(playerId))).write(
+      PlayersCompanion(name: Value(newName)),
+    );
+    await loadData(); // Recharge les données pour refléter le changement
+  }
+
+  Future<void> updateDoublesComposition(
+    int partieId,
+    int j1e1,
+    int? j2e1,
+    int j1e2,
+    int? j2e2,
+  ) async {
+    await (db.update(db.parties)..where((p) => p.id.equals(partieId))).write(
+      PartiesCompanion(
+        joueur1Equipe1Id: Value(j1e1),
+        joueur2Equipe1Id: Value(j2e1),
+        joueur1Equipe2Id: Value(j1e2),
+        joueur2Equipe2Id: Value(j2e2),
+      ),
+    );
+    await loadData();
+  }
+
+  Future<void> savePartie(int partieId, int winner, List<Game> sets) async {
+    await db.transaction(() async {
+      // 1. Update the Partie status
+      await (db.update(db.parties)..where((p) => p.id.equals(partieId))).write(
+        PartiesCompanion(isPlayed: const Value(true), winner: Value(winner)),
+      );
+
+      // 2. Delete old scores for this partie to avoid duplicates
+      await (db.delete(
+        db.scores,
+      )..where((s) => s.partieId.equals(partieId))).go();
+
+      // 3. Insert new scores for each set
+      for (final set in sets) {
+        await db
+            .into(db.scores)
+            .insert(
+              ScoresCompanion.insert(
+                partieId: partieId,
+                setNumber: set.manche,
+                scoreEquipe1: set.scoreTeam1,
+                scoreEquipe2: set.scoreTeam2,
+              ),
+            );
+      }
+    });
+
+    await loadData(); // Refresh data to reflect the changes in the UI
   }
 }
