@@ -27,12 +27,12 @@ class MatchSelectionScreen extends ConsumerWidget {
                 ),
               );
             },
-            tooltip: 'Nouvelle rencontre',
+            tooltip: 'Créer une nouvelle feuille de rencontre',
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.read(rencontreProvider.notifier).resetAndCreateDefault(),
-            tooltip: 'Réinitialiser les données',
+            tooltip: 'Réinitialiser les données et créer une rencontre par défaut',
           ),
         ],
       ),
