@@ -1,4 +1,3 @@
-
 import 'package:json_annotation/json_annotation.dart';
 
 part 'game_state.g.dart';
@@ -21,7 +20,8 @@ class GameState {
     this.setScores = const [], // Added this line
   });
 
-  factory GameState.fromJson(Map<String, dynamic> json) => _$GameStateFromJson(json);
+  factory GameState.fromJson(Map<String, dynamic> json) =>
+      _$GameStateFromJson(json);
 
   Map<String, dynamic> toJson() => _$GameStateToJson(this);
 }

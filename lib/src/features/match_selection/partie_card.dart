@@ -1,6 +1,7 @@
 // features/match_selection/partie_card.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/src/features/match_selection/partie_model.dart';
+import 'package:myapp/models/partie_model.dart';
+import 'package:myapp/models/player_model.dart';
 
 class PartieCard extends StatelessWidget {
   final Partie partie;
@@ -15,7 +16,7 @@ class PartieCard extends StatelessWidget {
         ? 'Double ${partie.id == '9' ? '1' : '2'}'
         : '${partie.team1Players.first.name} vs ${partie.team2Players.first.name}';
 
-    String getPlayerNames(List<dynamic> players) {
+    String getPlayerNames(List<Player> players) {
       if (players.length > 1) {
         return '${players[0].name} & ${players[1].name}';
       }
@@ -23,7 +24,7 @@ class PartieCard extends StatelessWidget {
     }
 
     final subtitle = isDouble
-        ? '${getPlayerNames(partie.team1Players)} vs ${getPlayerNames(partie.team2Players)}'
+        ? '${getPlayerNames(partie.team1Players.toList())} vs ${getPlayerNames(partie.team2Players.toList())}'
         : 'Simple';
 
     return Card(

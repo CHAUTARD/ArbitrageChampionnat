@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myapp/src/features/core/data/database.dart';
-import 'package:myapp/src/features/rencontre/rencontre_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
-  void _showEditPlayerNameDialog(
-      BuildContext context, WidgetRef ref, Player player) {
-    final controller = TextEditingController(text: player.name);
+  void _showResetConfirmationDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Modifier le nom du joueur'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
+        title: const Text('Réinitialiser les données'),
+        content: const Text(
+          'Voulez-vous vraiment effacer l\'historique des parties et restaurer les noms des joueurs d\'origine ?',
         ),
         actions: [
           TextButton(
@@ -24,35 +19,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () {
-              if (controller.text.isNotEmpty) {
-                ref
-                    .read(rencontreProvider.notifier)
-                    .updatePlayerNames({player.id: controller.text});
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Enregistrer'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showResetConfirmationDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Réinitialiser les données'),
-        content: const Text(
-            'Voulez-vous vraiment effacer l\'historique des parties et restaurer les noms des joueurs d\'origine ?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () {
-              ref.read(rencontreProvider.notifier).resetAndCreateDefault();
+              // ref.read(rencontreProvider.notifier).resetAndCreateDefault();
               Navigator.pop(context);
             },
             child: const Text('Réinitialiser'),
@@ -64,7 +31,6 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rencontreState = ref.watch(rencontreProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -85,23 +51,12 @@ class SettingsScreen extends ConsumerWidget {
           children: [
             Text('Liste des Joueurs', style: theme.textTheme.headlineSmall),
             const SizedBox(height: 16),
-            Expanded(
-              child: rencontreState.isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: rencontreState.rencontres.length,
-                      itemBuilder: (context, index) {
-                        final players = [];
-                        return ListTile(
-                          title: Text(players[index].name),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () => _showEditPlayerNameDialog(
-                                context, ref, players[index]),
-                          ),
-                        );
-                      },
-                    ),
+            const Expanded(
+              child: Center(
+                child: Text(
+                  'La fonctionnalité de gestion des joueurs n\'est plus disponible.',
+                ),
+              ),
             ),
           ],
         ),

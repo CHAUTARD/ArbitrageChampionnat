@@ -27,7 +27,8 @@ class _TimerDialogState extends State<TimerDialog> {
     _remainingTime = ValueNotifier(widget.duration);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingTime.value.inSeconds > 0) {
-        _remainingTime.value = _remainingTime.value - const Duration(seconds: 1);
+        _remainingTime.value =
+            _remainingTime.value - const Duration(seconds: 1);
       } else {
         _timer.cancel();
         // Maybe play a sound here in the future
@@ -53,7 +54,11 @@ class _TimerDialogState extends State<TimerDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AlertDialog(
-      title: Text(widget.title, textAlign: TextAlign.center, style: theme.textTheme.titleLarge),
+      title: Text(
+        widget.title,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.titleLarge,
+      ),
       content: ValueListenableBuilder<Duration>(
         valueListenable: _remainingTime,
         builder: (context, value, child) {
@@ -61,9 +66,11 @@ class _TimerDialogState extends State<TimerDialog> {
             _formatDuration(value),
             textAlign: TextAlign.center,
             style: theme.textTheme.displayLarge?.copyWith(
-              fontFamily: 'Oswald', 
+              fontFamily: 'Oswald',
               fontSize: 72,
-              color: value.inSeconds <= 10 ? Colors.red.shade700 : theme.textTheme.displayLarge?.color
+              color: value.inSeconds <= 10
+                  ? Colors.red.shade700
+                  : theme.textTheme.displayLarge?.color,
             ),
           );
         },
@@ -81,7 +88,11 @@ class _TimerDialogState extends State<TimerDialog> {
 }
 
 // Helper function to show the dialog easily
-Future<void> showTimerDialog(BuildContext context, {required Duration duration, required String title}) {
+Future<void> showTimerDialog(
+  BuildContext context, {
+  required Duration duration,
+  required String title,
+}) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {

@@ -1,4 +1,4 @@
-// lib/src/features/scoring/score_model.dart
+// lib/models/score_model.dart
 // Modèle pour un point marqué.
 
 class Score {

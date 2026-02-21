@@ -1,6 +1,6 @@
 // features/scoring/table_screen.dart
 import 'package:flutter/material.dart';
-import 'package:myapp/src/features/match_selection/partie_model.dart';
+import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/src/features/table/double_table_screen.dart';
 import 'package:myapp/src/features/table/simple_table_screen.dart';
 

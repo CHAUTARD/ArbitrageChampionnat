@@ -1,7 +1,7 @@
 // features/table/double_table_screen.dart
 import 'package:flutter/material.dart';
 import 'package:myapp/src/features/doubles_composition/double_composition_screen.dart';
-import 'package:myapp/src/features/match_selection/partie_model.dart';
+import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/src/features/scoring/scoring_screen.dart';
 
 class DoubleTableScreen extends StatelessWidget {
@@ -26,7 +26,7 @@ class DoubleTableScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             ScoringScreen(partie: partie),
-            DoublesCompositionScreen(partie: partie),
+            const DoublesCompositionScreen(),
           ],
         ),
       ),

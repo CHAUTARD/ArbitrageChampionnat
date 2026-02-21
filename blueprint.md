@@ -1,74 +1,68 @@
-## Titre de l'Application : Gestionnaire de Tournoi de Ping-Pong
+## Application Title: Tournament Score Tracker
 
-### Aperçu
+### Overview
 
-Cette application a pour but de faciliter la gestion des feuilles de matchs lors de tournois de tennis de table. Elle permet de visualiser les parties, de les attribuer à des tables, et de suivre les scores en temps réel. L'application est conçue pour être simple et intuitive, avec une interface claire et des fonctionnalités ciblées.
+This is a Flutter application designed to keep track of match scores for a tournament. It allows users to view a list of matches and add new ones. The application uses a local database (Drift) for offline data persistence and features a clean, modern interface with both light and dark modes.
 
-### Fonctionnalités Clés
+### Key Features
 
-1.  **Gestion des Rencontres :** Créer, modifier et supprimer des rencontres, y compris les équipes et les joueurs associés.
-2.  **Visualisation des Matchs :** Affiche la liste complète des matchs (simples et doubles) prévus, avec les noms des joueurs, leurs équipes, et les horaires.
-3.  **Composition des Doubles :** Permet de sélectionner les joueurs qui composeront les équipes de double.
-4.  **Attribution des Tables :** Glisser-déposer pour assigner un match à une table disponible.
-5.  **Saisie des Scores :** Interface dédiée pour entrer les scores des sets pour chaque match.
-6.  **Persistance des Données Locales :** Les données des parties et des joueurs sont sauvegardées localement sur l'appareil grâce à une base de données SQLite gérée par Drift.
-7.  **Paramètres :** Permet de modifier les noms des joueurs.
+*   **Offline First:** All match data is stored locally on the device, allowing the app to be fully functional without an internet connection.
+*   **Match List:** Displays a list of all tournament matches from the local database.
+*   **Add Match:** A dedicated screen to add new matches with player names and scores.
+*   **Theme Toggle:** Users can switch between light, dark, and system default themes.
+*   **Scalable Architecture:** The project is structured using a clean, layered architecture to separate concerns and improve maintainability.
 
-### Structure du Projet
+### Project Structure
 
 *   `lib/`
-    *   `main.dart` : Point d'entrée de l'application.
+    *   `main.dart`: The main entry point of the application, responsible for setting up providers and the root widget.
     *   `src/`
+        *   `core/`
+            *   `data/database.dart`: Defines the local database structure using Drift.
+            *   `theme/theme_provider.dart`: Manages the application's theme state (light/dark mode).
         *   `features/`
-            *   `core/data/database.dart` : Définition de la base de données locale avec Drift.
-            *   `rencontre/` : Contient les écrans et la logique pour la gestion des rencontres (création, édition, détails, suppression).
-            *   `match_selection/` : Contient les modèles, fournisseurs et écrans liés à la sélection des matchs.
-            *   `doubles_composition/` : Écran pour la composition des équipes de double.
-            *   `table_assignment/` : Logique pour l'assignation des tables.
-            *   `score_entry/` : Interface pour la saisie des scores.
-            *   `settings/` : Écran des paramètres.
-        *   `widgets/` : Widgets réutilisables.
-*   `assets/`
-    *   `data/`
-        *   `parties.json` : Fichier JSON contenant les données des matchs.
-        *   `players.json` : Fichier JSON contenant les données des joueurs.
+            *   `home/`
+                *   `home_screen.dart`: The main screen that displays the list of matches.
+                *   `add_match_screen.dart`: The screen for adding a new match.
+            *   `match_management/`
+                *   `application/match_service.dart`: The business logic layer, responsible for orchestrating data operations.
+                *   `data/repositories/drift_repository.dart`: The data access layer, responsible for all interactions with the local Drift database.
+                *   `domain/models/match.dart`: The data model for a match.
+        *   `widgets/`
+            *   `match_card.dart`: A reusable widget to display a single match.
+            *   `theme_toggle_button.dart`: A button for switching the app's theme.
 
-### Plan de Développement
+### Architecture
 
-**Phase 1 : Refactorisation et Amélioration (Terminée)**
+The application follows a layered architecture to ensure a clean separation of concerns:
 
-*   **Remplacement du `TeamProvider` :** Le `TeamProvider` a été entièrement remplacé par le `PartieProvider` pour une gestion plus centralisée et cohérente des données des matchs.
-*   **Centralisation du Thème :** La gestion du thème de l'application, y compris les couleurs, la typographie et les styles de composants, a été unifiée dans le fichier `main.dart`.
-*   **Intégration des Polices Locales :** La dépendance `google_fonts` a été supprimée au profit de polices locales (`Oswald` et `Roboto`) pour améliorer les performances et garantir la disponibilité des polices hors ligne.
-*   **Nettoyage du Code :** Les références inutilisées à `google_fonts` et les erreurs de thème (comme `TabBarTheme` au lieu de `TabBarThemeData`) ont été corrigées.
+*   **Presentation Layer (`features/home`, `widgets`):** The UI part of the application, composed of widgets, screens, and UI-specific state management.
+*   **Application Layer (`features/match_management/application`):** Contains the core business logic. The `MatchService` coordinates with the data layer.
+*   **Data Layer (`features/match_management/data`, `core/data`):** Responsible for data persistence. The `DriftRepository` abstracts away the specifics of the local database, providing a clean API for the application layer.
+*   **Domain Layer (`features/match_management/domain`):** Contains the core data structures (models) of the application, such as the `Match` class.
 
-**Phase 2 : Amélioration de l'Expérience Utilisateur (Terminée)**
+**State Management:**
 
-*   **Distinction Visuelle des Matchs :** Les cartes des matchs sur l'écran de sélection ont désormais des couleurs de fond distinctes pour différencier les simples (vert) des doubles (bleu).
-*   **Interface de Pointage Unifiée :** L'écran de pointage pour les matchs simples inclut désormais l'icône "style" permettant d'afficher/masquer les actions de cartons.
-*   **Sélection du Service Guidée pour les Doubles :** Mise en place de boîtes de dialogue et d'écrans dédiés pour guider la sélection du serveur et du receveur à chaque manche.
+The project uses **flutter_riverpod** for dependency injection and state management, allowing for a decoupled architecture.
 
-**Phase 3 : Persistance des données (Terminée)**
+**Navigation:**
 
-*   **Intégration de Drift :** Ajout de la base de données locale Drift pour la persistance des données.
-*   **Définition du schéma :** Création des tables `Players`, `Parties`, et `Manches` dans `lib/src/features/core/data/database.dart`.
-*   **Connexion au Provider :** Le `PartieProvider` a été refactorisé pour utiliser la base de données Drift.
+Navigation is handled by Flutter's built-in `Navigator` for simplicity.
 
-**Phase 4 : Résolution de Bugs et Stabilisation (Terminée)**
+### Development Plan
 
-*   **Correction Itérative :** Une série de corrections a été apportée pour résoudre de multiples erreurs de compilation liées à la manipulation des données avec Drift.
-*   **Analyse du Schéma :** Après plusieurs tentatives infructueuses, le schéma de la base de données (`database.dart`) a été analysé en détail pour comprendre la source réelle des erreurs.
-*   **Correction de la Logique d'Insertion :** La cause principale des erreurs était une utilisation incohérente des `Companions` de Drift. La logique a été corrigée en adoptant une méthode unifiée : l'utilisation systématique du constructeur `Value()` pour toutes les valeurs insérées dans la base de données.
-*   **Contribution de l'Utilisateur :** La résolution finale a été rendue possible grâce à l'intervention directe de l'utilisateur, qui a lui-même corrigé le code, mettant en évidence l'erreur que l'IA n'arrivait pas à résoudre seule.
-*   **Validation Finale :** Une analyse statique complète (`flutter analyze`) et une regénération des fichiers de la base de données (`build_runner`) ont été effectuées pour garantir l'absence totale d'erreurs et la parfaite synchronisation du code.
+**Phase 1: Architectural Refactoring (Completed)**
 
-**Phase 5 : Gestion des Rencontres (Terminée)**
+*   **Separation of Concerns:** The initial code was refactored to separate business logic from the UI and data persistence layers.
+*   **Created `FirestoreRepository`:** The logic for interacting with Firebase Firestore was moved from the UI and encapsulated within a dedicated `FirestoreRepository`.
+*   **Created `MatchService`:** A `MatchService` was introduced in the application layer to mediate between the UI and the repository, housing the core business logic.
+*   **Integrated Riverpod:** `flutter_riverpod` was added to the project to provide the `MatchService` and `FirestoreRepository` to the UI layer through dependency injection.
 
-*   **Vérification de la Suppression :** La logique de suppression d'une rencontre existait déjà dans le `rencontre_provider.dart` mais n'était pas accessible depuis l'interface.
-*   **Ajout du Bouton de Suppression :** Un bouton "Supprimer" a été ajouté à l'écran de détails d'une rencontre.
-*   **Confirmation Utilisateur :** Une boîte de dialogue de confirmation a été mise en place pour prévenir les suppressions accidentelles.
+**Phase 2: Local Database Migration (Completed)**
 
-**Phase 6 : Nouvelles Fonctionnalités (Futures Idées)**
-
-*   **Mode Sombre :** Ajouter une option pour basculer entre un thème clair et un thème sombre.
-*   **Synchronisation Cloud (Optionnel) :** Explorer l'intégration de Firebase Firestore pour permettre la synchronisation des données entre plusieurs appareils.
+*   **Replaced Firebase with Drift:** The application was migrated from Firebase Firestore to a local database solution using the Drift package. This enables full offline functionality.
+*   **Added Dependencies:** `drift`, `sqlite3_flutter_libs`, and `path_provider` were added to manage the local database.
+*   **Created `DriftRepository`:** A new repository was implemented to handle all CRUD (Create, Read, Update, Delete) operations with the Drift database.
+*   **Updated Service Layer:** The `MatchService` and its providers were updated to use the new `DriftRepository`.
+*   **Removed Firebase:** All Firebase-related dependencies (`cloud_firestore`, `firebase_core`) and initialization code were removed.
+*   **Simplified Navigation:** The `go_router` package was removed, and navigation was simplified to use the built-in `Navigator`.
