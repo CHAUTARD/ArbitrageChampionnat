@@ -1,3 +1,8 @@
+// lib/src/features/rencontre/create_rencontre_screen.dart
+//
+// Écran de création d'une nouvelle rencontre.
+// Permet de saisir les noms des équipes et des joueurs.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/rencontre/rencontre_provider.dart';

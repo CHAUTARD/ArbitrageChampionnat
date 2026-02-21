@@ -1,3 +1,8 @@
+// lib/src/features/rencontre/rencontre_detail_screen.dart
+//
+// Écran affichant les détails d'une rencontre, y compris la liste des parties.
+// Permet de naviguer vers les détails de chaque partie et de modifier ou supprimer la rencontre.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +10,7 @@ import 'package:myapp/src/features/match_selection/partie_provider.dart';
 import 'package:myapp/src/features/partie_detail/partie_detail_screen.dart';
 import 'package:myapp/src/features/rencontre/edit_rencontre_screen.dart';
 import 'package:myapp/src/features/rencontre/rencontre_model.dart';
+import 'package:myapp/src/features/rencontre/rencontre_provider.dart';
 
 class RencontreDetailScreen extends ConsumerStatefulWidget {
   final RencontreAvecEquipes rencontreAvecEquipes;
@@ -23,6 +29,38 @@ class _RencontreDetailScreenState extends ConsumerState<RencontreDetailScreen> {
     Future.microtask(() => ref
         .read(partieProvider.notifier)
         .getPartiesForRencontre(widget.rencontreAvecEquipes.rencontre.id));
+  }
+
+  Future<void> _deleteRencontre() async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmation'),
+          content: const Text(
+              'Êtes-vous sûr de vouloir supprimer cette rencontre ? Cette action est irréversible.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Supprimer', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      await ref
+          .read(rencontreProvider.notifier)
+          .deleteRencontre(widget.rencontreAvecEquipes.rencontre.id);
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    }
   }
 
   @override
@@ -58,6 +96,11 @@ class _RencontreDetailScreenState extends ConsumerState<RencontreDetailScreen> {
               );
             },
             tooltip: 'Modifier la feuille',
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: _deleteRencontre,
+            tooltip: 'Supprimer la rencontre',
           ),
         ],
       ),

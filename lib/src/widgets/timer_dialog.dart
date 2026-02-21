@@ -1,3 +1,9 @@
+// lib/src/widgets/timer_dialog.dart
+//
+// Définit une boîte de dialogue affichant un compte à rebours.
+// Ce widget est utilisé pour les temps morts et les changements de côté,
+// et il change de couleur lorsque le temps est presque écoulé.
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 

@@ -1,3 +1,8 @@
+// lib/src/features/rencontre/rencontre_model.dart
+//
+// Modèle de données pour une rencontre avec les noms des équipes.
+// Utilisé pour afficher les informations complètes d'une rencontre.
+
 import 'package:myapp/src/features/core/data/database.dart';
 
 class RencontreAvecEquipes {

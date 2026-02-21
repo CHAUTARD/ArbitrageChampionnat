@@ -1,3 +1,9 @@
+// lib/src/features/rencontre/rencontre_provider.dart
+//
+// Fournit la logique de gestion des rencontres.
+// Gère la création, le chargement, la mise à jour et la suppression des rencontres,
+// ainsi que la création des parties associées.
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/core/data/database.dart';
 import 'package:myapp/src/features/match_selection/partie_provider.dart';

@@ -1,3 +1,8 @@
+// lib/src/features/match_selection/partie_model.dart
+//
+// Modèle de données pour une partie (match).
+// Contient les informations sur les joueurs, l'arbitre, l'état du match, etc.
+
 import 'package:myapp/src/features/match_selection/player_model.dart';
 
 class Partie {

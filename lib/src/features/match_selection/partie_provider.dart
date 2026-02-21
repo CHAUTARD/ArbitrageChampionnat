@@ -1,4 +1,9 @@
-// features/match_selection/partie_provider.dart
+// lib/src/features/match_selection/partie_provider.dart
+//
+// Fournit la logique de gestion des parties (matchs).
+// Gère la création, la récupération, la mise à jour et la suppression des parties
+// en interagissant avec la base de données.
+
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/core/data/database.dart' as db;

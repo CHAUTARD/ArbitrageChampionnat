@@ -1,4 +1,9 @@
-// main.dart
+// lib/main.dart
+//
+// Point d'entrée de l'application.
+// Ce fichier initialise l'application Flutter, configure le thème global (clair et sombre),
+// et définit l'écran d'accueil (MatchSelectionScreen).
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

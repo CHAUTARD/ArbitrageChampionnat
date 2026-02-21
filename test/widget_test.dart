@@ -1,3 +1,9 @@
+// test/widget_test.dart
+//
+// Fichier de test de base pour les widgets Flutter.
+// Ce fichier contient un exemple de "smoke test" qui vérifie le comportement
+// d'un widget simple, en l'occurrence, un compteur qui s'incrémente.
+
 // This is a basic Flutter widget test.
 //
 // To perform an interaction with a widget in your test, use the WidgetTester

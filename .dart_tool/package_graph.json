@@ -113,7 +113,7 @@
     },
     {
       "name": "json_serializable",
-      "version": "6.12.0",
+      "version": "6.13.0",
       "dependencies": [
         "analyzer",
         "async",
@@ -121,7 +121,6 @@
         "build_config",
         "dart_style",
         "json_annotation",
-        "json_schema",
         "meta",
         "path",
         "pub_semver",
@@ -219,7 +218,7 @@
     },
     {
       "name": "json_annotation",
-      "version": "4.10.0",
+      "version": "4.11.0",
       "dependencies": [
         "meta"
       ]
@@ -584,7 +583,7 @@
     },
     {
       "name": "built_value",
-      "version": "8.12.3",
+      "version": "8.12.4",
       "dependencies": [
         "built_collection",
         "collection",
@@ -640,17 +639,6 @@
         "json_annotation",
         "pub_semver",
         "yaml"
-      ]
-    },
-    {
-      "name": "json_schema",
-      "version": "5.2.2",
-      "dependencies": [
-        "collection",
-        "http",
-        "logging",
-        "rfc_6901",
-        "uri"
       ]
     },
     {
@@ -959,19 +947,6 @@
       "dependencies": []
     },
     {
-      "name": "uri",
-      "version": "1.0.0",
-      "dependencies": [
-        "matcher",
-        "quiver"
-      ]
-    },
-    {
-      "name": "rfc_6901",
-      "version": "0.2.1",
-      "dependencies": []
-    },
-    {
       "name": "leak_tracker_testing",
       "version": "3.0.2",
       "dependencies": [
@@ -1033,13 +1008,6 @@
         "ffi",
         "meta",
         "path"
-      ]
-    },
-    {
-      "name": "quiver",
-      "version": "3.2.2",
-      "dependencies": [
-        "matcher"
       ]
     },
     {

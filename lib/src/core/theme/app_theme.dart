@@ -1,3 +1,8 @@
+// lib/src/core/theme/app_theme.dart
+//
+// Définit les thèmes clair et sombre de l'application.
+// Ce fichier centralise la configuration de l'apparence de l'interface utilisateur,
+// y compris les couleurs, la typographie et les styles des composants.
 
 import 'package:flutter/material.dart';
 

@@ -1,6 +1,11 @@
-// features/match_selection/match_selection_screen.dart
+// lib/src/features/match_selection/match_selection_screen.dart
+//
+// Écran principal affichant la liste des feuilles de rencontre.
+// Permet de créer, de visualiser et de supprimer des rencontres.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myapp/src/core/constants/app_constants.dart';
 import 'package:myapp/src/features/rencontre/create_rencontre_screen.dart';
 import 'package:myapp/src/features/rencontre/rencontre_detail_screen.dart';
 import 'package:myapp/src/features/rencontre/rencontre_provider.dart';
@@ -36,60 +41,88 @@ class MatchSelectionScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: rencontreState.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: rencontreState.rencontres.length,
-              itemBuilder: (context, index) {
-                final rencontre = rencontreState.rencontres[index];
-                final formattedDate = DateFormat(
-                  'dd/MM/yyyy',
-                ).format(rencontre.date);
-                return Card(
-                  margin: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    leading: Image.asset(
-                      'assets/icon/Raquette.png',
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.contain,
-                    ),
-                    title: Text(
-                      '${rencontre.nomEquipe1} vs ${rencontre.nomEquipe2}',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+      body: Column(
+        children: [
+          Expanded(
+            child: rencontreState.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: rencontreState.rencontres.length,
+                    itemBuilder: (context, index) {
+                      final rencontre = rencontreState.rencontres[index];
+                      final formattedDate = DateFormat(
+                        'dd/MM/yyyy',
+                      ).format(rencontre.date);
+                      return Card(
+                        margin: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          leading: Image.asset(
+                            'assets/icon/Raquette.png',
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.contain,
                           ),
-                    ),
-                    subtitle: Text('Match du $formattedDate'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _showDeleteConfirmationDialog(
-                            context,
-                            ref,
-                            rencontre.rencontre.id,
+                          title: Text(
+                            '${rencontre.nomEquipe1} vs ${rencontre.nomEquipe2}',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
-                          tooltip: 'Supprimer la rencontre',
-                        ),
-                        const Icon(Icons.arrow_forward_ios),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RencontreDetailScreen(
-                            rencontreAvecEquipes: rencontre,
+                          subtitle: Text('Match du $formattedDate'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => _showDeleteConfirmationDialog(
+                                  context,
+                                  ref,
+                                  rencontre.rencontre.id,
+                                ),
+                                tooltip: 'Supprimer la rencontre',
+                              ),
+                              const Icon(Icons.arrow_forward_ios),
+                            ],
                           ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RencontreDetailScreen(
+                                  rencontreAvecEquipes: rencontre,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
                   ),
-                );
-              },
-            ),
+          ),
+          _buildCopyright(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCopyright() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        children: [
+          Text(
+            AppConstants.copyright,
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Version ${AppConstants.appVersion}',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 

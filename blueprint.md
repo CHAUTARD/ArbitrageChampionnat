@@ -6,12 +6,13 @@ Cette application a pour but de faciliter la gestion des feuilles de matchs lors
 
 ### Fonctionnalités Clés
 
-1.  **Visualisation des Matchs :** Affiche la liste complète des matchs (simples et doubles) prévus, avec les noms des joueurs, leurs équipes, et les horaires.
-2.  **Composition des Doubles :** Permet de sélectionner les joueurs qui composeront les équipes de double.
-3.  **Attribution des Tables :** Glisser-déposer pour assigner un match à une table disponible.
-4.  **Saisie des Scores :** Interface dédiée pour entrer les scores des sets pour chaque match.
-5.  **Persistance des Données Locales :** Les données des parties et des joueurs sont sauvegardées localement sur l'appareil grâce à une base de données SQLite gérée par Drift.
-6.  **Paramètres :** Permet de modifier les noms des joueurs.
+1.  **Gestion des Rencontres :** Créer, modifier et supprimer des rencontres, y compris les équipes et les joueurs associés.
+2.  **Visualisation des Matchs :** Affiche la liste complète des matchs (simples et doubles) prévus, avec les noms des joueurs, leurs équipes, et les horaires.
+3.  **Composition des Doubles :** Permet de sélectionner les joueurs qui composeront les équipes de double.
+4.  **Attribution des Tables :** Glisser-déposer pour assigner un match à une table disponible.
+5.  **Saisie des Scores :** Interface dédiée pour entrer les scores des sets pour chaque match.
+6.  **Persistance des Données Locales :** Les données des parties et des joueurs sont sauvegardées localement sur l'appareil grâce à une base de données SQLite gérée par Drift.
+7.  **Paramètres :** Permet de modifier les noms des joueurs.
 
 ### Structure du Projet
 
@@ -20,6 +21,7 @@ Cette application a pour but de faciliter la gestion des feuilles de matchs lors
     *   `src/`
         *   `features/`
             *   `core/data/database.dart` : Définition de la base de données locale avec Drift.
+            *   `rencontre/` : Contient les écrans et la logique pour la gestion des rencontres (création, édition, détails, suppression).
             *   `match_selection/` : Contient les modèles, fournisseurs et écrans liés à la sélection des matchs.
             *   `doubles_composition/` : Écran pour la composition des équipes de double.
             *   `table_assignment/` : Logique pour l'assignation des tables.
@@ -60,7 +62,13 @@ Cette application a pour but de faciliter la gestion des feuilles de matchs lors
 *   **Contribution de l'Utilisateur :** La résolution finale a été rendue possible grâce à l'intervention directe de l'utilisateur, qui a lui-même corrigé le code, mettant en évidence l'erreur que l'IA n'arrivait pas à résoudre seule.
 *   **Validation Finale :** Une analyse statique complète (`flutter analyze`) et une regénération des fichiers de la base de données (`build_runner`) ont été effectuées pour garantir l'absence totale d'erreurs et la parfaite synchronisation du code.
 
-**Phase 5 : Nouvelles Fonctionnalités (Futures Idées)**
+**Phase 5 : Gestion des Rencontres (Terminée)**
+
+*   **Vérification de la Suppression :** La logique de suppression d'une rencontre existait déjà dans le `rencontre_provider.dart` mais n'était pas accessible depuis l'interface.
+*   **Ajout du Bouton de Suppression :** Un bouton "Supprimer" a été ajouté à l'écran de détails d'une rencontre.
+*   **Confirmation Utilisateur :** Une boîte de dialogue de confirmation a été mise en place pour prévenir les suppressions accidentelles.
+
+**Phase 6 : Nouvelles Fonctionnalités (Futures Idées)**
 
 *   **Mode Sombre :** Ajouter une option pour basculer entre un thème clair et un thème sombre.
 *   **Synchronisation Cloud (Optionnel) :** Explorer l'intégration de Firebase Firestore pour permettre la synchronisation des données entre plusieurs appareils.

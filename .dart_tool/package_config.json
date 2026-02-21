@@ -69,7 +69,7 @@
     },
     {
       "name": "built_value",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/built_value-8.12.3",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/built_value-8.12.4",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -267,19 +267,13 @@
     },
     {
       "name": "json_annotation",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/json_annotation-4.10.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/json_annotation-4.11.0",
       "packageUri": "lib/",
       "languageVersion": "3.9"
     },
     {
-      "name": "json_schema",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/json_schema-5.2.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "json_serializable",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/json_serializable-6.12.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/json_serializable-6.13.0",
       "packageUri": "lib/",
       "languageVersion": "3.9"
     },
@@ -440,22 +434,10 @@
       "languageVersion": "3.6"
     },
     {
-      "name": "quiver",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/quiver-3.2.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.17"
-    },
-    {
       "name": "recase",
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/recase-4.1.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
-    },
-    {
-      "name": "rfc_6901",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/rfc_6901-0.2.1",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
     },
     {
       "name": "riverpod",
@@ -606,12 +588,6 @@
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/typed_data-1.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
-    },
-    {
-      "name": "uri",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/uri-1.0.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
     },
     {
       "name": "vector_math",

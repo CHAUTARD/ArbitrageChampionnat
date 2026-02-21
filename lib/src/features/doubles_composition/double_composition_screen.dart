@@ -1,3 +1,9 @@
+// lib/src/features/doubles_composition/double_composition_screen.dart
+//
+// Écran permettant de composer les équipes pour les matchs de double.
+// Les utilisateurs peuvent sélectionner deux joueurs pour chaque équipe
+// parmi les joueurs disponibles pour la rencontre.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/core/data/database.dart' as db;

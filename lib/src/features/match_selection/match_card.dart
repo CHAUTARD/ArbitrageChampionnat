@@ -1,3 +1,9 @@
+// lib/src/features/match_selection/match_card.dart
+//
+// Représente une carte affichant les informations d'un match (simple ou double).
+// Permet de lancer le match et de naviguer vers l'écran de pointage correspondant.
+// La carte est également déplaçable (Draggable) pour réorganiser les matchs.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myapp/src/features/match_selection/partie_model.dart';
