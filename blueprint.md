@@ -1,7 +1,7 @@
 
 # Aperçu du Projet
 
-Ceci est une application Flutter pour la gestion des scores de tournois. Elle permet aux utilisateurs de créer, suivre et afficher les scores des matchs. L'application utilise Hive pour le stockage local et `provider` pour la gestion de l'état.
+Ceci est une application Flutter pour la gestion des scores de tournois. Elle permet aux utilisateurs de créer, suivre и afficher les scores des matchs. L'application utilise Hive pour le stockage local et `provider` pour la gestion de l'état.
 
 # Fonctionnalités Implémentées
 
@@ -10,7 +10,6 @@ Ceci est une application Flutter pour la gestion des scores de tournois. Elle pe
     *   Afficher une liste de matchs.
     *   Les données des matchs sont stockées localement à l'aide de Hive.
 *   **Modèles :** L'application utilise les modèles de données suivants :
-    *   `Equipe`
     *   `Game`
     *   `Manche`
     *   `Match`

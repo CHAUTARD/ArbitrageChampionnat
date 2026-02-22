@@ -11,7 +11,7 @@ class MatchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        title: Text('${match.equipe1.nom} vs ${match.equipe2.nom}'),
+        title: Text('${match.equipe1} vs ${match.equipe2}'),
         subtitle: Text('Score: ${match.score1} - ${match.score2}'),
         onTap: () {
           // Navigate to a placeholder screen

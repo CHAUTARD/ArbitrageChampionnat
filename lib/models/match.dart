@@ -1,7 +1,7 @@
-// lib/model/match.dart
+// lib/models/match.dart
 import 'package:hive/hive.dart';
-import 'package:myapp/models/equipe_model.dart';
 import 'package:uuid/uuid.dart';
+import 'package:myapp/models/partie_model.dart';
 
 part 'match.g.dart';
 
@@ -11,10 +11,10 @@ class Match extends HiveObject {
   final String id;
 
   @HiveField(1)
-  final Equipe equipe1;
+  String equipe1;
 
   @HiveField(2)
-  final Equipe equipe2;
+  String equipe2;
 
   @HiveField(3)
   final DateTime date;
@@ -25,6 +25,9 @@ class Match extends HiveObject {
   @HiveField(5)
   int score2;
 
+  @HiveField(6)
+  final List<Partie> parties;
+
   Match({
     String? id,
     required this.equipe1,
@@ -32,7 +35,9 @@ class Match extends HiveObject {
     required this.date,
     int? score1,
     int? score2,
+    List<Partie>? parties,
   }) : id = id ?? const Uuid().v4(),
        score1 = score1 ?? 0,
-       score2 = score2 ?? 0;
+       score2 = score2 ?? 0,
+       parties = parties ?? [];
 }

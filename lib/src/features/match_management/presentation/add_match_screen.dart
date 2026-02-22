@@ -1,9 +1,7 @@
 // lib/src/features/match_management/presentation/add_match_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:myapp/models/equipe_model.dart';
 import 'package:myapp/models/match.dart';
-import 'package:myapp/src/features/team_management/application/team_service.dart';
 import 'package:myapp/src/features/match_management/application/match_service.dart';
 
 class AddMatchScreen extends StatefulWidget {
@@ -15,15 +13,19 @@ class AddMatchScreen extends StatefulWidget {
 
 class _AddMatchScreenState extends State<AddMatchScreen> {
   final _formKey = GlobalKey<FormState>();
-  Equipe? _selectedEquipe1;
-  Equipe? _selectedEquipe2;
+  final _equipe1Controller = TextEditingController();
+  final _equipe2Controller = TextEditingController();
   DateTime _selectedDate = DateTime.now();
 
   @override
-  Widget build(BuildContext context) {
-    final teamService = Provider.of<TeamService>(context);
-    final teamsStream = teamService.getTeams();
+  void dispose() {
+    _equipe1Controller.dispose();
+    _equipe2Controller.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Ajouter une rencontre')),
       body: Padding(
@@ -32,56 +34,24 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
           key: _formKey,
           child: Column(
             children: [
-              StreamBuilder<List<Equipe>>(
-                stream: teamsStream,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const CircularProgressIndicator();
+              TextFormField(
+                controller: _equipe1Controller,
+                decoration: const InputDecoration(labelText: 'Équipe 1'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Veuillez saisir le nom de l\'équipe 1';
                   }
-                  final teams = snapshot.data!;
-                  return DropdownButtonFormField<Equipe>(
-                    decoration: const InputDecoration(labelText: 'Équipe 1'),
-                    items: teams.map((equipe) {
-                      return DropdownMenuItem(
-                        value: equipe,
-                        child: Text(equipe.nom),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedEquipe1 = value;
-                      });
-                    },
-                    validator: (value) => value == null
-                        ? 'Veuillez sélectionner une équipe'
-                        : null,
-                  );
+                  return null;
                 },
               ),
-              StreamBuilder<List<Equipe>>(
-                stream: teamsStream,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const CircularProgressIndicator();
+              TextFormField(
+                controller: _equipe2Controller,
+                decoration: const InputDecoration(labelText: 'Équipe 2'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Veuillez saisir le nom de l\'équipe 2';
                   }
-                  final teams = snapshot.data!;
-                  return DropdownButtonFormField<Equipe>(
-                    decoration: const InputDecoration(labelText: 'Équipe 2'),
-                    items: teams.map((equipe) {
-                      return DropdownMenuItem(
-                        value: equipe,
-                        child: Text(equipe.nom),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedEquipe2 = value;
-                      });
-                    },
-                    validator: (value) => value == null
-                        ? 'Veuillez sélectionner une équipe'
-                        : null,
-                  );
+                  return null;
                 },
               ),
               const SizedBox(height: 20),
@@ -107,20 +77,17 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    if (_selectedEquipe1 != null && _selectedEquipe2 != null) {
-                      final matchService = Provider.of<MatchService>(
-                        context,
-                        listen: false,
-                      );
-                      final newMatch = Match(
-                        equipe1: _selectedEquipe1!,
-                        equipe2: _selectedEquipe2!,
-                        date: _selectedDate,
-                      );
-                      matchService.addMatch(newMatch);
-                      Navigator.of(context).pop();
-                    }
+                    final matchService = Provider.of<MatchService>(
+                      context,
+                      listen: false,
+                    );
+                    final newMatch = Match(
+                      equipe1: _equipe1Controller.text,
+                      equipe2: _equipe2Controller.text,
+                      date: _selectedDate,
+                    );
+                    matchService.addMatch(newMatch);
+                    Navigator.of(context).pop();
                   }
                 },
                 child: const Text('Ajouter une rencontre'),

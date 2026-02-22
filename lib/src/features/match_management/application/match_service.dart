@@ -10,8 +10,16 @@ class MatchService {
     await _matchBox.put(match.id, match);
   }
 
+  Future<void> updateMatch(Match match) async {
+    await _matchBox.put(match.id, match);
+  }
+
   Future<void> deleteMatch(String matchId) async {
     await _matchBox.delete(matchId);
+  }
+
+  Future<void> deleteAllMatches() async {
+    await _matchBox.clear();
   }
 
   Stream<List<Match>> getMatches() {

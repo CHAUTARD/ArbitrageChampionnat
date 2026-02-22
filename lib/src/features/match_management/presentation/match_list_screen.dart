@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/match.dart';
 import 'package:myapp/src/features/match_management/application/match_service.dart';
 import 'package:myapp/src/features/match_management/presentation/add_match_screen.dart';
+import 'package:myapp/src/features/match_management/presentation/edit_match_screen.dart';
+import 'package:myapp/src/features/match_selection/partie_list_screen.dart';
+import 'package:myapp/src/features/settings/settings_screen.dart';
 
 class MatchListScreen extends StatelessWidget {
   const MatchListScreen({super.key});
@@ -13,7 +17,23 @@ class MatchListScreen extends StatelessWidget {
     final matchesStream = matchService.getMatches();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Liste des rencontres')),
+      appBar: AppBar(
+        title: const Text('Liste des rencontres'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Paramètres',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: StreamBuilder<List<Match>>(
         stream: matchesStream,
         builder: (context, snapshot) {
@@ -31,15 +51,54 @@ class MatchListScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final match = matches[index];
               return ListTile(
-                title: Text('${match.equipe1.nom} vs ${match.equipe2.nom}'),
-                subtitle: Text(
-                  'Le ${match.date.day}/${match.date.month}/${match.date.year}',
+                title: RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.titleMedium,
+                    children: [
+                      TextSpan(text: match.equipe1),
+                      TextSpan(
+                        text: ' vs ',
+                        style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                      ),
+                      TextSpan(text: match.equipe2),
+                    ],
+                  ),
                 ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    matchService.deleteMatch(match.id);
-                  },
+                subtitle: Text(
+                  'Le ${DateFormat.yMMMMEEEEd('fr_FR').format(match.date)}',
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.visibility),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PartieListScreen(match: match),
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditMatchScreen(match: match),
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                        matchService.deleteMatch(match.id);
+                      },
+                    ),
+                  ],
                 ),
               );
             },

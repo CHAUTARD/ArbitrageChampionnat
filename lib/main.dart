@@ -1,9 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:myapp/models/equipe_model.dart';
 import 'package:myapp/models/game_model.dart';
 import 'package:myapp/models/manche_model.dart';
 import 'package:myapp/models/match.dart';
@@ -11,21 +9,20 @@ import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/models/player_model.dart';
 import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
 import 'package:myapp/src/features/match_management/application/match_service.dart';
-import 'package:myapp/src/features/team_management/application/team_service.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+  await initializeDateFormatting('fr_FR', null);
 
   Hive
-    ..registerAdapter(EquipeAdapter())
     ..registerAdapter(GameAdapter())
     ..registerAdapter(MancheAdapter())
     ..registerAdapter(MatchAdapter())
     ..registerAdapter(PartieAdapter())
     ..registerAdapter(PlayerAdapter());
 
-  await Hive.openBox<Equipe>('equipes');
   await Hive.openBox<Game>('games');
   await Hive.openBox<Manche>('manches');
   await Hive.openBox<Match>('matches');
@@ -44,9 +41,6 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<MatchService>(
           create: (_) => MatchService(Hive.box<Match>('matches')),
-        ),
-        Provider<TeamService>(
-          create: (_) => TeamService(Hive.box<Equipe>('equipes')),
         ),
       ],
       child: MaterialApp(

@@ -1,7 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
-import 'package:myapp/models/equipe_model.dart';
 
 part 'player_model.g.dart';
 
@@ -15,7 +14,7 @@ class Player extends HiveObject {
   final String name;
 
   @HiveField(2)
-  final Equipe equipe;
+  final String equipe;
 
   Player({
     String? id,

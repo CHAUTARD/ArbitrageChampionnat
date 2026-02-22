@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:myapp/src/features/match_management/application/match_service.dart';
 import 'package:myapp/models/match.dart';
 import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
-import 'package:myapp/src/features/team_management/presentation/team_management_screen.dart';
 import 'package:myapp/src/features/match_selection/match_card.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -51,21 +50,10 @@ class HomeScreen extends StatelessWidget {
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TeamManagementScreen(),
-                  ),
-                );
-              },
-              child: const Text('Equipes'),
-            ),
-            const Text('© 2026 Patrick CHAUTARD'),
+            Text('© 2026 Patrick CHAUTARD'),
           ],
         ),
       ),

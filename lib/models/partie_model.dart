@@ -5,7 +5,6 @@
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
-import 'package:myapp/models/equipe_model.dart';
 
 part 'partie_model.g.dart';
 
@@ -100,10 +99,6 @@ class Partie extends HiveObject {
       nombreManches: nombreManches ?? this.nombreManches,
     );
   }
-
-  Equipe? get equipeA => null;
-
-  Equipe? get equipeB => null;
 
   int get nombreJoueurs => type == 'Double' ? 4 : 2;
 }
