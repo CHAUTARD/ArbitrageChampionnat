@@ -12,34 +12,31 @@ class ScoringScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => GameState(partie: partie),
-      child: Consumer<GameState>(builder: (context, gameState, child) {
-        return Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: MancheIndicator(),
-            ),
-            const Expanded(
-              child: MancheTable(),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: gameState.previousManche,
-                  child: const Text('Manche précédente'),
-                ),
-                ElevatedButton(
-                  onPressed: gameState.nextManche,
-                  child: const Text('Manche suivante'),
-                ),
-              ],
-            ),
-          ],
-        );
-      }),
-    );
+    return Consumer<GameState>(builder: (context, gameState, child) {
+      return Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: MancheIndicator(),
+          ),
+          const Expanded(
+            child: MancheTable(),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: gameState.previousManche,
+                child: const Text('Manche précédente'),
+              ),
+              ElevatedButton(
+                onPressed: gameState.nextManche,
+                child: const Text('Manche suivante'),
+              ),
+            ],
+          ),
+        ],
+      );
+    });
   }
 }

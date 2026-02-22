@@ -446,6 +446,12 @@
       "languageVersion": "3.6"
     },
     {
+      "name": "rxdart",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/rxdart-0.28.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "shared_preferences",
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/shared_preferences-2.5.4",
       "packageUri": "lib/",

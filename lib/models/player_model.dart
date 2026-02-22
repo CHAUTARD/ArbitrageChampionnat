@@ -16,10 +16,14 @@ class Player extends HiveObject {
   @HiveField(2)
   final String equipe;
 
+  @HiveField(3)
+  final String lettre;
+
   Player({
     String? id,
-    required this.name,
+    this.name = 'Joueur inconnu',
     required this.equipe,
+    required this.lettre,
   }) : id = id ?? const Uuid().v4();
 
   factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);

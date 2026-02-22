@@ -14,15 +14,15 @@ class EditMatchScreen extends StatefulWidget {
 
 class EditMatchScreenState extends State<EditMatchScreen> {
   final _formKey = GlobalKey<FormState>();
-  late String _equipe1;
-  late String _equipe2;
+  late String _equipeUn;
+  late String _equipeDeux;
   late DateTime _date;
 
   @override
   void initState() {
     super.initState();
-    _equipe1 = widget.match.equipe1;
-    _equipe2 = widget.match.equipe2;
+    _equipeUn = widget.match.equipeUn;
+    _equipeDeux = widget.match.equipeDeux;
     _date = widget.match.date;
   }
 
@@ -37,7 +37,7 @@ class EditMatchScreenState extends State<EditMatchScreen> {
           child: Column(
             children: [
               TextFormField(
-                initialValue: _equipe1,
+                initialValue: _equipeUn,
                 decoration: const InputDecoration(labelText: 'Équipe 1'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -46,11 +46,11 @@ class EditMatchScreenState extends State<EditMatchScreen> {
                   return null;
                 },
                 onSaved: (value) {
-                  _equipe1 = value!;
+                  _equipeUn = value!;
                 },
               ),
               TextFormField(
-                initialValue: _equipe2,
+                initialValue: _equipeDeux,
                 decoration: const InputDecoration(labelText: 'Équipe 2'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -59,7 +59,7 @@ class EditMatchScreenState extends State<EditMatchScreen> {
                   return null;
                 },
                 onSaved: (value) {
-                  _equipe2 = value!;
+                  _equipeDeux = value!;
                 },
               ),
               const SizedBox(height: 20),
@@ -92,10 +92,13 @@ class EditMatchScreenState extends State<EditMatchScreen> {
                     _formKey.currentState!.save();
                     final updatedMatch = Match(
                       id: widget.match.id,
-                      equipe1: _equipe1,
-                      equipe2: _equipe2,
+                      equipeUn: _equipeUn,
+                      equipeDeux: _equipeDeux,
                       date: _date,
                       parties: widget.match.parties,
+                      type: widget.match.type,
+                      status: widget.match.status,
+                      competitionId: widget.match.competitionId,
                     );
                     Provider.of<MatchService>(context, listen: false)
                         .updateMatch(updatedMatch);

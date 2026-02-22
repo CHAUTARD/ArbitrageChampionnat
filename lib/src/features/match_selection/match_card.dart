@@ -1,4 +1,3 @@
-// lib/src/features/match_selection/match_card.dart
 import 'package:flutter/material.dart';
 import 'package:myapp/models/match.dart';
 
@@ -9,10 +8,15 @@ class MatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scoreUn = match.parties.fold<int>(
+        0, (previousValue, element) => previousValue + element.scoreEquipeUn);
+    final scoreDeux = match.parties.fold<int>(
+        0, (previousValue, element) => previousValue + element.scoreEquipeDeux);
+
     return Card(
       child: ListTile(
-        title: Text('${match.equipe1} vs ${match.equipe2}'),
-        subtitle: Text('Score: ${match.score1} - ${match.score2}'),
+        title: Text('${match.equipeUn} vs ${match.equipeDeux}'),
+        subtitle: Text('Score: $scoreUn - $scoreDeux'),
         onTap: () {
           // Navigate to a placeholder screen
           Navigator.of(context).push(

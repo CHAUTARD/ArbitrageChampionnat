@@ -1,3 +1,4 @@
+// lib/src/features/settings/settings_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/src/core/constants/app_constants.dart';
@@ -12,7 +13,7 @@ class SettingsScreen extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: const Text('Réinitialiser les données'),
         content: const Text(
-          'Voulez-vous vraiment effacer l\'historique des rencontres ?',
+          "Voulez-vous vraiment effacer l'historique des rencontres ?",
         ),
         actions: [
           TextButton(
@@ -21,7 +22,10 @@ class SettingsScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              final matchService = Provider.of<MatchService>(context, listen: false);
+              final matchService = Provider.of<MatchService>(
+                context,
+                listen: false,
+              );
               matchService.deleteAllMatches();
               Navigator.pop(context);
             },
@@ -54,9 +58,10 @@ class SettingsScreen extends StatelessWidget {
           children: [
             Text('Informations', style: theme.textTheme.headlineSmall),
             const SizedBox(height: 16),
-            const Text('Version de l\'application : ${AppConstants.appVersion}'),
+            const Text(
+              "Version de l'application : ${AppConstants.appVersion}",
+            ),
             const SizedBox(height: 8),
-            const Text(AppConstants.copyright),
           ],
         ),
       ),

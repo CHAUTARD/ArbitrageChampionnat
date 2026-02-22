@@ -1,43 +1,50 @@
-// lib/models/match.dart
 import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:myapp/models/partie_model.dart';
 
 part 'match.g.dart';
 
+@JsonSerializable()
 @HiveType(typeId: 3)
 class Match extends HiveObject {
   @HiveField(0)
   final String id;
 
   @HiveField(1)
-  String equipe1;
+  final String type;
 
   @HiveField(2)
-  String equipe2;
+  final String status;
 
   @HiveField(3)
   final DateTime date;
 
   @HiveField(4)
-  int score1;
-
-  @HiveField(5)
-  int score2;
-
-  @HiveField(6)
   final List<Partie> parties;
 
+  @HiveField(5)
+  final String competitionId;
+
+  @HiveField(6)
+  @JsonKey(name: 'equipe_un')
+  final String equipeUn;
+
+  @HiveField(7)
+  @JsonKey(name: 'equipe_deux')
+  final String equipeDeux;
+
   Match({
-    String? id,
-    required this.equipe1,
-    required this.equipe2,
+    required this.id,
+    required this.type,
+    required this.status,
     required this.date,
-    int? score1,
-    int? score2,
-    List<Partie>? parties,
-  }) : id = id ?? const Uuid().v4(),
-       score1 = score1 ?? 0,
-       score2 = score2 ?? 0,
-       parties = parties ?? [];
+    required this.parties,
+    required this.competitionId,
+    required this.equipeUn,
+    required this.equipeDeux,
+  });
+
+  factory Match.fromJson(Map<String, dynamic> json) => _$MatchFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MatchToJson(this);
 }

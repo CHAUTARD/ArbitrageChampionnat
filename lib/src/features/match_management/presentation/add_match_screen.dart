@@ -1,8 +1,8 @@
-// lib/src/features/match_management/presentation/add_match_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/match.dart';
 import 'package:myapp/src/features/match_management/application/match_service.dart';
+import 'package:myapp/src/features/player_entry/player_entry_screen.dart';
 
 class AddMatchScreen extends StatefulWidget {
   const AddMatchScreen({super.key});
@@ -82,15 +82,25 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                       listen: false,
                     );
                     final newMatch = Match(
-                      equipe1: _equipe1Controller.text,
-                      equipe2: _equipe2Controller.text,
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      type: 'Championnat',
+                      status: 'A venir',
                       date: _selectedDate,
+                      parties: [],
+                      competitionId: 'your_competition_id', // Replace with actual competition ID
+                      equipeUn: _equipe1Controller.text,
+                      equipeDeux: _equipe2Controller.text,
                     );
                     matchService.addMatch(newMatch);
-                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlayerEntryScreen(match: newMatch),
+                      ),
+                    );
                   }
                 },
-                child: const Text('Ajouter une rencontre'),
+                child: const Text('Ajouter et saisir les joueurs'),
               ),
             ],
           ),

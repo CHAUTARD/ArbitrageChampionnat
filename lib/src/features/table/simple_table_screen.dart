@@ -1,29 +1,44 @@
-// features/table/simple_table_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:myapp/models/partie_model.dart';
+import 'package:myapp/models/player_model.dart';
+import 'package:myapp/src/features/scoring/game_state.dart';
 import 'package:myapp/src/features/scoring/scoring_screen.dart';
 
 class SimpleTableScreen extends StatelessWidget {
   final Partie partie;
+  final Player joueurUn;
+  final Player joueurDeux;
+  final Player? arbitre;
 
-  const SimpleTableScreen({super.key, required this.partie});
+  const SimpleTableScreen({
+    super.key,
+    required this.partie,
+    required this.joueurUn,
+    required this.joueurDeux,
+    this.arbitre,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 1,
+    return ChangeNotifierProvider(
+      create: (context) => GameState(
+        partie: partie,
+        team1Players: [joueurUn],
+        team2Players: [joueurDeux],
+      ),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('${partie.joueurUnId} vs ${partie.joueurDeuxId}'),
-          bottom: const TabBar(tabs: [Tab(text: 'Tableau des scores')]),
-        ),
-        body: TabBarView(
-          children: [
-            ScoringScreen(
-              partie: partie.copyWith(nombreManches: 5),
-            ), // CORRECTION
+          title: Text('${joueurUn.name} vs ${joueurDeux.name}'),
+          actions: [
+            if (arbitre != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: Center(child: Text('Arbitre: ${arbitre!.name}')),
+              ),
           ],
         ),
+        body: ScoringScreen(partie: partie),
       ),
     );
   }
