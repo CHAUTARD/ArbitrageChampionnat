@@ -10,7 +10,7 @@ class AppTheme {
   static ThemeData get lightTheme {
     const Color primarySeedColor = Colors.deepPurple;
 
-    final TextTheme appTextTheme = const TextTheme(
+    const TextTheme appTextTheme = TextTheme(
       displayLarge: TextStyle(
         fontFamily: 'Oswald',
         fontSize: 57,
@@ -72,7 +72,7 @@ class AppTheme {
   static ThemeData get darkTheme {
     const Color primarySeedColor = Colors.deepPurple;
 
-    final TextTheme appTextTheme = const TextTheme(
+    const TextTheme appTextTheme = TextTheme(
       displayLarge: TextStyle(
         fontFamily: 'Oswald',
         fontSize: 57,

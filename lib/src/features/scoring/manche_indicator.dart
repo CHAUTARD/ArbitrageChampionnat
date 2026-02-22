@@ -1,18 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/src/features/scoring/game_state.dart';
 
 class MancheIndicator extends StatelessWidget {
-  final int manchesGagnantes;
-  final int manchesPerdues;
-
-  const MancheIndicator({
-    super.key,
-    required this.manchesGagnantes,
-    required this.manchesPerdues,
-  });
+  const MancheIndicator({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // This widget is now empty and will not display anything.
-    return const SizedBox.shrink();
+    final gameState = Provider.of<GameState>(context);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (index) {
+        return GestureDetector(
+          onTap: () => gameState.setManche(index),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: gameState.currentManche == index
+                  ? Colors.blue
+                  : Colors.grey[300],
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              'Manche ${index + 1}',
+              style: TextStyle(
+                color: gameState.currentManche == index
+                    ? Colors.white
+                    : Colors.black,
+              ),
+            ),
+          ),
+        );
+      }),
+    );
   }
 }

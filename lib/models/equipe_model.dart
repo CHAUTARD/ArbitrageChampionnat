@@ -1,33 +1,33 @@
 // lib/models/equipe_model.dart
-//
-// Modèle de données pour une équipe.
-// Contient le nom de l'équipe et la liste des joueurs qui la composent.
-
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:myapp/models/player_model.dart';
 
 part 'equipe_model.g.dart';
 
-@collection
-class Equipe {
-  Id get isarId => fastHash(name);
+@JsonSerializable(explicitToJson: true)
+@HiveType(typeId: 0)
+class Equipe extends HiveObject {
+  @HiveField(0)
+  String? id;
 
-  @Index(unique: true, replace: true)
-  String name;
+  @HiveField(1)
+  final String nom;
 
-  @Backlink(to: "equipe")
-  final players = IsarLinks<Player>();
+  @HiveField(2)
+  final List<Player> joueurs;
 
-  Equipe({required this.name});
-}
+  Equipe({this.id, required this.nom, this.joueurs = const []});
 
-/// FNV-1a 64bit hash algorithm optimized for Dart strings
-int fastHash(String string) {
-  var hash = 0xcbf29ce484222325;
-  var i = 0;
-  while (i < string.length) {
-    hash = hash ^ string.codeUnitAt(i++);
-    hash = (hash * 0x100000001b3) & 0xFFFFFFFFFFFFFFFF;
+  factory Equipe.fromJson(Map<String, dynamic> json) => _$EquipeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$EquipeToJson(this);
+
+  Equipe copyWith({String? id, String? nom, List<Player>? joueurs}) {
+    return Equipe(
+      id: id ?? this.id,
+      nom: nom ?? this.nom,
+      joueurs: joueurs ?? this.joueurs,
+    );
   }
-  return hash;
 }

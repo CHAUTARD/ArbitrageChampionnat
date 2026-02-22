@@ -1,16 +1,22 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
 import 'package:myapp/models/manche_model.dart';
 
 part 'game_model.g.dart';
 
-@collection
-class Game {
-  Id id = Isar.autoIncrement;
-
+@HiveType(typeId: 1)
+class Game extends HiveObject {
+  @HiveField(0)
   final int scoreTeam1;
+
+  @HiveField(1)
   final int scoreTeam2;
 
-  final manche = IsarLink<Manche>();
+  @HiveField(2)
+  final HiveList<Manche> manche;
 
-  Game({required this.scoreTeam1, required this.scoreTeam2});
+  Game({
+    required this.scoreTeam1,
+    required this.scoreTeam2,
+    required this.manche,
+  });
 }

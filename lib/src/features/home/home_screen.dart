@@ -1,25 +1,23 @@
+// lib/src/features/home/home_screen.dart
+
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myapp/src/features/home/add_match_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:myapp/src/features/match_management/application/match_service.dart';
 import 'package:myapp/models/match.dart';
-import 'package:myapp/src/widgets/match_card.dart';
-import 'package:myapp/src/widgets/theme_toggle_button.dart';
-import 'package:myapp/src/core/theme/theme_provider.dart';
+import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
+import 'package:myapp/src/features/team_management/presentation/team_management_screen.dart';
+import 'package:myapp/src/features/match_selection/match_card.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final themeNotifier = ref.watch(themeProvider);
-    final matchesStream = ref.watch(matchServiceProvider).getMatches();
+  Widget build(BuildContext context) {
+    final matchService = Provider.of<MatchService>(context);
+    final matchesStream = matchService.getMatches();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tournament Scores'),
-        actions: [ThemeToggleButton(themeProvider: themeNotifier)],
-      ),
+      appBar: AppBar(title: const Text('Arbitrage championnat')),
       body: StreamBuilder<List<Match>>(
         stream: matchesStream,
         builder: (context, snapshot) {
@@ -27,10 +25,10 @@ class HomeScreen extends ConsumerWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text('Erreur : ${snapshot.error}'));
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No matches found.'));
+            return const Center(child: Text('Aucun match trouvé.'));
           }
 
           final matches = snapshot.data!;
@@ -46,10 +44,30 @@ class HomeScreen extends ConsumerWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AddMatchScreen()),
+            MaterialPageRoute(builder: (context) => const MatchListScreen()),
           );
         },
         child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TeamManagementScreen(),
+                  ),
+                );
+              },
+              child: const Text('Equipes'),
+            ),
+            const Text('© 2026 Patrick CHAUTARD'),
+          ],
+        ),
       ),
     );
   }

@@ -1,27 +1,45 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter/material.dart';
+import 'package:myapp/models/partie_model.dart';
 
-part 'game_state.g.dart';
+class GameState with ChangeNotifier {
+  late Partie partie;
+  int currentManche = 0;
+  List<List<int>> scores = [];
 
-@JsonSerializable()
-class GameState {
-  final int team1Score;
-  final int team2Score;
-  final bool isSwapped;
-  final String? serverId;
-  final String? receiverId;
-  final List<String> setScores; // Added this line
+  GameState({required this.partie}) {
+    scores = List<List<int>>.generate(
+      5,
+      (index) => List<int>.generate(partie.nombreJoueurs, (index) => 0),
+    );
+  }
 
-  GameState({
-    required this.team1Score,
-    required this.team2Score,
-    required this.isSwapped,
-    this.serverId,
-    this.receiverId,
-    this.setScores = const [], // Added this line
-  });
+  void incrementScore(int playerIndex) {
+    scores[currentManche][playerIndex]++;
+    notifyListeners();
+  }
 
-  factory GameState.fromJson(Map<String, dynamic> json) =>
-      _$GameStateFromJson(json);
+  void nextManche() {
+    if (currentManche < 4) {
+      currentManche++;
+      notifyListeners();
+    }
+  }
 
-  Map<String, dynamic> toJson() => _$GameStateToJson(this);
+  void previousManche() {
+    if (currentManche > 0) {
+      currentManche--;
+      notifyListeners();
+    }
+  }
+
+  void setManche(int index) {
+    if (index >= 0 && index < 5) {
+      currentManche = index;
+      notifyListeners();
+    }
+  }
+
+  void saveGame() {
+    // Logique pour sauvegarder l'état du jeu
+  }
 }

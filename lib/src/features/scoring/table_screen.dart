@@ -11,7 +11,7 @@ class TableScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDouble = partie.team1Players.length > 1;
+    final isDouble = partie.type == 'Double';
     return isDouble
         ? DoubleTableScreen(partie: partie)
         : SimpleTableScreen(partie: partie);

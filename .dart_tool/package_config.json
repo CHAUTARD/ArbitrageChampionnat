@@ -3,15 +3,15 @@
   "packages": [
     {
       "name": "_fe_analyzer_shared",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-61.0.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-67.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.17"
+      "languageVersion": "3.0"
     },
     {
       "name": "analyzer",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/analyzer-5.13.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/analyzer-6.4.1",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.0"
     },
     {
       "name": "archive",
@@ -63,9 +63,9 @@
     },
     {
       "name": "build_runner",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/build_runner-2.4.9",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/build_runner-2.4.13",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.5"
     },
     {
       "name": "build_runner_core",
@@ -141,15 +141,9 @@
     },
     {
       "name": "dart_style",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/dart_style-2.3.2",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/dart_style-2.3.6",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
-    },
-    {
-      "name": "dartx",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/dartx-1.2.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.0"
     },
     {
       "name": "fake_async",
@@ -183,9 +177,9 @@
     },
     {
       "name": "flutter_launcher_icons",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_launcher_icons-0.13.1",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_launcher_icons-0.14.4",
       "packageUri": "lib/",
-      "languageVersion": "2.18"
+      "languageVersion": "3.0"
     },
     {
       "name": "flutter_lints",
@@ -194,10 +188,10 @@
       "languageVersion": "3.8"
     },
     {
-      "name": "flutter_riverpod",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/flutter_riverpod-2.6.1",
+      "name": "flutter_localizations",
+      "rootUri": "file:///home/user/flutter/packages/flutter_localizations",
       "packageUri": "lib/",
-      "languageVersion": "2.17"
+      "languageVersion": "3.8"
     },
     {
       "name": "flutter_test",
@@ -230,6 +224,24 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "hive",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/hive-2.2.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "hive_flutter",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/hive_flutter-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "hive_generator",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/hive_generator-2.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "http_multi_server",
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/http_multi_server-3.2.2",
       "packageUri": "lib/",
@@ -260,38 +272,20 @@
       "languageVersion": "3.4"
     },
     {
-      "name": "isar",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/isar-3.1.0+1",
-      "packageUri": "lib/",
-      "languageVersion": "2.17"
-    },
-    {
-      "name": "isar_flutter_libs",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/isar_flutter_libs-3.1.0+1",
-      "packageUri": "lib/",
-      "languageVersion": "2.17"
-    },
-    {
-      "name": "isar_generator",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/isar_generator-3.1.0+1",
-      "packageUri": "lib/",
-      "languageVersion": "2.17"
-    },
-    {
       "name": "js",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/js-0.6.7",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/js-0.7.2",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.7"
     },
     {
       "name": "json_annotation",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/json_annotation-4.8.1",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/json_annotation-4.9.0",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.0"
     },
     {
       "name": "json_serializable",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/json_serializable-6.7.1",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/json_serializable-6.8.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -345,7 +339,7 @@
     },
     {
       "name": "mime",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/mime-1.0.6",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/mime-2.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -429,7 +423,7 @@
     },
     {
       "name": "posix",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/posix-6.0.3",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/posix-6.5.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -447,15 +441,9 @@
     },
     {
       "name": "pubspec_parse",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/pubspec_parse-1.4.0",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/pubspec_parse-1.5.0",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
-    },
-    {
-      "name": "riverpod",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/riverpod-2.6.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.17"
+      "languageVersion": "3.6"
     },
     {
       "name": "shared_preferences",
@@ -507,9 +495,9 @@
     },
     {
       "name": "shelf_web_socket",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/shelf_web_socket-1.0.4",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/shelf_web_socket-2.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.17"
+      "languageVersion": "3.3"
     },
     {
       "name": "sky_engine",
@@ -542,12 +530,6 @@
       "languageVersion": "3.4"
     },
     {
-      "name": "state_notifier",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/state_notifier-1.0.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "stream_channel",
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/stream_channel-2.1.4",
       "packageUri": "lib/",
@@ -578,22 +560,22 @@
       "languageVersion": "3.5"
     },
     {
-      "name": "time",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/time-2.1.6",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "timing",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/timing-1.0.1",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/timing-1.0.2",
       "packageUri": "lib/",
-      "languageVersion": "2.14"
+      "languageVersion": "3.4"
     },
     {
       "name": "typed_data",
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/typed_data-1.4.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
+    },
+    {
+      "name": "uuid",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/uuid-4.5.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "vector_math",
@@ -620,10 +602,16 @@
       "languageVersion": "3.4"
     },
     {
-      "name": "web_socket_channel",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/web_socket_channel-2.4.0",
+      "name": "web_socket",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/web_socket-1.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.15"
+      "languageVersion": "3.4"
+    },
+    {
+      "name": "web_socket_channel",
+      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/web_socket_channel-3.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
     },
     {
       "name": "xdg_directories",
@@ -636,12 +624,6 @@
       "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/xml-6.6.1",
       "packageUri": "lib/",
       "languageVersion": "3.8"
-    },
-    {
-      "name": "xxh3",
-      "rootUri": "file:///home/user/.pub-cache/hosted/pub.dev/xxh3-1.2.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.16"
     },
     {
       "name": "yaml",

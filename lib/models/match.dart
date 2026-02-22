@@ -1,36 +1,38 @@
-import 'package:isar/isar.dart';
+// lib/model/match.dart
+import 'package:hive/hive.dart';
+import 'package:myapp/models/equipe_model.dart';
+import 'package:uuid/uuid.dart';
 
 part 'match.g.dart';
 
-@collection
-class Match {
-  Id get isarId => fastHash(id!);
+@HiveType(typeId: 3)
+class Match extends HiveObject {
+  @HiveField(0)
+  final String id;
 
-  @Index(unique: true, replace: true)
-  final String? id;
-  final String player1;
-  final String player2;
-  final int score1;
-  final int score2;
+  @HiveField(1)
+  final Equipe equipe1;
+
+  @HiveField(2)
+  final Equipe equipe2;
+
+  @HiveField(3)
   final DateTime date;
 
-  Match({
-    this.id,
-    required this.player1,
-    required this.player2,
-    required this.score1,
-    required this.score2,
-    required this.date,
-  });
-}
+  @HiveField(4)
+  int score1;
 
-/// FNV-1a 64bit hash algorithm optimized for Dart strings
-int fastHash(String string) {
-  var hash = 0xcbf29ce484222325;
-  var i = 0;
-  while (i < string.length) {
-    hash = hash ^ string.codeUnitAt(i++);
-    hash = (hash * 0x100000001b3) & 0xFFFFFFFFFFFFFFFF;
-  }
-  return hash;
+  @HiveField(5)
+  int score2;
+
+  Match({
+    String? id,
+    required this.equipe1,
+    required this.equipe2,
+    required this.date,
+    int? score1,
+    int? score2,
+  }) : id = id ?? const Uuid().v4(),
+       score1 = score1 ?? 0,
+       score2 = score2 ?? 0;
 }

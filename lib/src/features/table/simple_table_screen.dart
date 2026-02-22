@@ -14,14 +14,14 @@ class SimpleTableScreen extends StatelessWidget {
       length: 1,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            '${partie.team1Players.first.name} vs ${partie.team2Players.first.name}',
-          ),
+          title: Text('${partie.joueurUnId} vs ${partie.joueurDeuxId}'),
           bottom: const TabBar(tabs: [Tab(text: 'Tableau des scores')]),
         ),
         body: TabBarView(
           children: [
-            ScoringScreen(partie: partie), // CORRECTION
+            ScoringScreen(
+              partie: partie.copyWith(nombreManches: 5),
+            ), // CORRECTION
           ],
         ),
       ),

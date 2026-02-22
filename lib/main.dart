@@ -1,86 +1,88 @@
-// lib/main.dart
-//
-// Point d'entrée de l'application.
-// Ce fichier initialise l'application Flutter, configure le thème global (clair et sombre),
-// et définit l'écran d'accueil (HomeScreen).
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myapp/src/core/theme/theme_provider.dart';
-import 'package:myapp/src/features/core/data/isar_service.dart';
-import 'package:myapp/src/features/home/home_screen.dart';
-
-// Provider pour le service Isar
-final isarServiceProvider = Provider<IsarService>((ref) {
-  return IsarService();
-});
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myapp/models/equipe_model.dart';
+import 'package:myapp/models/game_model.dart';
+import 'package:myapp/models/manche_model.dart';
+import 'package:myapp/models/match.dart';
+import 'package:myapp/models/partie_model.dart';
+import 'package:myapp/models/player_model.dart';
+import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
+import 'package:myapp/src/features/match_management/application/match_service.dart';
+import 'package:myapp/src/features/team_management/application/team_service.dart';
 
 void main() async {
-  // Assurer l'initialisation des bindings Flutter avant toute autre chose
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
 
-  runApp(const ProviderScope(child: MyApp()));
+  Hive
+    ..registerAdapter(EquipeAdapter())
+    ..registerAdapter(GameAdapter())
+    ..registerAdapter(MancheAdapter())
+    ..registerAdapter(MatchAdapter())
+    ..registerAdapter(PartieAdapter())
+    ..registerAdapter(PlayerAdapter());
+
+  await Hive.openBox<Equipe>('equipes');
+  await Hive.openBox<Game>('games');
+  await Hive.openBox<Manche>('manches');
+  await Hive.openBox<Match>('matches');
+  await Hive.openBox<Partie>('parties');
+  await Hive.openBox<Player>('players');
+
+  runApp(const MyApp());
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final themeNotifier = ref.watch(themeProvider);
-
-    const Color primarySeedColor = Colors.deepPurple;
-
-    // Light Theme
-    final ThemeData lightTheme = ThemeData(
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: primarySeedColor,
-        brightness: Brightness.light,
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: primarySeedColor,
-        foregroundColor: Colors.white,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: primarySeedColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        Provider<MatchService>(
+          create: (_) => MatchService(Hive.box<Match>('matches')),
         ),
-      ),
-    );
-
-    // Dark Theme
-    final ColorScheme darkColorScheme = ColorScheme.fromSeed(
-      seedColor: primarySeedColor,
-      brightness: Brightness.dark,
-    );
-
-    final ThemeData darkTheme = ThemeData(
-      useMaterial3: true,
-      colorScheme: darkColorScheme,
-      appBarTheme: AppBarTheme(
-        backgroundColor: Colors.grey[900],
-        foregroundColor: Colors.white,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          foregroundColor: darkColorScheme.onPrimaryContainer,
-          backgroundColor: darkColorScheme.primaryContainer,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        Provider<TeamService>(
+          create: (_) => TeamService(Hive.box<Equipe>('equipes')),
         ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Feuilles de rencontre',
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('fr', 'FR'),
+        ],
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.deepPurple,
+            brightness: Brightness.light,
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.deepPurple,
+            foregroundColor: Colors.white,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.deepPurple,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+          ),
+        ),
+        home: const MatchListScreen(),
       ),
-    );
-
-    return MaterialApp(
-      title: 'Feuilles de rencontre',
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: themeNotifier.themeMode,
-      home: const HomeScreen(),
     );
   }
 }

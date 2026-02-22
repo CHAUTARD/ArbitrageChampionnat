@@ -1,28 +1,29 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:uuid/uuid.dart';
 import 'package:myapp/models/equipe_model.dart';
 
 part 'player_model.g.dart';
 
-@collection
-class Player {
-  Id get isarId => fastHash(id);
-
-  @Index(unique: true, replace: true)
+@JsonSerializable(explicitToJson: true)
+@HiveType(typeId: 5)
+class Player extends HiveObject {
+  @HiveField(0)
   final String id;
+
+  @HiveField(1)
   final String name;
 
-  final equipe = IsarLink<Equipe>();
+  @HiveField(2)
+  final Equipe equipe;
 
-  Player({required this.id, required this.name});
-}
+  Player({
+    String? id,
+    required this.name,
+    required this.equipe,
+  }) : id = id ?? const Uuid().v4();
 
-/// FNV-1a 64bit hash algorithm optimized for Dart strings
-int fastHash(String string) {
-  var hash = 0xcbf29ce484222325;
-  var i = 0;
-  while (i < string.length) {
-    hash = hash ^ string.codeUnitAt(i++);
-    hash = (hash * 0x100000001b3) & 0xFFFFFFFFFFFFFFFF;
-  }
-  return hash;
+  factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PlayerToJson(this);
 }
