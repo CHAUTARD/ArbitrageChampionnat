@@ -20,7 +20,7 @@ class PartieCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDouble = partie.type == 'Double';
+    final isDouble = partie.team1PlayerIds.length == 2;
 
     String getPlayerNames(List<Player> players) {
       if (players.isEmpty) return 'Composition incomplète';
@@ -28,23 +28,90 @@ class PartieCard extends StatelessWidget {
       return '${players[0].name} & ${players[1].name}';
     }
 
-    final title = isDouble
-        ? 'Double ${partie.id == '9' ? '1' : '2'}'
-        : (team1Players.isNotEmpty && team2Players.isNotEmpty
-            ? '${team1Players.first.name} vs ${team2Players.first.name}'
-            : 'Simple');
-
-    final subtitle = isDouble
-        ? '${getPlayerNames(team1Players)} vs ${getPlayerNames(team2Players)}'
-        : 'Arbitre: ${arbitre?.name ?? 'Non défini'}';
-
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: ListTile(
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      child: InkWell(
         onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isDouble
+                    ? 'Double Messieurs - Partie ${partie.numero}'
+                    : 'Simple Messieurs - Partie ${partie.numero}',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          getPlayerNames(team1Players),
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Équipe 1',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    'VS',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          getPlayerNames(team2Players),
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          textAlign: TextAlign.right,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Équipe 2',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              if (arbitre != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.sports, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Arbitre: ${arbitre!.name}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

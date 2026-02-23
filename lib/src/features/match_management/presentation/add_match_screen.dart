@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:myapp/data/static_parties_data.dart';
 import 'package:myapp/models/match.dart';
+import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/src/features/match_management/application/match_service.dart';
 import 'package:myapp/src/features/player_entry/player_entry_screen.dart';
 
@@ -81,13 +83,14 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                       context,
                       listen: false,
                     );
+                    final List<Partie> parties = getStaticParties();
                     final newMatch = Match(
                       id: DateTime.now().millisecondsSinceEpoch.toString(),
                       type: 'Championnat',
                       status: 'A venir',
                       date: _selectedDate,
-                      parties: [],
-                      competitionId: 'your_competition_id', // Replace with actual competition ID
+                      parties: parties,
+                      competitionId: 'your_competition_id', // Remplacez par l'ID de compétition réel
                       equipeUn: _equipe1Controller.text,
                       equipeDeux: _equipe2Controller.text,
                     );

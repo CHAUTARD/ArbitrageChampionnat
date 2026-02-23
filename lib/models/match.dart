@@ -1,10 +1,8 @@
 import 'package:hive/hive.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:myapp/models/partie_model.dart';
 
 part 'match.g.dart';
 
-@JsonSerializable()
 @HiveType(typeId: 3)
 class Match extends HiveObject {
   @HiveField(0)
@@ -26,11 +24,9 @@ class Match extends HiveObject {
   final String competitionId;
 
   @HiveField(6)
-  @JsonKey(name: 'equipe_un')
   final String equipeUn;
 
   @HiveField(7)
-  @JsonKey(name: 'equipe_deux')
   final String equipeDeux;
 
   Match({
@@ -44,7 +40,14 @@ class Match extends HiveObject {
     required this.equipeDeux,
   });
 
-  factory Match.fromJson(Map<String, dynamic> json) => _$MatchFromJson(json);
-
-  Map<String, dynamic> toJson() => _$MatchToJson(this);
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'type': type,
+        'status': status,
+        'date': date.toIso8601String(),
+        'parties': parties.map((p) => p.toJson()).toList(),
+        'competitionId': competitionId,
+        'equipe_un': equipeUn,
+        'equipe_deux': equipeDeux,
+      };
 }

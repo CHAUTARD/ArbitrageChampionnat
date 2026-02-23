@@ -22,11 +22,7 @@ class SimpleTableScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => GameState(
-        partie: partie,
-        team1Players: [joueurUn],
-        team2Players: [joueurDeux],
-      ),
+      create: (context) => GameState(partie),
       child: Scaffold(
         appBar: AppBar(
           title: Text('${joueurUn.name} vs ${joueurDeux.name}'),

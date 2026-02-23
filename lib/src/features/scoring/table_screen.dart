@@ -65,7 +65,8 @@ class _TableScreenState extends State<TableScreen> {
             ? _findPlayerById(players, widget.partie.arbitreId!)
             : null;
 
-        final isDouble = widget.partie.type == 'Double';
+        // Correction: Utiliser la taille de la liste des joueurs pour déterminer le type de partie
+        final isDouble = widget.partie.team1PlayerIds.length == 2;
         return isDouble
             ? DoubleTableScreen(
                 partie: widget.partie,

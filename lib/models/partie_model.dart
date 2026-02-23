@@ -1,86 +1,79 @@
 import 'package:hive/hive.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
 part 'partie_model.g.dart';
 
-@JsonSerializable()
 @HiveType(typeId: 4)
 class Partie extends HiveObject {
   @HiveField(0)
   final String id;
 
   @HiveField(1)
-  @JsonKey(defaultValue: 'Simple')
-  final String type;
+  final int numero;
 
   @HiveField(2)
-  @JsonKey(name: 'equipe1', defaultValue: [])
   final List<String> team1PlayerIds;
 
   @HiveField(3)
-  @JsonKey(name: 'equipe2', defaultValue: [])
   final List<String> team2PlayerIds;
 
   @HiveField(4)
-  @JsonKey(name: 'score_equipe_un', defaultValue: 0)
-  final int scoreEquipeUn;
+  final String? arbitreId;
 
   @HiveField(5)
-  @JsonKey(name: 'score_equipe_deux', defaultValue: 0)
-  final int scoreEquipeDeux;
+  final int? scoreEquipeUn;
 
   @HiveField(6)
-  @JsonKey(defaultValue: 'En cours')
-  final String statut;
-
-  @HiveField(7)
-  @JsonKey(name: 'match_id')
-  final String matchId;
-
-  @HiveField(8)
-  @JsonKey(name: 'arbitre')
-  final String? arbitreId;
+  final int? scoreEquipeDeux;
 
   Partie({
     String? id,
-    required this.type,
+    required this.numero,
     required this.team1PlayerIds,
     required this.team2PlayerIds,
-    required this.scoreEquipeUn,
-    required this.scoreEquipeDeux,
-    required this.statut,
-    required this.matchId,
     this.arbitreId,
+    this.scoreEquipeUn,
+    this.scoreEquipeDeux,
   }) : id = id ?? const Uuid().v4();
 
-  factory Partie.fromJson(Map<String, dynamic> json) => _$PartieFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PartieToJson(this);
-
-  Partie copyWith({
-    String? id,
-    String? type,
-    List<String>? team1PlayerIds,
-    List<String>? team2PlayerIds,
-    int? scoreEquipeUn,
-    int? scoreEquipeDeux,
-    String? statut,
-    String? matchId,
-    String? arbitreId,
-  }) {
+  factory Partie.fromJson(Map<String, dynamic> json) {
     return Partie(
-      id: id ?? this.id,
-      type: type ?? this.type,
-      team1PlayerIds: team1PlayerIds ?? this.team1PlayerIds,
-      team2PlayerIds: team2PlayerIds ?? this.team2PlayerIds,
-      scoreEquipeUn: scoreEquipeUn ?? this.scoreEquipeUn,
-      scoreEquipeDeux: scoreEquipeDeux ?? this.scoreEquipeDeux,
-      statut: statut ?? this.statut,
-      matchId: matchId ?? this.matchId,
-      arbitreId: arbitreId ?? this.arbitreId,
+      numero: json['numero'] as int,
+      team1PlayerIds: (json['team1PlayerIds'] as List<dynamic>).map((e) => e as String).toList(),
+      team2PlayerIds: (json['team2PlayerIds'] as List<dynamic>).map((e) => e as String).toList(),
+      arbitreId: json['arbitreId'] as String?,
+      scoreEquipeUn: json['scoreEquipeUn'] as int?,
+      scoreEquipeDeux: json['scoreEquipeDeux'] as int?,
     );
   }
 
-  int get nombreJoueurs => type == 'Double' ? 4 : 2;
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'numero': numero,
+        'team1PlayerIds': team1PlayerIds,
+        'team2PlayerIds': team2PlayerIds,
+        'arbitreId': arbitreId,
+        'scoreEquipeUn': scoreEquipeUn,
+        'scoreEquipeDeux': scoreEquipeDeux,
+      };
+
+  Partie copyWith({
+    String? id,
+    int? numero,
+    List<String>? team1PlayerIds,
+    List<String>? team2PlayerIds,
+    String? arbitreId,
+    int? scoreEquipeUn,
+    int? scoreEquipeDeux,
+  }) {
+    return Partie(
+      id: id ?? this.id,
+      numero: numero ?? this.numero,
+      team1PlayerIds: team1PlayerIds ?? this.team1PlayerIds,
+      team2PlayerIds: team2PlayerIds ?? this.team2PlayerIds,
+      arbitreId: arbitreId ?? this.arbitreId,
+      scoreEquipeUn: scoreEquipeUn ?? this.scoreEquipeUn,
+      scoreEquipeDeux: scoreEquipeDeux ?? this.scoreEquipeDeux,
+    );
+  }
 }

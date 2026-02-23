@@ -1,38 +1,28 @@
-# Aperçu du Projet
+# Blueprint de l'Application de Suivi de Scores de Tennis
 
-Ceci est une application Flutter pour la gestion des scores de tournois de tennis de table. Elle permet aux utilisateurs de créer, suivre et afficher les scores des matchs, y compris les parties simples et doubles. L'application utilise Hive pour le stockage local et `provider` pour la gestion de l'état et du thème.
+## Aperçu
 
-# Fonctionnalités Implémentées
+Cette application Flutter permet de suivre les scores des matchs de tennis, qu'il s'agisse de simples ou de doubles. Elle offre une interface claire pour enregistrer les points, gérer les manches et afficher les scores en temps réel.
 
-*   **Gestion du Thème :** L'application prend en charge les modes de thème clair, sombre et système. Un bouton dans la barre d'applications permet aux utilisateurs de basculer entre les thèmes.
-*   **Gestion des Matchs :**
-    *   Afficher une liste de matchs avec les scores totaux.
-    *   Créer, modifier et supprimer des matchs.
-    *   Les données des matchs sont stockées localement à l'aide de Hive.
-*   **Gestion des Parties :**
-    *   Afficher une liste des parties pour chaque match.
-    *   Naviguer vers un écran de tableau de pointage pour chaque partie.
-*   **Tableau de Pointage :**
-    *   Écrans de tableau de pointage distincts pour les parties simples et doubles.
-    *   Incrémenter les scores pour chaque équipe/joueur.
-*   **Modèles :** L'application utilise les modèles de données suivants :
-    *   `Game`
-    *   `Manche`
-    *   `Match`
-    *   `Partie`
-    *   `Player`
-*   **Localisation :** L'application est localisée en français.
+## Fonctionnalités
 
-# Plan Actuel
+*   **Création de Match :** Permet de créer des matchs en simple ou en double en sélectionnant les joueurs.
+*   **Tableau de Score :** Affiche le score de la manche en cours pour chaque équipe.
+*   **Gestion des Manches :** Permet de naviguer entre les différentes manches d'un match.
+*   **Saisie des Scores :** Des boutons permettent d'incrémenter et de décrémenter le score de chaque équipe.
 
-*   **Refactoring:** Renommage de `equipe1`/`equipe2` et `score1`/`score2` en `equipeUn`/`equipeDeux` et `scoreUn`/`scoreDeux` respectivement dans plusieurs fichiers pour plus de cohérence.
-*   **Corrections de Bugs:**
-    *   Résolution des erreurs dans `lib/src/features/match_selection/match_card.dart` en calculant correctement les scores totaux à partir des parties individuelles.
-    *   Correction des erreurs dans `lib/src/features/scoring/table_screen.dart` en supprimant un paramètre `arbitre` non défini et en ajoutant le paramètre `equipe` requis au constructeur `Player`.
-    *   Correction du paramètre `equipe` manquant dans `lib/src/features/match_selection/partie_list_screen.dart` et `lib/src/features/scoring/manche_table.dart`.
-*   **Navigation:**
-    *   Mise à jour de la navigation dans `lib/src/features/match_selection/partie_list_screen.dart` pour utiliser `TableScreen`.
-    *   Ajout de la récupération des données des joueurs à `lib/src/features/scoring/table_screen.dart` pour garantir que les données correctes sont transmises à `SimpleTableScreen` et `DoubleTableScreen`.
-*   **Dépendances:**
-    *   Ajout de `flutter_localizations` à `pubspec.yaml`.
-    *   Ajout de `initialize_localizations.dart` à `lib/` pour configurer les localisations.
+## Style et Conception
+
+L'application utilise le framework Material Design de Flutter pour une apparence propre et cohérente. La navigation est simple et intuitive, et les informations sont présentées de manière claire et lisible.
+
+## Plan Actuel
+
+L'objectif actuel est de finaliser l'application en s'assurant que toutes les fonctionnalités sont correctement implémentées et qu'il n'y a plus d'erreurs ou d'incohérences.
+
+### Étapes Réalisées
+
+1.  **Correction des Erreurs de Compilation :** Résolution de divers problèmes qui empêchaient l'application de compiler.
+2.  **Modélisation des Données avec Hive :** Mise en place d'une persistance des données robuste à l'aide de la base de données Hive.
+3.  **Nettoyage des Avertissements `build_runner` :** Élimination des avertissements liés à la génération de code.
+4.  **Résolution des Incohérences Logiques :** Correction de la logique de l'application pour garantir un comportement correct.
+5.  **Analyse Statique Complète :** Exécution d'une analyse statique pour s'assurer qu'il n'y a plus d'erreurs dans le code.

@@ -37,7 +37,7 @@ class _MancheTableState extends State<MancheTable> {
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
     final partie = gameState.partie;
-    final scores = gameState.scores[gameState.currentManche];
+    final currentManche = gameState.currentManche;
 
     return FutureBuilder<List<Player>>(
       future: _playersFuture,
@@ -78,13 +78,13 @@ class _MancheTableState extends State<MancheTable> {
                 DataRow(
                   cells: [
                     DataCell(Text(team1Name)),
-                    DataCell(Text(scores[0].toString())),
+                    DataCell(Text(currentManche.scoreTeam1.toString())),
                   ],
                 ),
                 DataRow(
                   cells: [
                     DataCell(Text(team2Name)),
-                    DataCell(Text(scores[1].toString())),
+                    DataCell(Text(currentManche.scoreTeam2.toString())),
                   ],
                 ),
               ],
@@ -94,12 +94,25 @@ class _MancheTableState extends State<MancheTable> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () => gameState.incrementScore(0),
+                  onPressed: () => gameState.incrementScoreForTeam(0),
                   child: Text('+1 $team1Name'),
                 ),
                 ElevatedButton(
-                  onPressed: () => gameState.incrementScore(1),
+                  onPressed: () => gameState.decrementScoreForTeam(0),
+                  child: Text('-1 $team1Name'),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () => gameState.incrementScoreForTeam(1),
                   child: Text('+1 $team2Name'),
+                ),
+                ElevatedButton(
+                  onPressed: () => gameState.decrementScoreForTeam(1),
+                  child: Text('-1 $team2Name'),
                 ),
               ],
             ),

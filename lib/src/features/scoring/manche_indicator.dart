@@ -10,13 +10,13 @@ class MancheIndicator extends StatelessWidget {
     final gameState = Provider.of<GameState>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(5, (index) {
+      children: List.generate(gameState.manches.length, (index) {
         return GestureDetector(
           onTap: () => gameState.setManche(index),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: gameState.currentManche == index
+              color: gameState.currentMancheIndex == index
                   ? Colors.blue
                   : Colors.grey[300],
               borderRadius: BorderRadius.circular(20),
@@ -24,7 +24,7 @@ class MancheIndicator extends StatelessWidget {
             child: Text(
               'Manche ${index + 1}',
               style: TextStyle(
-                color: gameState.currentManche == index
+                color: gameState.currentMancheIndex == index
                     ? Colors.white
                     : Colors.black,
               ),

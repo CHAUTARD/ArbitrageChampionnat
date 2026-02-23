@@ -72,7 +72,8 @@ class _PartieListScreenState extends State<PartieListScreen> {
                 team2Players: team2Players,
                 arbitre: arbitre,
                 onTap: () async {
-                  if (partie.type == 'Double') {
+                  // La condition est maintenant basée sur le nombre de joueurs
+                  if (partie.team1PlayerIds.length == 2) {
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
