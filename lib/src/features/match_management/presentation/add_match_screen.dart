@@ -1,8 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/data/static_parties_data.dart';
 import 'package:myapp/models/match.dart';
-import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/src/features/match_management/application/match_service.dart';
 import 'package:myapp/src/features/player_entry/player_entry_screen.dart';
 
@@ -18,6 +18,15 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   final _equipe1Controller = TextEditingController();
   final _equipe2Controller = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    if (kDebugMode) {
+      _equipe1Controller.text = 'Les Artistes';
+      _equipe2Controller.text = 'Les Bûcherons';
+    }
+  }
 
   @override
   void dispose() {
@@ -83,9 +92,10 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                       context,
                       listen: false,
                     );
-                    final List<Partie> parties = getStaticParties();
+                    final matchId = DateTime.now().millisecondsSinceEpoch.toString();
+                    final parties = getStaticParties(matchId);
                     final newMatch = Match(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      id: matchId,
                       type: 'Championnat',
                       status: 'A venir',
                       date: _selectedDate,

@@ -1,10 +1,12 @@
+// partie_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/match.dart';
 import 'package:myapp/models/player_model.dart';
 import 'package:myapp/src/features/doubles_composition/double_composition_screen.dart';
+import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
 import 'package:myapp/src/features/match_selection/partie_card.dart';
-import 'package:myapp/src/features/scoring/table_screen.dart';
+import 'package:myapp/src/features/scoring/scoring_screen.dart';
 
 class PartieListScreen extends StatefulWidget {
   final Match match;
@@ -39,7 +41,18 @@ class _PartieListScreenState extends State<PartieListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Feuille de parties')),
+      appBar: AppBar(
+        title: const Text('Feuille des parties'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const MatchListScreen()),
+              (Route<dynamic> route) => false,
+            );
+          },
+        ),
+      ),
       body: FutureBuilder<List<Player>>(
         future: _playersFuture,
         builder: (context, snapshot) {
@@ -53,6 +66,7 @@ class _PartieListScreenState extends State<PartieListScreen> {
 
           final players = snapshot.data!;
           return ListView.builder(
+            padding: const EdgeInsets.all(8.0),
             itemCount: widget.match.parties.length,
             itemBuilder: (context, index) {
               final partie = widget.match.parties[index];
@@ -68,18 +82,19 @@ class _PartieListScreenState extends State<PartieListScreen> {
 
               return PartieCard(
                 partie: partie,
+                equipeUn: widget.match.equipeUn,
+                equipeDeux: widget.match.equipeDeux,
                 team1Players: team1Players,
                 team2Players: team2Players,
                 arbitre: arbitre,
                 onTap: () async {
-                  // La condition est maintenant basée sur le nombre de joueurs
-                  if (partie.team1PlayerIds.length == 2) {
-                    final result = await Navigator.push(
+                  if (partie.isEditable) {
+                    final result = await Navigator.push<bool>(
                       context,
                       MaterialPageRoute(
                         builder: (context) => DoubleCompositionScreen(
                           partie: partie,
-                          match: widget.match, // Pass the match object
+                          match: widget.match,
                         ),
                       ),
                     );
@@ -93,7 +108,7 @@ class _PartieListScreenState extends State<PartieListScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TableScreen(partie: partie),
+                        builder: (context) => ScoringScreen(partie: partie),
                       ),
                     );
                   }

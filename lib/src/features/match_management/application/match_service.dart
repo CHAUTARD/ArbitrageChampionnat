@@ -1,3 +1,4 @@
+// lib/src/features/match_management/application/match_service.dart
 import 'package:hive/hive.dart';
 import 'package:myapp/models/match.dart';
 import 'package:rxdart/rxdart.dart';
@@ -24,6 +25,9 @@ class MatchService {
   }
 
   Stream<List<Match>> getMatches() {
-    return _matchBox.watch().map((_) => _matchBox.values.toList()).startWith(_matchBox.values.toList());
+    return _matchBox
+        .watch()
+        .map((_) => _matchBox.values.toList())
+        .startWith(_matchBox.values.toList());
   }
 }

@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/match.dart';
 import 'package:myapp/models/player_model.dart';
-import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
+import 'package:myapp/src/features/match_selection/partie_list_screen.dart';
 
 class PlayerEntryScreen extends StatefulWidget {
   final Match match;
@@ -27,6 +28,21 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
   };
 
   @override
+  void initState() {
+    super.initState();
+    if (kDebugMode) {
+      _controllers['A']!.text = 'Alain';
+      _controllers['B']!.text = 'Bernard';
+      _controllers['C']!.text = 'Claude';
+      _controllers['D']!.text = 'Didier';
+      _controllers['W']!.text = 'Williams';
+      _controllers['X']!.text = 'Xavier';
+      _controllers['Y']!.text = 'Yves';
+      _controllers['Z']!.text = 'Zoé';
+    }
+  }
+
+  @override
   void dispose() {
     _controllers.forEach((_, controller) => controller.dispose());
     super.dispose();
@@ -35,26 +51,36 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
   Future<void> _savePlayers() async {
     if (_formKey.currentState!.validate()) {
       final playersBox = await Hive.openBox<Player>('players');
+      await playersBox.clear();
+
+      final playersToSave = <Player>[];
 
       final team1Letters = ['A', 'B', 'C', 'D'];
-      final team2Letters = ['W', 'X', 'Y', 'Z'];
-
       for (var letter in team1Letters) {
-        final player = Player(
-          name: _controllers[letter]!.text,
-          equipe: widget.match.equipeUn,
-          lettre: letter,
+        playersToSave.add(
+          Player(
+            id: '${widget.match.id}-$letter',
+            name: _controllers[letter]!.text,
+            equipe: widget.match.equipeUn,
+            lettre: letter,
+          ),
         );
-        await playersBox.add(player);
       }
 
+      final team2Letters = ['W', 'X', 'Y', 'Z'];
       for (var letter in team2Letters) {
-        final player = Player(
-          name: _controllers[letter]!.text,
-          equipe: widget.match.equipeDeux,
-          lettre: letter,
+        playersToSave.add(
+          Player(
+            id: '${widget.match.id}-$letter',
+            name: _controllers[letter]!.text,
+            equipe: widget.match.equipeDeux,
+            lettre: letter,
+          ),
         );
-        await playersBox.add(player);
+      }
+
+      for (var player in playersToSave) {
+        await playersBox.put(player.id, player);
       }
 
       if (!mounted) return;
@@ -62,7 +88,7 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const MatchListScreen(),
+          builder: (context) => PartieListScreen(match: widget.match),
         ),
         (route) => false,
       );
@@ -72,24 +98,16 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Saisie des joueurs'),
-      ),
+      appBar: AppBar(title: const Text('Saisie des joueurs')),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              _buildTeamSection(
-                widget.match.equipeUn,
-                ['A', 'B', 'C', 'D'],
-              ),
+              _buildTeamSection(widget.match.equipeUn, ['A', 'B', 'C', 'D']),
               const SizedBox(height: 20),
-              _buildTeamSection(
-                widget.match.equipeDeux,
-                ['W', 'X', 'Y', 'Z'],
-              ),
+              _buildTeamSection(widget.match.equipeDeux, ['W', 'X', 'Y', 'Z']),
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: _savePlayers,
@@ -107,32 +125,25 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(teamName, style: Theme.of(context).textTheme.headlineSmall),
-        Table(
-          columnWidths: const {
-            0: IntrinsicColumnWidth(),
-            1: FlexColumnWidth(),
-          },
-          children: letters.map((letter) {
-            return TableRow(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 16.0, top: 12.0),
-                  child: Text(letter, style: Theme.of(context).textTheme.titleLarge),
-                ),
-                TextFormField(
-                  controller: _controllers[letter],
-                  decoration: const InputDecoration(labelText: 'Nom du joueur'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Veuillez entrer un nom';
-                    }
-                    return null;
-                  },
-                ),
-              ],
-            );
-          }).toList(),
-        ),
+        const SizedBox(height: 8),
+        ...letters.map((letter) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: TextFormField(
+              controller: _controllers[letter],
+              decoration: InputDecoration(
+                labelText: 'Joueur $letter',
+                border: const OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez entrer un nom';
+                }
+                return null;
+              },
+            ),
+          );
+        }),
       ],
     );
   }

@@ -58,6 +58,8 @@ class MatchDetailsScreen extends StatelessWidget {
 
           return PartieCard(
             partie: partie,
+            equipeUn: match.equipeUn,
+            equipeDeux: match.equipeDeux,
             team1Players: team1Players,
             team2Players: team2Players,
             arbitre: arbitre,

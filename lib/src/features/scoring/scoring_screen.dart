@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/src/features/scoring/game_state.dart';
-import 'package:myapp/src/features/scoring/manche_indicator.dart';
 import 'package:myapp/src/features/scoring/manche_table.dart';
-import 'package:provider/provider.dart';
 
 class ScoringScreen extends StatelessWidget {
   final Partie partie;
@@ -12,31 +11,39 @@ class ScoringScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<GameState>(builder: (context, gameState, child) {
-      return Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: MancheIndicator(),
-          ),
-          const Expanded(
-            child: MancheTable(),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: gameState.previousManche,
-                child: const Text('Manche précédente'),
-              ),
-              ElevatedButton(
-                onPressed: gameState.nextManche,
-                child: const Text('Manche suivante'),
-              ),
-            ],
-          ),
-        ],
-      );
-    });
+    return ChangeNotifierProvider(
+      create: (context) => GameState(partie),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Feuille de Match'),
+        ),
+        body: Consumer<GameState>(
+          builder: (context, gameState, child) {
+            return Column(
+              children: [
+                // Manches navigation
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(gameState.manches.length, (index) {
+                    return ElevatedButton(
+                      onPressed: () => gameState.setManche(index),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: gameState.currentMancheIndex == index
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.surface,
+                      ),
+                      child: Text(gameState.manches[index].isTieBreak ? 'TB' : 'M${index + 1}'),
+                    );
+                  }),
+                ),
+                const SizedBox(height: 20),
+                // Current manche table
+                const MancheTable(),
+              ],
+            );
+          },
+        ),
+      ),
+    );
   }
 }

@@ -26,6 +26,12 @@ class Partie extends HiveObject {
   @HiveField(6)
   final int? scoreEquipeDeux;
 
+  @HiveField(7)
+  final String status;
+
+  @HiveField(8)
+  final bool isEditable;
+
   Partie({
     String? id,
     required this.numero,
@@ -34,6 +40,8 @@ class Partie extends HiveObject {
     this.arbitreId,
     this.scoreEquipeUn,
     this.scoreEquipeDeux,
+    this.status = 'A venir',
+    this.isEditable = false,
   }) : id = id ?? const Uuid().v4();
 
   factory Partie.fromJson(Map<String, dynamic> json) {
@@ -44,6 +52,8 @@ class Partie extends HiveObject {
       arbitreId: json['arbitreId'] as String?,
       scoreEquipeUn: json['scoreEquipeUn'] as int?,
       scoreEquipeDeux: json['scoreEquipeDeux'] as int?,
+      status: json['status'] as String? ?? 'A venir',
+      isEditable: json['isEditable'] as bool? ?? false,
     );
   }
 
@@ -55,6 +65,8 @@ class Partie extends HiveObject {
         'arbitreId': arbitreId,
         'scoreEquipeUn': scoreEquipeUn,
         'scoreEquipeDeux': scoreEquipeDeux,
+        'status': status,
+        'isEditable': isEditable,
       };
 
   Partie copyWith({
@@ -65,6 +77,8 @@ class Partie extends HiveObject {
     String? arbitreId,
     int? scoreEquipeUn,
     int? scoreEquipeDeux,
+    String? status,
+    bool? isEditable,
   }) {
     return Partie(
       id: id ?? this.id,
@@ -74,6 +88,8 @@ class Partie extends HiveObject {
       arbitreId: arbitreId ?? this.arbitreId,
       scoreEquipeUn: scoreEquipeUn ?? this.scoreEquipeUn,
       scoreEquipeDeux: scoreEquipeDeux ?? this.scoreEquipeDeux,
+      status: status ?? this.status,
+      isEditable: isEditable ?? this.isEditable,
     );
   }
 }

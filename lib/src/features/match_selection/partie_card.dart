@@ -4,6 +4,8 @@ import 'package:myapp/models/player_model.dart';
 
 class PartieCard extends StatelessWidget {
   final Partie partie;
+  final String equipeUn;
+  final String equipeDeux;
   final List<Player> team1Players;
   final List<Player> team2Players;
   final Player? arbitre;
@@ -12,18 +14,31 @@ class PartieCard extends StatelessWidget {
   const PartieCard({
     super.key,
     required this.partie,
+    required this.equipeUn,
+    required this.equipeDeux,
     required this.team1Players,
     required this.team2Players,
     this.arbitre,
     required this.onTap,
   });
 
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Terminé':
+        return Colors.green;
+      case 'En cours':
+        return Colors.orange;
+      default:
+        return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isDouble = partie.team1PlayerIds.length == 2;
+    final isDouble = partie.team1PlayerIds.length > 1;
 
     String getPlayerNames(List<Player> players) {
-      if (players.isEmpty) return 'Composition incomplète';
+      if (players.any((p) => p.id.isEmpty)) return 'Composition incomplète';
       if (players.length == 1) return players.first.name;
       return '${players[0].name} & ${players[1].name}';
     }
@@ -38,13 +53,35 @@ class PartieCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                isDouble
-                    ? 'Double Messieurs - Partie ${partie.numero}'
-                    : 'Simple Messieurs - Partie ${partie.numero}',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    isDouble
+                        ? 'Partie ${partie.numero} - Double'
+                        : 'Partie ${partie.numero}',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 4.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(partie.status),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Text(
+                      partie.status,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
               Row(
@@ -61,7 +98,7 @@ class PartieCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Équipe 1',
+                          equipeUn,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
@@ -70,9 +107,9 @@ class PartieCard extends StatelessWidget {
                   Text(
                     'VS',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Expanded(
                     child: Column(
@@ -86,7 +123,7 @@ class PartieCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Équipe 2',
+                          equipeDeux,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
