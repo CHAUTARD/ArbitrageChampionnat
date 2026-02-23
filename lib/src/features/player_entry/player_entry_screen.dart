@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/match.dart';
 import 'package:myapp/models/player_model.dart';
-import 'package:myapp/src/features/match_selection/partie_list_screen.dart';
+import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
 
 class PlayerEntryScreen extends StatefulWidget {
   final Match match;
@@ -59,11 +59,12 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
 
       if (!mounted) return;
 
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => PartieListScreen(match: widget.match),
+          builder: (context) => const MatchListScreen(),
         ),
+        (route) => false,
       );
     }
   }
@@ -120,7 +121,7 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
                 ),
                 TextFormField(
                   controller: _controllers[letter],
-                  decoration: InputDecoration(labelText: 'Nom du joueur'),
+                  decoration: const InputDecoration(labelText: 'Nom du joueur'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Veuillez entrer un nom';

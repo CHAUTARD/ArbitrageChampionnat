@@ -39,7 +39,7 @@ class _PartieListScreenState extends State<PartieListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Feuille de match')), // Changed title
+      appBar: AppBar(title: const Text('Feuille de parties')),
       body: FutureBuilder<List<Player>>(
         future: _playersFuture,
         builder: (context, snapshot) {
