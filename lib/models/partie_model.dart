@@ -1,73 +1,54 @@
 import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 part 'partie_model.g.dart';
 
-@HiveType(typeId: 4)
+@JsonSerializable()
+@HiveType(typeId: 2)
 class Partie extends HiveObject {
   @HiveField(0)
-  final String id;
+  String? id;
 
   @HiveField(1)
   final int numero;
 
   @HiveField(2)
-  final List<String> team1PlayerIds;
+  List<String> team1PlayerIds;
 
   @HiveField(3)
-  final List<String> team2PlayerIds;
+  List<String> team2PlayerIds;
 
   @HiveField(4)
-  final String? arbitreId;
+  String? arbitreId;
 
   @HiveField(5)
-  final int? scoreEquipeUn;
+  int? scoreEquipeUn;
 
   @HiveField(6)
-  final int? scoreEquipeDeux;
+  int? scoreEquipeDeux;
 
   @HiveField(7)
-  final String status;
+  String status;
 
   @HiveField(8)
   final bool isEditable;
 
   Partie({
-    String? id,
+    this.id,
     required this.numero,
     required this.team1PlayerIds,
     required this.team2PlayerIds,
     this.arbitreId,
     this.scoreEquipeUn,
     this.scoreEquipeDeux,
-    this.status = 'A venir',
-    this.isEditable = false,
-  }) : id = id ?? const Uuid().v4();
+    required this.status,
+    required this.isEditable,
+  });
 
-  factory Partie.fromJson(Map<String, dynamic> json) {
-    return Partie(
-      numero: json['numero'] as int,
-      team1PlayerIds: (json['team1PlayerIds'] as List<dynamic>).map((e) => e as String).toList(),
-      team2PlayerIds: (json['team2PlayerIds'] as List<dynamic>).map((e) => e as String).toList(),
-      arbitreId: json['arbitreId'] as String?,
-      scoreEquipeUn: json['scoreEquipeUn'] as int?,
-      scoreEquipeDeux: json['scoreEquipeDeux'] as int?,
-      status: json['status'] as String? ?? 'A venir',
-      isEditable: json['isEditable'] as bool? ?? false,
-    );
-  }
+  String get type => team1PlayerIds.length == 1 ? 'Simple' : 'Double';
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'numero': numero,
-        'team1PlayerIds': team1PlayerIds,
-        'team2PlayerIds': team2PlayerIds,
-        'arbitreId': arbitreId,
-        'scoreEquipeUn': scoreEquipeUn,
-        'scoreEquipeDeux': scoreEquipeDeux,
-        'status': status,
-        'isEditable': isEditable,
-      };
+  factory Partie.fromJson(Map<String, dynamic> json) => _$PartieFromJson(json);
+  Map<String, dynamic> toJson() => _$PartieToJson(this);
 
   Partie copyWith({
     String? id,

@@ -25,14 +25,18 @@ class _TableScreenState extends State<TableScreen> {
   }
 
   Future<List<Player>> _loadPlayers() async {
-    final String response = await rootBundle.loadString('assets/data/players.json');
+    final String response = await rootBundle.loadString(
+      'assets/data/players.json',
+    );
     final data = await json.decode(response) as List;
     return data.map((player) => Player.fromJson(player)).toList();
   }
 
   Player _findPlayerById(List<Player> players, String id) {
-    return players.firstWhere((player) => player.id == id,
-        orElse: () => Player(id: '', name: 'Unknown', equipe: '', lettre: ''));
+    return players.firstWhere(
+      (player) => player.id == id,
+      orElse: () => Player(id: '', name: 'Unknown', equipe: '', lettre: ''),
+    );
   }
 
   @override
@@ -49,9 +53,7 @@ class _TableScreenState extends State<TableScreen> {
             body: Center(child: Text('Error: ${snapshot.error}')),
           );
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Scaffold(
-            body: Center(child: Text('No players found.')),
-          );
+          return const Scaffold(body: Center(child: Text('No players found.')));
         }
 
         final players = snapshot.data!;

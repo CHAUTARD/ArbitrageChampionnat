@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/models/player_model.dart';
+import 'package:myapp/src/features/scoring/game_service.dart';
 import 'package:myapp/src/features/scoring/game_state.dart';
 import 'package:myapp/src/features/scoring/scoring_screen.dart';
 
@@ -21,8 +22,10 @@ class SimpleTableScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final gameService = Provider.of<GameService>(context, listen: false);
     return ChangeNotifierProvider(
-      create: (context) => GameState(partie),
+      create: (context) =>
+          GameState(gameService: gameService, partie: partie),
       child: Scaffold(
         appBar: AppBar(
           title: Text('${joueurUn.name} vs ${joueurDeux.name}'),

@@ -22,17 +22,6 @@ class PartieCard extends StatelessWidget {
     required this.onTap,
   });
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'Terminé':
-        return Colors.green;
-      case 'En cours':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDouble = partie.team1PlayerIds.length > 1;
@@ -55,32 +44,32 @@ class PartieCard extends StatelessWidget {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    isDouble
-                        ? 'Partie ${partie.numero} - Double'
-                        : 'Partie ${partie.numero}',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(partie.status),
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
+                  Expanded(
                     child: Text(
-                      partie.status,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12.0,
-                      ),
+                      isDouble
+                          ? 'Partie ${partie.numero} - Double'
+                          : 'Partie ${partie.numero}',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
+                  if (arbitre != null)
+                    Row(
+                      children: [
+                        const Icon(Icons.sports, size: 16, color: Colors.black54),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Arbitre: ${arbitre!.name}',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontStyle: FontStyle.italic,
+                                color: Colors.black54,
+                              ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -104,11 +93,14 @@ class PartieCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Text(
-                    'VS',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      'VS',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
                   Expanded(
@@ -131,21 +123,6 @@ class PartieCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (arbitre != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.sports, size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Arbitre: ${arbitre!.name}',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                ),
             ],
           ),
         ),

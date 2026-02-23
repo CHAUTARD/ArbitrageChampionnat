@@ -9,6 +9,7 @@ import 'package:myapp/src/features/match_management/presentation/add_match_scree
 import 'package:myapp/src/features/match_management/presentation/edit_match_screen.dart';
 import 'package:myapp/src/features/match_selection/partie_list_screen.dart';
 import 'package:myapp/src/features/settings/settings_screen.dart';
+import 'package:myapp/src/features/team_rosters/presentation/team_roster_screen.dart';
 
 class MatchListScreen extends StatelessWidget {
   const MatchListScreen({super.key});
@@ -22,6 +23,16 @@ class MatchListScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Liste des rencontres'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.people),
+            tooltip: 'Composition des équipes',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TeamRosterScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             tooltip: 'Paramètres',
@@ -101,14 +112,17 @@ class MatchListScreen extends StatelessWidget {
                           builder: (context) => AlertDialog(
                             title: const Text('Confirmer la suppression'),
                             content: const Text(
-                                'Voulez-vous vraiment supprimer cette rencontre ?'),
+                              'Voulez-vous vraiment supprimer cette rencontre ?',
+                            ),
                             actions: [
                               TextButton(
-                                onPressed: () => Navigator.of(context).pop(false),
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
                                 child: const Text('Annuler'),
                               ),
                               TextButton(
-                                onPressed: () => Navigator.of(context).pop(true),
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
                                 child: const Text('Supprimer'),
                               ),
                             ],

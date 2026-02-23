@@ -13,13 +13,31 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:myapp/main.dart';
+import 'package:myapp/models/player_model.dart';
+import 'package:myapp/src/features/players/player_service.dart';
+
+class MockPlayerService implements PlayerService {
+  @override
+  Future<void> initializeDatabase() async {
+    // No-op
+  }
+
+  @override
+  Future<List<Player>> getPlayers() async {
+    return [];
+  }
+
+  @override
+  Future<Player?> getPlayerById(String id) async {
+    return null;
+  }
+}
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp(playerService: MockPlayerService()));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

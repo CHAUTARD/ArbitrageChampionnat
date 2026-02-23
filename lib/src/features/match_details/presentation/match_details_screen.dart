@@ -26,9 +26,14 @@ class MatchDetailsScreen extends StatelessWidget {
     }
 
     final scoreUn = match.parties.fold<int>(
-        0, (previousValue, element) => previousValue + (element.scoreEquipeUn ?? 0));
+      0,
+      (previousValue, element) => previousValue + (element.scoreEquipeUn ?? 0),
+    );
     final scoreDeux = match.parties.fold<int>(
-        0, (previousValue, element) => previousValue + (element.scoreEquipeDeux ?? 0));
+      0,
+      (previousValue, element) =>
+          previousValue + (element.scoreEquipeDeux ?? 0),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -39,10 +44,9 @@ class MatchDetailsScreen extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Text(
               'Score final: $scoreUn - $scoreDeux',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(color: Colors.white),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(color: Colors.white),
             ),
           ),
         ),
@@ -54,7 +58,9 @@ class MatchDetailsScreen extends StatelessWidget {
           final partie = match.parties[index];
           final team1Players = getPlayersByIds(partie.team1PlayerIds);
           final team2Players = getPlayersByIds(partie.team2PlayerIds);
-          final arbitre = partie.arbitreId != null ? getPlayerById(partie.arbitreId!) : null;
+          final arbitre = partie.arbitreId != null
+              ? getPlayerById(partie.arbitreId!)
+              : null;
 
           return PartieCard(
             partie: partie,

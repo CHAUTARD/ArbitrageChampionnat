@@ -58,9 +58,7 @@ class SettingsScreen extends StatelessWidget {
           children: [
             Text('Informations', style: theme.textTheme.headlineSmall),
             const SizedBox(height: 16),
-            const Text(
-              "Version de l'application : ${AppConstants.appVersion}",
-            ),
+            const Text("Version de l'application : ${AppConstants.appVersion}"),
             const SizedBox(height: 8),
           ],
         ),

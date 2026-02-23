@@ -52,9 +52,7 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('© 2026 Patrick CHAUTARD'),
-          ],
+          children: [Text('© 2026 Patrick CHAUTARD')],
         ),
       ),
     );

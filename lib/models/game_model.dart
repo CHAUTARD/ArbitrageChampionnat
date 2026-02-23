@@ -1,22 +1,23 @@
 import 'package:hive/hive.dart';
 import 'package:myapp/models/manche_model.dart';
+import 'package:myapp/models/partie_model.dart';
 
 part 'game_model.g.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 5)
 class Game extends HiveObject {
   @HiveField(0)
-  final int scoreTeam1;
+  late String id;
 
   @HiveField(1)
-  final int scoreTeam2;
+  late Partie partie;
 
   @HiveField(2)
-  final HiveList<Manche> manche;
+  late List<Manche> manches;
 
   Game({
-    required this.scoreTeam1,
-    required this.scoreTeam2,
-    required this.manche,
+    required this.id,
+    required this.partie,
+    required this.manches,
   });
 }

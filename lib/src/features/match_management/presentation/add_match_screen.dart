@@ -92,7 +92,8 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                       context,
                       listen: false,
                     );
-                    final matchId = DateTime.now().millisecondsSinceEpoch.toString();
+                    final matchId = DateTime.now().millisecondsSinceEpoch
+                        .toString();
                     final parties = getStaticParties(matchId);
                     final newMatch = Match(
                       id: matchId,
@@ -100,7 +101,8 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                       status: 'A venir',
                       date: _selectedDate,
                       parties: parties,
-                      competitionId: 'your_competition_id', // Remplacez par l'ID de compétition réel
+                      competitionId:
+                          'your_competition_id', // Remplacez par l'ID de compétition réel
                       equipeUn: _equipe1Controller.text,
                       equipeDeux: _equipe2Controller.text,
                     );
@@ -108,7 +110,8 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PlayerEntryScreen(match: newMatch),
+                        builder: (context) =>
+                            PlayerEntryScreen(match: newMatch),
                       ),
                     );
                   }

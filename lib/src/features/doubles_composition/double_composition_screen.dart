@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/match.dart';
@@ -9,8 +8,11 @@ class DoubleCompositionScreen extends StatefulWidget {
   final Partie partie;
   final Match match;
 
-  const DoubleCompositionScreen(
-      {super.key, required this.partie, required this.match});
+  const DoubleCompositionScreen({
+    super.key,
+    required this.partie,
+    required this.match,
+  });
 
   @override
   State<DoubleCompositionScreen> createState() =>
@@ -42,10 +44,12 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
     final allPlayers = playersBox.values.toList();
 
     setState(() {
-      _team1Players =
-          allPlayers.where((p) => p.equipe == widget.match.equipeUn).toList();
-      _team2Players =
-          allPlayers.where((p) => p.equipe == widget.match.equipeDeux).toList();
+      _team1Players = allPlayers
+          .where((p) => p.equipe == widget.match.equipeUn)
+          .toList();
+      _team2Players = allPlayers
+          .where((p) => p.equipe == widget.match.equipeDeux)
+          .toList();
 
       if (widget.partie.team1PlayerIds.isNotEmpty) {
         _selectedT1P1 = widget.partie.team1PlayerIds[0];
@@ -74,7 +78,10 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
           _selectedT2P2 == null) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Veuillez sélectionner tous les joueurs.')));
+          const SnackBar(
+            content: Text('Veuillez sélectionner tous les joueurs.'),
+          ),
+        );
         return;
       }
 
@@ -102,9 +109,7 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Composition des Équipes de Double'),
-      ),
+      appBar: AppBar(title: const Text('Composition des Équipes de Double')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -161,12 +166,16 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
         DropdownButtonFormField<String>(
           initialValue: selectedP1,
           decoration: const InputDecoration(
-              labelText: 'Joueur 1', border: OutlineInputBorder()),
+            labelText: 'Joueur 1',
+            border: OutlineInputBorder(),
+          ),
           items: players
-              .map((player) => DropdownMenuItem(
-                    value: player.id,
-                    child: Text('${player.name} (${player.lettre})'),
-                  ))
+              .map(
+                (player) => DropdownMenuItem(
+                  value: player.id,
+                  child: Text('${player.name} (${player.lettre})'),
+                ),
+              )
               .toList(),
           onChanged: (value) {
             onSelectionChanged(value, selectedP2);
@@ -185,12 +194,16 @@ class _DoubleCompositionScreenState extends State<DoubleCompositionScreen> {
         DropdownButtonFormField<String>(
           initialValue: selectedP2,
           decoration: const InputDecoration(
-              labelText: 'Joueur 2', border: OutlineInputBorder()),
+            labelText: 'Joueur 2',
+            border: OutlineInputBorder(),
+          ),
           items: players
-              .map((player) => DropdownMenuItem(
-                    value: player.id,
-                    child: Text('${player.name} (${player.lettre})'),
-                  ))
+              .map(
+                (player) => DropdownMenuItem(
+                  value: player.id,
+                  child: Text('${player.name} (${player.lettre})'),
+                ),
+              )
               .toList(),
           onChanged: (value) {
             onSelectionChanged(selectedP1, value);

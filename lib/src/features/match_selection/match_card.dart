@@ -10,9 +10,14 @@ class MatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scoreUn = match.parties.fold<int>(
-        0, (previousValue, element) => previousValue + (element.scoreEquipeUn ?? 0));
+      0,
+      (previousValue, element) => previousValue + (element.scoreEquipeUn ?? 0),
+    );
     final scoreDeux = match.parties.fold<int>(
-        0, (previousValue, element) => previousValue + (element.scoreEquipeDeux ?? 0));
+      0,
+      (previousValue, element) =>
+          previousValue + (element.scoreEquipeDeux ?? 0),
+    );
 
     return Card(
       child: ListTile(

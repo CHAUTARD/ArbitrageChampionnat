@@ -9,6 +9,8 @@ import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/models/player_model.dart';
 import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
 import 'package:myapp/src/features/match_management/application/match_service.dart';
+import 'package:myapp/src/features/players/player_service.dart';
+import 'package:myapp/src/features/scoring/game_service.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
@@ -28,13 +30,17 @@ void main() async {
   await Hive.openBox<Manche>('manches');
   await Hive.openBox<Match>('matches');
   await Hive.openBox<Partie>('parties');
-  await Hive.openBox<Player>('players');
 
-  runApp(const MyApp());
+  final playerService = PlayerService();
+  await playerService.initializeDatabase();
+
+  runApp(MyApp(playerService: playerService));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final PlayerService playerService;
+
+  const MyApp({super.key, required this.playerService});
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +48,10 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider<MatchService>(
           create: (_) => MatchService(Hive.box<Match>('matches')),
+        ),
+        Provider<PlayerService>.value(value: playerService),
+        Provider<GameService>(
+          create: (_) => GameService(Hive.box<Game>('games')),
         ),
       ],
       child: MaterialApp(
@@ -52,9 +62,7 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [
-          Locale('fr', 'FR'),
-        ],
+        supportedLocales: const [Locale('fr', 'FR')],
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
@@ -70,9 +78,9 @@ class MyApp extends StatelessWidget {
               foregroundColor: Colors.white,
               backgroundColor: Colors.deepPurple,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
           ),
         ),

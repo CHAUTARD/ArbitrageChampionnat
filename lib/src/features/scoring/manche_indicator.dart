@@ -10,7 +10,7 @@ class MancheIndicator extends StatelessWidget {
     final gameState = Provider.of<GameState>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(gameState.manches.length, (index) {
+      children: List.generate(gameState.game.manches.length, (index) {
         return GestureDetector(
           onTap: () => gameState.setManche(index),
           child: Container(

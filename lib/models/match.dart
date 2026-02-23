@@ -41,13 +41,13 @@ class Match extends HiveObject {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'type': type,
-        'status': status,
-        'date': date.toIso8601String(),
-        'parties': parties.map((p) => p.toJson()).toList(),
-        'competitionId': competitionId,
-        'equipe_un': equipeUn,
-        'equipe_deux': equipeDeux,
-      };
+    'id': id,
+    'type': type,
+    'status': status,
+    'date': date.toIso8601String(),
+    'parties': parties.map((p) => p.toJson()).toList(),
+    'competitionId': competitionId,
+    'equipe_un': equipeUn,
+    'equipe_deux': equipeDeux,
+  };
 }

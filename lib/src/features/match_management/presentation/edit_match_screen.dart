@@ -100,8 +100,10 @@ class EditMatchScreenState extends State<EditMatchScreen> {
                       status: widget.match.status,
                       competitionId: widget.match.competitionId,
                     );
-                    Provider.of<MatchService>(context, listen: false)
-                        .updateMatch(updatedMatch);
+                    Provider.of<MatchService>(
+                      context,
+                      listen: false,
+                    ).updateMatch(updatedMatch);
                     Navigator.of(context).pop();
                   }
                 },

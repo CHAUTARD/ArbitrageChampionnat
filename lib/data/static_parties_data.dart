@@ -10,7 +10,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['W'],
       "arbitreId": 'D',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
     {
       "numero": 2,
@@ -18,7 +18,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['X'],
       "arbitreId": 'Z',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
     {
       "numero": 3,
@@ -26,7 +26,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['Y'],
       "arbitreId": 'B',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
     {
       "numero": 4,
@@ -34,7 +34,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['Z'],
       "arbitreId": 'W',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
     {
       "numero": 5,
@@ -42,7 +42,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['X'],
       "arbitreId": 'C',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
     {
       "numero": 6,
@@ -50,7 +50,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['W'],
       "arbitreId": 'Y',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
     {
       "numero": 7,
@@ -58,7 +58,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['Y'],
       "arbitreId": 'A',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
     {
       "numero": 8,
@@ -66,7 +66,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['Z'],
       "arbitreId": 'X',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
 
     // --- DOUBLES ---
@@ -76,7 +76,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": [],
       "arbitreId": 'B',
       "status": "A venir",
-      "isEditable": true
+      "isEditable": true,
     },
     {
       "numero": 10,
@@ -84,7 +84,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": [],
       "arbitreId": 'A',
       "status": "A venir",
-      "isEditable": true
+      "isEditable": true,
     },
     {
       "numero": 11,
@@ -92,7 +92,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['Z'],
       "arbitreId": 'B',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
     {
       "numero": 12,
@@ -100,7 +100,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['W'],
       "arbitreId": 'D',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
     {
       "numero": 13,
@@ -108,7 +108,7 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['Y'],
       "arbitreId": 'X',
       "status": "A venir",
-      "isEditable": false
+      "isEditable": false,
     },
     {
       "numero": 14,
@@ -116,19 +116,23 @@ List<Partie> getStaticParties(String matchId) {
       "team2PlayerIds": ['X'],
       "arbitreId": 'Y',
       "status": "A venir",
-      "isEditable": false
-    }
+      "isEditable": false,
+    },
   ];
 
   // Préfixe les IDs avec l'ID du match pour garantir l'unicité
   final updatedParties = partiesData.map((data) {
-    final team1Ids = (data['team1PlayerIds'] as List<String>)
+    final team1Ids = (data['team1PlayerIds'] as List<dynamic>)
+        .map((id) => id.toString()) // Convert each element to String
         .map((id) => '$matchId-$id')
         .toList();
-    final team2Ids = (data['team2PlayerIds'] as List<String>)
+    final team2Ids = (data['team2PlayerIds'] as List<dynamic>)
+        .map((id) => id.toString()) // Convert each element to String
         .map((id) => '$matchId-$id')
         .toList();
-    final arbitreId = data['arbitreId'] != null ? '$matchId-${data['arbitreId']}' : null;
+    final arbitreId = data['arbitreId'] != null
+        ? '$matchId-${data['arbitreId']}'
+        : null;
 
     return {
       ...data,
