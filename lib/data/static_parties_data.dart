@@ -72,8 +72,8 @@ List<Partie> getStaticParties(String matchId) {
     // --- DOUBLES ---
     {
       "numero": 9,
-      "team1PlayerIds": [],
-      "team2PlayerIds": [],
+      "team1PlayerIds": ['A', 'B'],
+      "team2PlayerIds": ['W', 'X'],
       "arbitreId": 'B',
       "status": "A venir",
       "isEditable": true,

@@ -27,6 +27,7 @@ class PartieCard extends StatelessWidget {
     final isDouble = partie.team1PlayerIds.length > 1;
 
     String getPlayerNames(List<Player> players) {
+      if (players.isEmpty) return 'Composition incomplète';
       if (players.any((p) => p.id.isEmpty)) return 'Composition incomplète';
       if (players.length == 1) return players.first.name;
       return '${players[0].name} & ${players[1].name}';

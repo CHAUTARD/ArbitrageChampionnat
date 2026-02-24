@@ -1,3 +1,4 @@
+// game_service.dart
 import 'package:hive/hive.dart';
 import 'package:myapp/models/game_model.dart';
 import 'package:myapp/models/manche_model.dart';
@@ -9,12 +10,10 @@ class GameService {
   GameService(this._gameBox);
 
   Future<Game> createGame(Partie partie) async {
-    final isDouble = partie.team1PlayerIds.length == 2;
-    final int numberOfManches = isDouble ? 5 : 3;
     final List<Manche> manches = [];
 
-    for (int i = 0; i < numberOfManches; i++) {
-      manches.add(Manche(partie: partie, numeroManche: i + 1));
+    for (int i = 0; i < 5; i++) {
+      manches.add(Manche(partie: partie));
     }
 
     final newGame = Game(

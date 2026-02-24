@@ -1,3 +1,4 @@
+// lib/src/features/match_management/presentation/add_match_screen.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,8 +24,8 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
   void initState() {
     super.initState();
     if (kDebugMode) {
-      _equipe1Controller.text = 'Les Artistes';
-      _equipe2Controller.text = 'Les Bûcherons';
+      _equipe1Controller.text = 'LTY TT 1';
+      _equipe2Controller.text = 'SPO Rouen 5';
     }
   }
 
@@ -73,8 +74,8 @@ class _AddMatchScreenState extends State<AddMatchScreen> {
                   final date = await showDatePicker(
                     context: context,
                     initialDate: _selectedDate,
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2101),
+                    firstDate: DateTime(DateTime.now().year),
+                    lastDate: DateTime(DateTime.now().year + 1),
                     locale: const Locale('fr', 'FR'),
                   );
                   if (date != null) {

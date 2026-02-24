@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 part 'player_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-@HiveType(typeId: 5)
+@HiveType(typeId: 5) // Correction du typeId
 class Player extends HiveObject {
   @HiveField(0)
   final String id;

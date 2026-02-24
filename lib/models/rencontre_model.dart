@@ -3,7 +3,7 @@ import 'package:myapp/models/partie_model.dart';
 
 part 'rencontre_model.g.dart';
 
-@HiveType(typeId: 3)
+@HiveType(typeId: 6)
 class Rencontre extends HiveObject {
   @HiveField(0)
   late String id;

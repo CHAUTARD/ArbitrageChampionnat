@@ -8,8 +8,6 @@ import 'package:myapp/src/features/match_management/application/match_service.da
 import 'package:myapp/src/features/match_management/presentation/add_match_screen.dart';
 import 'package:myapp/src/features/match_management/presentation/edit_match_screen.dart';
 import 'package:myapp/src/features/match_selection/partie_list_screen.dart';
-import 'package:myapp/src/features/settings/settings_screen.dart';
-import 'package:myapp/src/features/team_rosters/presentation/team_roster_screen.dart';
 
 class MatchListScreen extends StatelessWidget {
   const MatchListScreen({super.key});
@@ -20,31 +18,7 @@ class MatchListScreen extends StatelessWidget {
     final matchesStream = matchService.getMatches();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Liste des rencontres'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.people),
-            tooltip: 'Composition des équipes',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const TeamRosterScreen()),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Paramètres',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Liste des rencontres')),
       body: StreamBuilder<List<Match>>(
         stream: matchesStream,
         builder: (context, snapshot) {
@@ -111,8 +85,10 @@ class MatchListScreen extends StatelessWidget {
                           context: context,
                           builder: (context) => AlertDialog(
                             title: const Text('Confirmer la suppression'),
-                            content: const Text(
-                              'Voulez-vous vraiment supprimer cette rencontre ?',
+                            content: Text(
+                              'Voulez-vous vraiment supprimer la rencontre :\n\n'
+                              '${match.equipeUn} vs ${match.equipeDeux}\n'
+                              'Le ${DateFormat.yMMMMEEEEd('fr_FR').format(match.date)} ?',
                             ),
                             actions: [
                               TextButton(

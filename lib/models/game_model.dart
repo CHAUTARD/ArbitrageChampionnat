@@ -4,7 +4,7 @@ import 'package:myapp/models/partie_model.dart';
 
 part 'game_model.g.dart';
 
-@HiveType(typeId: 5)
+@HiveType(typeId: 1)
 class Game extends HiveObject {
   @HiveField(0)
   late String id;
@@ -15,9 +15,5 @@ class Game extends HiveObject {
   @HiveField(2)
   late List<Manche> manches;
 
-  Game({
-    required this.id,
-    required this.partie,
-    required this.manches,
-  });
+  Game({required this.id, required this.partie, required this.manches});
 }

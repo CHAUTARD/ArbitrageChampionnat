@@ -1,3 +1,4 @@
+// game_state.dart
 import 'package:flutter/material.dart';
 import 'package:myapp/models/game_model.dart';
 import 'package:myapp/models/manche_model.dart';

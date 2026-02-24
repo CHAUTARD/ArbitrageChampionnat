@@ -2,42 +2,43 @@
 
 ## Aperçu
 
-Cette application Flutter permet de suivre les scores des matchs de tennis, qu'il s'agisse de simples ou de doubles. Elle offre une interface claire pour enregistrer les points, gérer les manches et afficher les scores en temps réel.
+Cette application Flutter, conçue pour l'arbitrage de championnat, permet de gérer intégralement une rencontre de tennis de table. Elle prend en charge la création de matchs, la saisie des joueurs, la composition automatique et manuelle des parties, et le suivi des scores en temps réel.
 
 ## Fonctionnalités
 
-*   **Création de Match :** Permet de créer des matchs en simple ou en double en sélectionnant les joueurs.
+*   **Création de Match :** Permet de créer des rencontres en spécifiant le type, la compétition et les équipes.
+*   **Saisie des Joueurs :** Un écran dédié pour entrer les noms des 4 joueurs de chaque équipe.
 *   **Saisie Automatique (Mode Débogage) :** En mode débogage, les noms des équipes et des joueurs sont automatiquement pré-remplis pour accélérer les tests.
-*   **Flux de Navigation Amélioré :** La navigation a été optimisée :
-    *   Après la création d'une rencontre, l'utilisateur est directement redirigé vers l'écran des fiches de partie.
-    *   Un bouton de retour a été ajouté à l'écran "Feuille des parties" pour revenir facilement à la liste des rencontres.
-*   **Affichage Corrigé des Noms :** L'application affiche désormais correctement les noms des joueurs et des arbitres sur les fiches de partie.
-*   **Tableau de Score :** Affiche le score de la manche en cours pour chaque équipe.
-*   **Gestion des Manches :** Permet de naviguer entre les différentes manches d'un match.
-*   **Saisie des Scores :** Des boutons permettent d'incrémenter et de décrémenter le score de chaque équipe.
-*   **Feuille de Match :** Un écran dédié affiche la feuille de match pour une partie donnée.
-*   **Affichage des 14 Parties :** L'application génère et affiche systématiquement les 14 parties d'une rencontre.
-*   **Statut des Parties :** Le statut de chaque partie est géré et affiché avec un code couleur.
-*   **Assignation Automatique des Joueurs et Arbitres :** Les joueurs et arbitres sont assignés automatiquement aux simples.
-*   **Composition des Doubles Modifiable :** Seules les parties en double sont modifiables par l'utilisateur.
-*   **Navigation Contextuelle :** La navigation depuis une partie dépend de son type (simple ou double).
-*   **Noms d'Équipes sur les Fiches de Partie :** Les noms réels des équipes sont affichés.
+*   **Assignation Automatique des Simples :** Les 8 premières parties (simples) sont automatiquement configurées avec les joueurs et les arbitres respectifs dès la saisie des joueurs.
+*   **Composition Intelligente des Doubles :**
+    *   Un écran dédié (`ConfigureDoublesScreen`) centralise la composition des deux parties de double.
+    *   L'utilisateur compose la première partie de double (n°9), et la seconde (n°10) est automatiquement constituée avec les joueurs restants de chaque équipe.
+    *   Ce processus garantit une composition rapide et sans erreur des équipes de double.
+*   **Feuille de Match Complète :**
+    *   Affiche la liste des 14 parties de la rencontre.
+    *   Indique le statut de chaque partie avec un code couleur pour une meilleure lisibilité.
+    *   Affiche les noms des joueurs et de l'arbitre pour chaque partie.
+*   **Écran de Pointage :**
+    *   Interface claire pour incrémenter/décrémenter les points.
+    *   Gestion et navigation entre les manches.
+*   **Flux de Navigation Optimisé :**
+    *   Le parcours utilisateur est linéaire et intuitif : `Création de rencontre` -> `Saisie des joueurs` -> `Configuration des doubles` -> `Feuille des parties`.
+    *   La navigation est conçue pour guider l'arbitre à chaque étape, minimisant les actions manuelles.
 
 ## Style et Conception
 
-L'application utilise le framework Material Design de Flutter pour une apparence propre et cohérente.
+L'application utilise Material Design pour une interface utilisateur propre, moderne et cohérente sur toutes les plateformes. La conception est axée sur la simplicité et l'efficacité pour une utilisation en conditions de match.
 
 ## Plan Actuel
 
-L'objectif est de finaliser l'application, en s'assurant que tout est fonctionnel et sans erreurs.
+L'objectif est de continuer à améliorer l'expérience utilisateur, de stabiliser l'application et d'ajouter des fonctionnalités de sauvegarde et de partage des résultats.
 
 ### Étapes Réalisées
 
-1.  **Ajout du Bouton Retour :** Intégration d'un bouton de retour sur l'écran "Feuille des parties".
-2.  **Correction de l'Affichage des Noms :** Résolution du bug qui empêchait l'affichage des noms des joueurs et arbitres.
-3.  **Redirection vers les Fiches de Partie :** Modification du flux de navigation après la création d'une rencontre.
-4.  **Saisie Automatique en Mode Débogage :** Implémentation du pré-remplissage automatique des données.
-5.  **Affichage des Noms d'Équipes :** Remplacement des libellés génériques par les noms réels.
-6.  **Pré-remplissage des parties et gestion des doubles :** Mise en place de la logique d'assignation.
-7.  **Affichage des 14 parties et de leur statut :** Implémentation de la génération et de l'affichage des parties.
-8.  **Corrections et Améliorations Diverses :** Résolution de bugs, de problèmes de compilation et d'incohérences logiques.
+1.  **Mise en place de la structure de base :** Création des modèles, des services et des écrans initiaux.
+2.  **Affichage des 14 parties :** Implémentation de la logique pour générer et afficher la feuille de match complète.
+3.  **Assignation automatique des simples :** Développement de l'algorithme d'assignation des joueurs et arbitres.
+4.  **Flux de création et de saisie :** Optimisation de la navigation depuis la création du match jusqu'à l'affichage des parties.
+5.  **Développement de l'écran de pointage :** Création de l'interface de saisie des scores.
+6.  **Composition intelligente des doubles :** Création de l'écran de configuration centralisée pour les doubles, simplifiant drastiquement le processus.
+7.  **Corrections et Améliorations :** Résolution continue de bugs, amélioration de la robustesse et correction d'erreurs de compilation comme l'ajout de la méthode `copyWith`.

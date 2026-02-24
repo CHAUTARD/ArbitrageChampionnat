@@ -1,9 +1,10 @@
+// lib/src/features/player_entry/player_entry_screen.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/match.dart';
 import 'package:myapp/models/player_model.dart';
-import 'package:myapp/src/features/match_selection/partie_list_screen.dart';
+import 'package:myapp/src/features/doubles_composition/configure_doubles_screen.dart';
 
 class PlayerEntryScreen extends StatefulWidget {
   final Match match;
@@ -48,13 +49,14 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
     super.dispose();
   }
 
-  Future<void> _savePlayers() async {
+  Future<void> _savePlayersAndConfigureDoubles() async {
     if (_formKey.currentState!.validate()) {
       final playersBox = await Hive.openBox<Player>('players');
-      await playersBox.clear();
+      await playersBox.clear(); // Clear existing players before adding new ones
 
       final playersToSave = <Player>[];
 
+      // Team 1
       final team1Letters = ['A', 'B', 'C', 'D'];
       for (var letter in team1Letters) {
         playersToSave.add(
@@ -67,6 +69,7 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
         );
       }
 
+      // Team 2
       final team2Letters = ['W', 'X', 'Y', 'Z'];
       for (var letter in team2Letters) {
         playersToSave.add(
@@ -79,18 +82,19 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
         );
       }
 
+      // Save all players to Hive
       for (var player in playersToSave) {
         await playersBox.put(player.id, player);
       }
 
       if (!mounted) return;
 
-      Navigator.pushAndRemoveUntil(
+      // Navigate to the doubles configuration screen
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => PartieListScreen(match: widget.match),
+          builder: (context) => ConfigureDoublesScreen(match: widget.match),
         ),
-        (route) => false,
       );
     }
   }
@@ -110,8 +114,9 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
               _buildTeamSection(widget.match.equipeDeux, ['W', 'X', 'Y', 'Z']),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: _savePlayers,
-                child: const Text('Enregistrer et continuer'),
+                onPressed: _savePlayersAndConfigureDoubles,
+                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
+                child: const Text('Enregistrer et Configurer les Doubles'),
               ),
             ],
           ),
@@ -125,19 +130,21 @@ class _PlayerEntryScreenState extends State<PlayerEntryScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(teamName, style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         ...letters.map((letter) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            padding: const EdgeInsets.symmetric(vertical: 6.0),
             child: TextFormField(
               controller: _controllers[letter],
+              keyboardType: TextInputType.name,
+              textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
                 labelText: 'Joueur $letter',
                 border: const OutlineInputBorder(),
               ),
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Veuillez entrer un nom';
+                if (value == null || value.trim().isEmpty) {
+                  return 'Le nom ne peut pas être vide';
                 }
                 return null;
               },

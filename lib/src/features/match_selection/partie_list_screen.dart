@@ -2,8 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/match.dart';
+import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/models/player_model.dart';
-import 'package:myapp/src/features/doubles_composition/double_composition_screen.dart';
+import 'package:myapp/src/features/doubles_composition/configure_doubles_screen.dart';
 import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
 import 'package:myapp/src/features/match_selection/partie_card.dart';
 import 'package:myapp/src/features/scoring/scoring_screen.dart';
@@ -28,7 +29,8 @@ class _PartieListScreenState extends State<PartieListScreen> {
 
   Future<List<Player>> _loadPlayers() async {
     final box = await Hive.openBox<Player>('players');
-    return box.values.toList();
+    // Ensure players for the current match are loaded
+    return box.values.where((p) => p.id.startsWith(widget.match.id)).toList();
   }
 
   Player _findPlayerById(List<Player> players, String id) {
@@ -38,13 +40,42 @@ class _PartieListScreenState extends State<PartieListScreen> {
     );
   }
 
+  void _navigateToScoring(Partie partie) {
+    // Check if the players for the match are defined
+    if (partie.team1PlayerIds.isEmpty || partie.team2PlayerIds.isEmpty) {
+       if (partie.isEditable) {
+         // For editable doubles, guide the user to the configuration screen
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Veuillez d\'abord configurer les équipes de double.')),
+          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ConfigureDoublesScreen(match: widget.match)),
+          ).then((_) => setState(() { _playersFuture = _loadPlayers(); })); // Refresh on return
+       } else {
+          // For fixed matches with missing players (should not happen in normal flow)
+           ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Les joueurs pour cette partie ne sont pas définis.')),
+          );
+       }
+    } else {
+      // Proceed to scoring screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ScoringScreen(partie: partie),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Feuille des parties'),
+        title: Text('Feuille de Match'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.home),
           onPressed: () {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const MatchListScreen()),
@@ -52,6 +83,10 @@ class _PartieListScreenState extends State<PartieListScreen> {
             );
           },
         ),
+        actions: [
+            // The icon to edit doubles is removed as per the new workflow.
+            // The user is now automatically redirected to the configuration screen.
+        ],
       ),
       body: FutureBuilder<List<Player>>(
         future: _playersFuture,
@@ -61,12 +96,12 @@ class _PartieListScreenState extends State<PartieListScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Erreur: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Aucun joueur trouvé.'));
+            return const Center(child: Text('Aucun joueur trouvé pour ce match.'));
           }
 
           final players = snapshot.data!;
           return ListView.builder(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             itemCount: widget.match.parties.length,
             itemBuilder: (context, index) {
               final partie = widget.match.parties[index];
@@ -87,32 +122,7 @@ class _PartieListScreenState extends State<PartieListScreen> {
                 team1Players: team1Players,
                 team2Players: team2Players,
                 arbitre: arbitre,
-                onTap: () async {
-                  if (partie.isEditable) {
-                    final result = await Navigator.push<bool>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DoubleCompositionScreen(
-                          partie: partie,
-                          match: widget.match,
-                        ),
-                      ),
-                    );
-                    if (result == true) {
-                      // Refresh the list only if changes were saved
-                      setState(() {
-                        _playersFuture = _loadPlayers();
-                      });
-                    }
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ScoringScreen(partie: partie),
-                      ),
-                    );
-                  }
-                },
+                onTap: () => _navigateToScoring(partie),
               );
             },
           );

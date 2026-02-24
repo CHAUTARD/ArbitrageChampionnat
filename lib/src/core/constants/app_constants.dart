@@ -11,5 +11,5 @@ class AppConstants {
   static const int copyrightYear = 2026;
 
   static const String copyright =
-      '© $copyrightYear $appAuthor. Tous droits réservés.';
+      '© $copyrightYear $appAuthor - v$appVersion. Tous droits réservés.';
 }

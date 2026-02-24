@@ -40,6 +40,28 @@ class Match extends HiveObject {
     required this.equipeDeux,
   });
 
+  Match copyWith({
+    String? id,
+    String? type,
+    String? status,
+    DateTime? date,
+    List<Partie>? parties,
+    String? competitionId,
+    String? equipeUn,
+    String? equipeDeux,
+  }) {
+    return Match(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      status: status ?? this.status,
+      date: date ?? this.date,
+      parties: parties ?? this.parties,
+      competitionId: competitionId ?? this.competitionId,
+      equipeUn: equipeUn ?? this.equipeUn,
+      equipeDeux: equipeDeux ?? this.equipeDeux,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'type': type,

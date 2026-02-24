@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'partie_model.g.dart';
 
 @JsonSerializable()
-@HiveType(typeId: 2)
+@HiveType(typeId: 4)
 class Partie extends HiveObject {
   @HiveField(0)
   String? id;
