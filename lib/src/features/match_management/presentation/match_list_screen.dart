@@ -18,7 +18,15 @@ class MatchListScreen extends StatelessWidget {
     final matchesStream = matchService.getMatches();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Liste des rencontres')),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Icon(Icons.home, color: Colors.grey), // Icône inactive
+            SizedBox(width: 8), // Espace entre l'icône et le texte
+            const Text('Liste des rencontres'),
+          ],
+        ),
+      ),
       body: StreamBuilder<List<Match>>(
         stream: matchesStream,
         builder: (context, snapshot) {

@@ -1,6 +1,6 @@
-import 'dart:convert';
+// lib/src/features/scorring/table_screen.dart
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/models/player_model.dart';
 import 'package:myapp/src/features/table/double_table_screen.dart';
@@ -25,11 +25,8 @@ class _TableScreenState extends State<TableScreen> {
   }
 
   Future<List<Player>> _loadPlayers() async {
-    final String response = await rootBundle.loadString(
-      'assets/data/players.json',
-    );
-    final data = await json.decode(response) as List;
-    return data.map((player) => Player.fromJson(player)).toList();
+    final box = await Hive.openBox<Player>('players');
+    return box.values.toList();
   }
 
   Player _findPlayerById(List<Player> players, String id) {

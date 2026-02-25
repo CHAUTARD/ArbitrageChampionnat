@@ -160,7 +160,7 @@ class _ConfigureDoublesScreenState extends State<ConfigureDoublesScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTeamSection(
-              title: 'Composition du Double 1 (Partie ${_double1.numero})',
+              title: 'Composition - Partie ${_double1.numero} - Double',
               teamName: widget.match.equipeUn,
               players: _team1Players,
               selectedPlayer1: _team1Player1,
@@ -208,7 +208,7 @@ class _ConfigureDoublesScreenState extends State<ConfigureDoublesScreen> {
             const SizedBox(height: 16),
 
             _buildReadOnlySection(
-              title: 'Composition du Double 2 (Partie ${_double2.numero})',
+              title: 'Partie ${_double2.numero} - Double',
               teamName: widget.match.equipeUn,
               players: _team1Remaining,
             ),

@@ -7,7 +7,7 @@ import 'package:myapp/models/player_model.dart';
 import 'package:myapp/src/features/doubles_composition/configure_doubles_screen.dart';
 import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
 import 'package:myapp/src/features/match_selection/partie_card.dart';
-import 'package:myapp/src/features/scoring/scoring_screen.dart';
+import 'package:myapp/src/features/scoring/table_screen.dart';
 
 class PartieListScreen extends StatefulWidget {
   final Match match;
@@ -40,31 +40,41 @@ class _PartieListScreenState extends State<PartieListScreen> {
     );
   }
 
-  void _navigateToScoring(Partie partie) {
+  void _navigateToTable(Partie partie) {
     // Check if the players for the match are defined
     if (partie.team1PlayerIds.isEmpty || partie.team2PlayerIds.isEmpty) {
-       if (partie.isEditable) {
-         // For editable doubles, guide the user to the configuration screen
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Veuillez d\'abord configurer les équipes de double.')),
-          );
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ConfigureDoublesScreen(match: widget.match)),
-          ).then((_) => setState(() { _playersFuture = _loadPlayers(); })); // Refresh on return
-       } else {
-          // For fixed matches with missing players (should not happen in normal flow)
-           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Les joueurs pour cette partie ne sont pas définis.')),
-          );
-       }
+      if (partie.isEditable) {
+        // For editable doubles, guide the user to the configuration screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Veuillez d\'abord configurer les équipes de double.',
+            ),
+          ),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ConfigureDoublesScreen(match: widget.match),
+          ),
+        ).then(
+          (_) => setState(() {
+            _playersFuture = _loadPlayers();
+          }),
+        ); // Refresh on return
+      } else {
+        // For fixed matches with missing players (should not happen in normal flow)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Les joueurs pour cette partie ne sont pas définis.'),
+          ),
+        );
+      }
     } else {
       // Proceed to scoring screen
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => ScoringScreen(partie: partie),
-        ),
+        MaterialPageRoute(builder: (context) => TableScreen(partie: partie)),
       );
     }
   }
@@ -73,9 +83,9 @@ class _PartieListScreenState extends State<PartieListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Feuille de Match'),
+        title: Text('Fiche de partie'),
         leading: IconButton(
-          icon: const Icon(Icons.home),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => const MatchListScreen()),
@@ -84,8 +94,8 @@ class _PartieListScreenState extends State<PartieListScreen> {
           },
         ),
         actions: [
-            // The icon to edit doubles is removed as per the new workflow.
-            // The user is now automatically redirected to the configuration screen.
+          // The icon to edit doubles is removed as per the new workflow.
+          // The user is now automatically redirected to the configuration screen.
         ],
       ),
       body: FutureBuilder<List<Player>>(
@@ -96,7 +106,9 @@ class _PartieListScreenState extends State<PartieListScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Erreur: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Aucun joueur trouvé pour ce match.'));
+            return const Center(
+              child: Text('Aucun joueur trouvé pour ce match.'),
+            );
           }
 
           final players = snapshot.data!;
@@ -117,12 +129,10 @@ class _PartieListScreenState extends State<PartieListScreen> {
 
               return PartieCard(
                 partie: partie,
-                equipeUn: widget.match.equipeUn,
-                equipeDeux: widget.match.equipeDeux,
                 team1Players: team1Players,
                 team2Players: team2Players,
                 arbitre: arbitre,
-                onTap: () => _navigateToScoring(partie),
+                onTap: () => _navigateToTable(partie),
               );
             },
           );

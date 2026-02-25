@@ -33,6 +33,12 @@ class Partie extends HiveObject {
   @HiveField(8)
   final bool isEditable;
 
+  @HiveField(9)
+  String? winnerId;
+
+  @HiveField(10)
+  bool validated;
+
   Partie({
     this.id,
     required this.numero,
@@ -43,9 +49,12 @@ class Partie extends HiveObject {
     this.scoreEquipeDeux,
     required this.status,
     required this.isEditable,
+    this.winnerId,
+    this.validated = false,
   });
 
   String get type => team1PlayerIds.length == 1 ? 'Simple' : 'Double';
+  bool get isDouble => team1PlayerIds.length > 1;
 
   factory Partie.fromJson(Map<String, dynamic> json) => _$PartieFromJson(json);
   Map<String, dynamic> toJson() => _$PartieToJson(this);
@@ -60,6 +69,8 @@ class Partie extends HiveObject {
     int? scoreEquipeDeux,
     String? status,
     bool? isEditable,
+    String? winnerId,
+    bool? validated,
   }) {
     return Partie(
       id: id ?? this.id,
@@ -71,6 +82,8 @@ class Partie extends HiveObject {
       scoreEquipeDeux: scoreEquipeDeux ?? this.scoreEquipeDeux,
       status: status ?? this.status,
       isEditable: isEditable ?? this.isEditable,
+      winnerId: winnerId ?? this.winnerId,
+      validated: validated ?? this.validated,
     );
   }
 }

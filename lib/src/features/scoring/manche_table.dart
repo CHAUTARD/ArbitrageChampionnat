@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/manche_model.dart';
+import 'package:myapp/models/player_model.dart';
 import 'package:myapp/src/features/scoring/game_state.dart';
 
 class MancheTable extends StatelessWidget {
-  const MancheTable({super.key});
+  final List<Player> team1Players;
+  final List<Player> team2Players;
+
+  const MancheTable(
+      {super.key, required this.team1Players, required this.team2Players});
+
+  String getPlayerNames(List<Player> players) {
+    if (players.isEmpty || players.any((p) => p.id.isEmpty)) {
+      return 'Composition incomplète';
+    }
+    if (players.length == 1) return players.first.name;
+    return players.map((p) => p.name).join(' & ');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,11 +30,24 @@ class MancheTable extends StatelessWidget {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildScoreColumn(context, 'Équipe 1', currentManche.scoreTeam1,
-                  () => gameState.incrementScore(1), () => gameState.decrementScore(1)),
-              _buildScoreColumn(context, 'Équipe 2', currentManche.scoreTeam2,
-                  () => gameState.incrementScore(2), () => gameState.decrementScore(2)),
+              Expanded(
+                child: _buildScoreColumn(
+                    context,
+                    getPlayerNames(team1Players),
+                    currentManche.scoreTeam1,
+                    () => gameState.incrementScore(0, team1Players.first.id),
+                    () => gameState.decrementScore(0, team1Players.first.id)),
+              ),
+              Expanded(
+                child: _buildScoreColumn(
+                    context,
+                    getPlayerNames(team2Players),
+                    currentManche.scoreTeam2,
+                    () => gameState.incrementScore(1, team2Players.first.id),
+                    () => gameState.decrementScore(1, team2Players.first.id)),
+              ),
             ],
           ),
         ],
@@ -33,10 +59,18 @@ class MancheTable extends StatelessWidget {
       VoidCallback onIncrement, VoidCallback onDecrement) {
     return Column(
       children: [
-        Text(title, style: Theme.of(context).textTheme.headlineSmall),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.headlineSmall,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
         const SizedBox(height: 10),
-        Text(score.toString(), style: Theme.of(context).textTheme.headlineMedium),
+        Text(score.toString(),
+            style: Theme.of(context).textTheme.headlineMedium),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
               icon: const Icon(Icons.remove),

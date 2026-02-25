@@ -23,22 +23,42 @@ class SimpleTableScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gameService = Provider.of<GameService>(context, listen: false);
-    return ChangeNotifierProvider(
-      create: (context) =>
-          GameState(gameService: gameService, partie: partie),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('${joueurUn.name} vs ${joueurDeux.name}'),
-          actions: [
-            if (arbitre != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: Center(child: Text('Arbitre: ${arbitre!.name}')),
-              ),
-          ],
-        ),
-        body: ScoringScreen(partie: partie),
-      ),
+
+    return FutureBuilder<GameState>(
+      future: GameState.create(gameService: gameService, partie: partie),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(child: Text('Erreur: ${snapshot.error}')),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: Text("Impossible de charger l'état du jeu.")),
+          );
+        }
+
+        final gameState = snapshot.data!;
+
+        return ChangeNotifierProvider.value(
+          value: gameState,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text('Partie n°${partie.numero} - Arbitre: ${arbitre?.name ?? 'Non assigné'}'),
+            ),
+            body: ScoringScreen(
+              partie: partie,
+              team1Players: [joueurUn],
+              team2Players: [joueurDeux],
+            ),
+          ),
+        );
+      },
     );
   }
 }

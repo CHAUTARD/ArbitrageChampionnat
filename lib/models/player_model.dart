@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 part 'player_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-@HiveType(typeId: 5) // Correction du typeId
+@HiveType(typeId: 5)
 class Player extends HiveObject {
   @HiveField(0)
   final String id;
@@ -25,6 +25,15 @@ class Player extends HiveObject {
     required this.equipe,
     required this.lettre,
   }) : id = id ?? const Uuid().v4();
+
+  factory Player.unknown() {
+    return Player(
+      id: 'unknown',
+      name: 'Joueur inconnu',
+      equipe: 'N/A',
+      lettre: '?',
+    );
+  }
 
   factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
 
