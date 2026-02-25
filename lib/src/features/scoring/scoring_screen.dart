@@ -4,6 +4,7 @@ import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/models/player_model.dart';
 import 'package:myapp/src/features/scoring/game_state.dart';
 import 'package:myapp/src/features/scoring/manche_table.dart';
+import 'package:myapp/src/features/scoring/current_manche_score.dart';
 
 class ScoringScreen extends StatefulWidget {
   final Partie partie;
@@ -156,7 +157,12 @@ class _ScoringScreenState extends State<ScoringScreen> {
                     ],
                   ),
                 ),
-                const MancheTable(),
+                CurrentMancheScore(areSidesSwapped: areSidesSwapped),
+                const SizedBox(height: 20),
+                MancheTable(
+                  team1Players: widget.team1Players,
+                  team2Players: widget.team2Players,
+                ),
                 const SizedBox(height: 20),
                 if (gameState.game.manches.length < 5)
                   ElevatedButton(
@@ -184,6 +190,12 @@ class _ScoringScreenState extends State<ScoringScreen> {
       if (team.length > 1)
         IconButton(
           icon: const Icon(Icons.swap_horiz),
+          iconSize: 28,
+          style: IconButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+            foregroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
+          ),
+          tooltip: 'Changer la position des joueurs',
           onPressed: isGameStarted ? null : () => _swapPlayers(team),
         ),
     ];
