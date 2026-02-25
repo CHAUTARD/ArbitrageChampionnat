@@ -1,3 +1,9 @@
+// Path: lib/src/features/table/simple_table_screen.dart
+// Rôle: Écran d'affichage de la table de jeu pour un match en simple.
+// Similaire à `DoubleTableScreen`, ce widget est actuellement un placeholder.
+// Il est conçu pour afficher la disposition d'une table de ping-pong pour un match en simple.
+// Il initialise également un `GameState` pour une future intégration avec la logique de jeu.
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/partie_model.dart';

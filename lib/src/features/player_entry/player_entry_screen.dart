@@ -1,3 +1,11 @@
+// Path: lib/src/features/player_entry/player_entry_screen.dart
+// Rôle: Gère l'écran de saisie des noms des joueurs pour un match donné.
+// Cet écran affiche un formulaire permettant de saisir les noms des quatre joueurs de chaque équipe, identifiés par des lettres (A, B, C, D et W, X, Y, Z).
+// Une fois les noms saisis et validés, le service sauvegarde ces joueurs dans la base de données locale (Hive), en remplaçant les anciennes données pour ce match afin d'éviter les doublons.
+// Il génère ensuite la liste standard des 14 parties (simples et doubles), en assignant les joueurs et les arbitres selon les règles prédéfinies pour les simples.
+// Les parties de double sont créées sans joueurs assignés et marquées comme "modifiables" (`isEditable`).
+// Après la création, l'utilisateur est redirigé vers l'écran listant toutes les parties du match (`PartieListScreen`).
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';

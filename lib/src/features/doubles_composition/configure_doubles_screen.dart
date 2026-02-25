@@ -1,3 +1,9 @@
+// Path: lib/src/features/doubles_composition/configure_doubles_screen.dart
+// Rôle: Gère l'écran de configuration des parties de double.
+// Cet écran permet à l'utilisateur de sélectionner les joueurs pour la première partie de double.
+// La composition de la deuxième partie de double est automatiquement déduite des joueurs restants.
+// Les modifications sont ensuite sauvegardées dans la base de données locale.
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/match.dart';

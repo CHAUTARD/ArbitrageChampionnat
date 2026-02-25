@@ -1,3 +1,8 @@
+// Path: lib/src/features/match_selection/match_card.dart
+// Rôle: Affiche une carte (Card) résumant les informations d'un match.
+// Cette carte présente les noms des deux équipes qui s'affrontent, ainsi que le score total du match.
+// Un appui sur la carte navigue vers l'écran de détails du match correspondant.
+
 import 'package:flutter/material.dart';
 import 'package:myapp/models/match.dart';
 import 'package:myapp/src/features/match_details/presentation/match_details_screen.dart';

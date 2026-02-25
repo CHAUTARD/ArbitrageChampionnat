@@ -1,3 +1,8 @@
+// Path: lib/main.dart
+// Rôle: Point d'entrée principal de l'application Flutter.
+// Ce fichier initialise l'application, configure les services (comme Hive pour la base de données locale
+// et les providers pour la gestion d'état), et définit le thème global ainsi que la route initiale.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';

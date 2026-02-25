@@ -1,3 +1,9 @@
+// Path: lib/models/match.dart
+// Rôle: Définit le modèle de données pour un "Match" (rencontre).
+// Ce modèle représente une rencontre complète, incluant son identifiant, type, statut, date,
+// la liste des parties qui la composent, et les noms des deux équipes qui s'affrontent.
+// Il est persisté dans la base de données locale à l'aide de Hive.
+
 import 'package:hive/hive.dart';
 import 'package:myapp/models/partie_model.dart';
 

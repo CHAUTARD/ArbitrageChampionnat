@@ -1,10 +1,16 @@
+// Path: lib/models/partie_model.dart
+// Rôle: Définit le modèle de données pour une "Partie".
+// Ce modèle représente un match individuel (simple ou double) au sein d'une rencontre.
+// Il contient toutes les informations relatives à la partie : numéro, joueurs, arbitre, scores, statut, etc.
+// Il est sérialisable en JSON et persisté avec Hive.
+
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'partie_model.g.dart';
 
 @JsonSerializable()
-@HiveType(typeId: 4)
+@HiveType(typeId: 3)
 class Partie extends HiveObject {
   @HiveField(0)
   String? id;

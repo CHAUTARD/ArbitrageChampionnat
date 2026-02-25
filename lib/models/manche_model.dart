@@ -1,3 +1,8 @@
+// Path: lib/models/manche_model.dart
+// Rôle: Définit le modèle de données pour une "Manche".
+// Ce modèle représente une manche individuelle d'une partie, avec les scores de chaque équipe et un indicateur 
+// pour savoir si la manche est terminée. Il est sérialisable en JSON et persisté avec Hive.
+
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:myapp/models/partie_model.dart';
@@ -5,7 +10,7 @@ import 'package:myapp/models/partie_model.dart';
 part 'manche_model.g.dart';
 
 @JsonSerializable()
-@HiveType(typeId: 2) // Correction du typeId
+@HiveType(typeId: 1) // Correction du typeId
 class Manche extends HiveObject {
   @HiveField(0)
   final Partie partie;

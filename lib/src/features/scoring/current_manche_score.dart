@@ -1,3 +1,9 @@
+// Path: lib/src/features/scoring/current_manche_score.dart
+// Rôle: Gère l'affichage et la mise à jour du score pour la manche en cours.
+// Ce widget affiche les scores actuels de chaque équipe pour la manche en cours et permet de les incrémenter ou de les décrémenter via des boutons.
+// Il prend en compte l'inversion des côtés (`areSidesSwapped`) pour afficher les scores du bon côté de l'écran.
+// Il interagit avec `GameState` (via Provider) pour lire et mettre à jour l'état du jeu.
+
 import 'package:flutter/material.dart';
 import 'package:myapp/src/features/scoring/game_state.dart';
 import 'package:provider/provider.dart';

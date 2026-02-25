@@ -1,4 +1,8 @@
-// partie_list_screen.dart
+// Path: lib/src/features/match_selection/partie_list_screen.dart
+// Rôle: Affiche la liste des parties (simples et doubles) pour un match donné.
+// Cet écran charge les joueurs associés au match et affiche une `PartieCard` pour chaque partie.
+// Il gère la navigation vers l'écran de score (`TableScreen`) ou vers l'écran de configuration des doubles (`ConfigureDoublesScreen`) si la composition des équipes de double n'est pas encore définie.
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/match.dart';

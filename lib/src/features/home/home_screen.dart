@@ -1,4 +1,8 @@
-// lib/src/features/home/home_screen.dart
+// Path: lib/src/features/home/home_screen.dart
+// Rôle: Affiche l'écran d'accueil de l'application.
+// Cet écran présente la liste des matchs en cours, récupérée en temps réel depuis le MatchService.
+// Il permet également de naviguer vers l'écran de gestion des matchs pour en ajouter de nouveaux.
+// Un simple copyright est affiché en bas de page.
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

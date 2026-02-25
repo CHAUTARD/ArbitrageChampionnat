@@ -1,3 +1,9 @@
+// Path: lib/data/static_parties_data.dart
+// Rôle: Fournit les données statiques pour la composition des parties d'une rencontre.
+// Ce fichier contient la logique pour générer la liste standard des 14 parties (simples et doubles)
+// d'une rencontre de tennis de table, en préfixant les identifiants des joueurs avec l'ID du match
+// pour assurer leur unicité.
+
 import 'package:myapp/models/partie_model.dart';
 
 /// Retourne une liste de parties avec les identifiants des joueurs préfixés par l'ID du match.

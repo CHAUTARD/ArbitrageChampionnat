@@ -1,6 +1,10 @@
+// Path: lib/src/features/players/player_service.dart
+// Rôle: Fournit des services pour la gestion des joueurs, en interagissant avec la base de données locale (Hive).
+// Ce service gère l'initialisation de la base de données.
+// Il permet de récupérer la liste complète des joueurs ou un joueur spécifique par son identifiant.
+
 import 'package:hive/hive.dart';
 import 'package:myapp/models/player_model.dart';
-import 'package:myapp/data/static_players_data.dart';
 
 class PlayerService {
   static const String _boxName = 'players';
@@ -10,13 +14,9 @@ class PlayerService {
   }
 
   Future<void> initializeDatabase() async {
-    final box = await _openBox();
-    if (box.isEmpty) {
-      final staticPlayers = getStaticPlayers();
-      for (var player in staticPlayers) {
-        await box.put(player.id, player);
-      }
-    }
+    // This method ensures the Hive box for players is open when the app starts.
+    // It no longer pre-populates the database with static data.
+    await _openBox();
   }
 
   Future<List<Player>> getPlayers() async {

@@ -1,4 +1,8 @@
-// lib/src/features/scorring/table_screen.dart
+// Path: lib/src/features/scoring/table_screen.dart
+// Rôle: Aiguille vers l'écran de table de jeu approprié (simple ou double).
+// Ce widget agit comme un routeur.
+// En fonction du nombre de joueurs dans la `Partie` (un ou deux par équipe), il charge les données des joueurs depuis Hive, puis affiche soit `SimpleTableScreen` pour les matchs en simple, soit `DoubleTableScreen` pour les matchs en double.
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:myapp/models/partie_model.dart';

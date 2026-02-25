@@ -1,3 +1,14 @@
+// Path: lib/src/features/scoring/game_state.dart
+// Rôle: Gère l'état de la partie en cours (`Game`).
+// Cette classe, utilisée avec `ChangeNotifier` et `Provider`, est le cœur de la logique de scoring.
+// Elle charge une partie existante ou en crée une nouvelle via `GameService`.
+// Elle expose des méthodes pour manipuler l'état du jeu, telles que :
+// - `addManche`: Ajoute une nouvelle manche (set).
+// - `updateMancheScore`: Met à jour le score d'une manche spécifique.
+// - `removeManche`: Supprime la dernière manche.
+// - `_updateScores`: Recalcule les scores globaux de la partie (nombre de manches gagnées par chaque équipe).
+// Après chaque modification, elle notifie les widgets qui l'écoutent pour qu'ils se reconstruisent, et persiste les changements via `GameService`.
+
 import 'package:flutter/material.dart';
 import 'package:myapp/models/game_model.dart';
 import 'package:myapp/models/manche_model.dart';

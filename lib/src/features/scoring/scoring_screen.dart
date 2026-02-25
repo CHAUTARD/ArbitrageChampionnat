@@ -1,3 +1,19 @@
+// Path: lib/src/features/scoring/scoring_screen.dart
+// Rôle: Écran principal pour le comptage des points d'une partie.
+// C'est l'interface où l'utilisateur interagit pour enregistrer les scores.
+//
+// Fonctionnalités:
+// - **Gestion de l'état du jeu**: S'intègre avec `GameState` (via Provider) pour charger, afficher et mettre à jour l'état de la partie.
+// - **Affichage des équipes**: Montre les joueurs des deux équipes. Avant que la partie ne commence, il permet d'échanger la position des joueurs dans un double.
+// - **Sélection du serveur**: Permet de désigner le joueur qui a gagné le tirage au sort (toss) et qui servira en premier.
+// - **Logique de service**: Calcule et met à jour automatiquement le joueur qui doit servir (`_currentServer`) en fonction du score, de la manche et du vainqueur du toss, en suivant les règles du tennis de table (changement de service tous les 2 points, etc.).
+// - **Score de la manche en cours**: Affiche et permet de modifier le score de la manche actuelle via le widget `CurrentMancheScore`.
+// - **Tableau des manches**: Affiche un résumé des scores de toutes les manches jouées via `MancheTable`.
+// - **Contrôles de la partie**:
+//   - "Manche suivante": Bouton pour conclure la manche en cours et en commencer une nouvelle.
+//   - "Valider la partie": Bouton pour terminer la partie et enregistrer le résultat final.
+// - **Inversion des côtés**: Change automatiquement le côté des équipes sur l'affichage à chaque nouvelle manche pour refléter la réalité du jeu (`areSidesSwapped`).
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/partie_model.dart';

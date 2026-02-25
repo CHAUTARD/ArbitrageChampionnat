@@ -1,10 +1,16 @@
+// Path: lib/models/game_model.dart
+// Rôle: Définit le modèle de données pour un "Game" (jeu).
+// Ce modèle représente l'état d'un jeu de pointage en cours, incluant l'identifiant, 
+// la partie associée, les scores, la liste des manches, et le nombre de manches gagnées par chaque équipe.
+// Il est persisté dans la base de données locale à l'aide de Hive.
+
 import 'package:hive/hive.dart';
 import 'package:myapp/models/manche_model.dart';
 import 'package:myapp/models/partie_model.dart';
 
 part 'game_model.g.dart';
 
-@HiveType(typeId: 4)
+@HiveType(typeId: 0)
 class Game extends HiveObject {
   @HiveField(0)
   final String id;

@@ -1,3 +1,8 @@
+// Path: lib/src/features/table/double_table_screen.dart
+// Rôle: Écran d'affichage de la table de jeu pour un match en double.
+// Pour l'instant, ce widget est un placeholder. Il est destiné à afficher la disposition spécifique d'une table de ping-pong pour un match en double, potentiellement avec le positionnement des joueurs, les zones de service, etc.
+// Il initialise un `GameState` pour pouvoir, à terme, interagir avec l'état de la partie.
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/partie_model.dart';

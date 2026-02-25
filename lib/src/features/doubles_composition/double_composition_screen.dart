@@ -1,3 +1,9 @@
+// Path: lib/src/features/doubles_composition/double_composition_screen.dart
+// Rôle: Gère l'écran de composition des équipes pour une partie de double.
+// Cet écran permet à l'utilisateur de sélectionner les deux joueurs de chaque équipe qui participeront à une partie de double spécifique.
+// La sélection est validée pour s'assurer qu'un joueur n'est pas sélectionné deux fois dans la même équipe.
+// La composition est ensuite sauvegardée dans la base de données locale.
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/match.dart';

@@ -1,3 +1,9 @@
+// Path: lib/src/features/scoring/manche_table.dart
+// Rôle: Affiche un tableau récapitulatif des scores de chaque manche pour les deux équipes.
+// Ce widget construit un `DataTable` qui présente les noms des joueurs de chaque équipe et les scores obtenus dans chaque manche (jusqu'à 5).
+// Il écoute les changements de `GameState` pour mettre à jour les scores en temps réel.
+// Si une manche n'a pas encore été jouée, il affiche un tiret '-' comme espace réservé.
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/player_model.dart';

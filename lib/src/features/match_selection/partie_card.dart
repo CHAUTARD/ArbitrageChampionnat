@@ -1,3 +1,8 @@
+// Path: lib/src/features/match_selection/partie_card.dart
+// Rôle: Affiche une carte (Card) pour une seule partie (simple ou double).
+// Cette carte affiche le numéro de la partie, les noms des joueurs ou des paires, le score (si validé), et l'arbitre désigné.
+// Elle est interactive et déclenche une action (onTap) lorsqu'on appuie dessus, généralement pour naviguer vers l'écran de score.
+
 import 'package:flutter/material.dart';
 import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/models/player_model.dart';

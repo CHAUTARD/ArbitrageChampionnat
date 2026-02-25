@@ -1,3 +1,8 @@
+// Path: lib/models/player_model.dart
+// Rôle: Définit le modèle de données pour un "Player" (joueur).
+// Ce modèle représente un joueur avec ses informations de base : identifiant, nom, équipe et une lettre assignée.
+// Il est sérialisable en JSON et persisté avec Hive. Il inclut également une fabrique pour créer un joueur "inconnu".
+
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
@@ -5,7 +10,7 @@ import 'package:uuid/uuid.dart';
 part 'player_model.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-@HiveType(typeId: 5)
+@HiveType(typeId: 4)
 class Player extends HiveObject {
   @HiveField(0)
   final String id;
