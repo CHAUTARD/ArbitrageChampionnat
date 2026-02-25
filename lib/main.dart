@@ -1,35 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myapp/models/game_model.dart';
 import 'package:myapp/models/manche_model.dart';
 import 'package:myapp/models/match.dart';
 import 'package:myapp/models/partie_model.dart';
 import 'package:myapp/models/player_model.dart';
-import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
 import 'package:myapp/src/features/match_management/application/match_service.dart';
+import 'package:myapp/src/features/match_management/presentation/match_list_screen.dart';
 import 'package:myapp/src/features/players/player_service.dart';
 import 'package:myapp/src/features/scoring/game_service.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
   await Hive.initFlutter();
-  await initializeDateFormatting('fr_FR', null);
 
-  Hive
-    ..registerAdapter(GameAdapter())
-    ..registerAdapter(MancheAdapter())
-    ..registerAdapter(MatchAdapter())
-    ..registerAdapter(PartieAdapter())
-    ..registerAdapter(PlayerAdapter());
+  // Registering adapters
+  Hive.registerAdapter(MatchAdapter());
+  Hive.registerAdapter(PartieAdapter());
+  Hive.registerAdapter(PlayerAdapter());
+  Hive.registerAdapter(MancheAdapter());
+  Hive.registerAdapter(GameAdapter());
 
-  await Hive.openBox<Game>('games');
-  await Hive.openBox<Manche>('manches');
+  // Opening boxes
   await Hive.openBox<Match>('matches');
-  await Hive.openBox<Partie>('parties');
+  await Hive.openBox<Player>('players');
+  await Hive.openBox<Game>('games');
 
   final playerService = PlayerService();
   await playerService.initializeDatabase();
@@ -39,7 +36,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final PlayerService playerService;
-
   const MyApp({super.key, required this.playerService});
 
   @override
@@ -51,7 +47,10 @@ class MyApp extends StatelessWidget {
         ),
         Provider<PlayerService>.value(value: playerService),
         Provider<GameService>(
-          create: (_) => GameService(Hive.box<Game>('games')),
+          create: (_) => GameService(
+            gameBox: Hive.box<Game>('games'),
+            uuid: const Uuid(),
+          ),
         ),
       ],
       child: MaterialApp(
@@ -73,17 +72,15 @@ class MyApp extends StatelessWidget {
             backgroundColor: Colors.deepPurple,
             foregroundColor: Colors.white,
           ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.deepPurple,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
+        ),
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.deepPurple,
+            brightness: Brightness.dark,
           ),
         ),
+        themeMode: ThemeMode.system,
         home: const MatchListScreen(),
       ),
     );

@@ -60,23 +60,18 @@ class _TableScreenState extends State<TableScreen> {
         final team2Players = widget.partie.team2PlayerIds
             .map((id) => _findPlayerById(players, id))
             .toList();
-        final arbitre = widget.partie.arbitreId != null
-            ? _findPlayerById(players, widget.partie.arbitreId!)
-            : null;
 
-        // Correction: Utiliser la taille de la liste des joueurs pour déterminer le type de partie
         final isDouble = widget.partie.team1PlayerIds.length == 2;
         return isDouble
             ? DoubleTableScreen(
                 partie: widget.partie,
-                team1Players: team1Players,
-                team2Players: team2Players,
+                team1: team1Players,
+                team2: team2Players,
               )
             : SimpleTableScreen(
                 partie: widget.partie,
-                joueurUn: team1Players.first,
-                joueurDeux: team2Players.first,
-                arbitre: arbitre,
+                team1: team1Players,
+                team2: team2Players,
               );
       },
     );

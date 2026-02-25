@@ -1,35 +1,34 @@
-// game_service.dart
 import 'package:hive/hive.dart';
 import 'package:myapp/models/game_model.dart';
 import 'package:myapp/models/manche_model.dart';
 import 'package:myapp/models/partie_model.dart';
+import 'package:uuid/uuid.dart';
 
 class GameService {
-  final Box<Game> _gameBox;
+  final Box<Game> gameBox;
+  final Uuid uuid;
 
-  GameService(this._gameBox);
+  GameService({required this.gameBox, required this.uuid});
 
-  Future<Game> createGame(Partie partie) async {
-    final List<Manche> manches = [];
-
-    for (int i = 0; i < 5; i++) {
-      manches.add(Manche(partie: partie));
-    }
-
+  Game createGame(Partie partie) {
     final newGame = Game(
-      id: 'game_${partie.id}', // Ensure a unique ID for the game
+      id: uuid.v4(),
       partie: partie,
-      manches: manches,
+      manches: [Manche(partie: partie, scoreTeam1: 0, scoreTeam2: 0)], // Correction ici
+      scores: [0, 0],
     );
-    await _gameBox.put(newGame.id, newGame);
+    gameBox.put(newGame.id, newGame);
     return newGame;
   }
 
-  Future<Game?> getGame(String partieId) async {
-    return _gameBox.get('game_$partieId');
+  Game? getGame(String partieId) {
+    return gameBox.values.cast<Game?>().firstWhere(
+          (game) => game?.partie.id == partieId,
+          orElse: () => null,
+        );
   }
 
-  Future<void> updateGame(Game game) async {
-    await _gameBox.put(game.id, game);
+  void updateGame(Game game) {
+    gameBox.put(game.id, game);
   }
 }
