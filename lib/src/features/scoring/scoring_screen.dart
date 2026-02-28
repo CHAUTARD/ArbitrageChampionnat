@@ -1,4 +1,5 @@
 // Path: lib/src/features/scoring/scoring_screen.dart
+
 // Rôle: Écran principal pour le comptage des points d'une partie.
 // C'est l'interface où l'utilisateur interagit pour enregistrer les scores.
 //
@@ -10,7 +11,6 @@
 // - **Score de la manche en cours**: Affiche et permet de modifier le score de la manche actuelle via le widget `CurrentMancheScore`.
 // - **Tableau des manches**: Affiche un résumé des scores de toutes les manches jouées via `MancheTable`.
 // - **Contrôles de la partie**:
-//   - "Manche suivante": Bouton pour conclure la manche en cours et en commencer une nouvelle.
 //   - "Valider la partie": Bouton pour terminer la partie et enregistrer le résultat final.
 // - **Inversion des côtés**: Change automatiquement le côté des équipes sur l'affichage à chaque nouvelle manche pour refléter la réalité du jeu (`areSidesSwapped`).
 
@@ -22,16 +22,22 @@ import 'package:myapp/src/features/scoring/game_state.dart';
 import 'package:myapp/src/features/scoring/manche_table.dart';
 import 'package:myapp/src/features/scoring/current_manche_score.dart';
 
+/// Previously `ScoringScreen` depended on an ancestor
+/// `Provider<GameState>`. To simplify navigation we now create
+/// and expose `GameState` internally, so callers can push this
+/// widget directly without wrapping it.
 class ScoringScreen extends StatefulWidget {
   final Partie partie;
   final List<Player> team1Players;
   final List<Player> team2Players;
+  final String arbitreName;
 
   const ScoringScreen({
     super.key,
     required this.partie,
     required this.team1Players,
     required this.team2Players,
+    this.arbitreName = '',
   });
 
   @override
@@ -42,12 +48,22 @@ class _ScoringScreenState extends State<ScoringScreen> {
   late Player _currentServer;
   late Player _tossWinner;
 
+  // hold the GameState instance created for this screen
+  late GameState _gameState;
+
+  // allow user to manually flip sides before/during the match
+  bool _manualSwap = false;
+
   @override
   void initState() {
     super.initState();
     _tossWinner = widget.team1Players.first;
     _currentServer = _tossWinner;
-    Provider.of<GameState>(context, listen: false).loadGame(widget.partie);
+
+    // create our own GameState using the GameService which is expected
+    // to be provided at the root of the app (unchanged behaviour)
+    _gameState = GameState(context.read());
+    _gameState.loadGame(widget.partie);
   }
 
   void _selectTossWinner(Player player) {
@@ -70,43 +86,57 @@ class _ScoringScreenState extends State<ScoringScreen> {
   }
 
   bool gameStateIsStarted() {
-      final gameState = Provider.of<GameState>(context, listen: false);
-      return gameState.game.scores[0] > 0 || gameState.game.scores[1] > 0;
+    if (_gameState.game.manches.isEmpty) {
+      return false;
+    }
+
+    final firstManche = _gameState.game.manches.first;
+    final bool firstPointScored =
+        firstManche.scoreTeam1 > 0 || firstManche.scoreTeam2 > 0;
+
+    return firstPointScored || _gameState.game.manches.length > 1;
+  }
+
+  void _toggleManualSwap() {
+    if (gameStateIsStarted()) return;
+    setState(() {
+      _manualSwap = !_manualSwap;
+    });
   }
 
   void _updateCurrentServer(GameState gameState) {
+    // Once first server is defined, it stays the same for the whole manche.
+    // Server side is inverted only when moving to the next manche.
+    // The displayed server is always the player currently shown on the table
+    // for the serving side (first player of that side).
     if (gameState.game.manches.isEmpty) return;
+    if (widget.team1Players.isEmpty || widget.team2Players.isEmpty) return;
 
     final bool isTossWinnerInTeam1 = widget.team1Players.contains(_tossWinner);
-    final Player tossLoser = isTossWinnerInTeam1
-        ? widget.team2Players.first
-        : widget.team1Players.first;
-
     final mancheIndex = gameState.game.manches.length - 1;
-    final currentManche = gameState.game.manches.last;
-    final totalScore = currentManche.scoreTeam1 + currentManche.scoreTeam2;
 
-    Player setInitialServer;
-    Player setInitialReceiver;
-    final bool isTossWinnerServingSet = (mancheIndex % 2 == 0);
+    // Displayed sides can be swapped every manche, with an optional manual
+    // swap before game start.
+    final bool effectiveSwapCurrent = ((mancheIndex % 2) == 1) ^ _manualSwap;
+    final bool effectiveSwapFirstManche = _manualSwap;
 
-    if (isTossWinnerServingSet) {
-      setInitialServer = _tossWinner;
-      setInitialReceiver = tossLoser;
-    } else {
-      setInitialServer = tossLoser;
-      setInitialReceiver = _tossWinner;
-    }
+    // Side of the first server in manche 1 is determined by toss winner side.
+    final bool firstServerStartsOnLeft = effectiveSwapFirstManche
+        ? !isTossWinnerInTeam1
+        : isTossWinnerInTeam1;
 
-    int serviceChanges;
-    if (totalScore >= 20) {
-      const int changesBeforeDeuce = 10; // 20 / 2
-      serviceChanges = changesBeforeDeuce + (totalScore - 20);
-    } else {
-      serviceChanges = totalScore ~/ 2;
-    }
+    // At the start of each new manche, the first server side alternates.
+    bool servingOnLeft = (mancheIndex % 2 == 0)
+        ? firstServerStartsOnLeft
+        : !firstServerStartsOnLeft;
 
-    final Player newServer = (serviceChanges % 2 == 0) ? setInitialServer : setInitialReceiver;
+    final bool servingTeamIsTeam1 = servingOnLeft
+        ? !effectiveSwapCurrent
+        : effectiveSwapCurrent;
+
+    final Player newServer = servingTeamIsTeam1
+        ? widget.team1Players.first
+        : widget.team2Players.first;
 
     if (_currentServer != newServer) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -119,7 +149,40 @@ class _ScoringScreenState extends State<ScoringScreen> {
     }
   }
 
-  Future<void> _validateAndFinishGame(GameState gameState) async {
+  String? _getDesignatedWinnerId(GameState gameState) {
+    const int manchesToWin = 3;
+    final int manchesTeam1 = gameState.game.manchesGagneesTeam1;
+    final int manchesTeam2 = gameState.game.manchesGagneesTeam2;
+
+    if (manchesTeam1 == manchesTeam2) {
+      return null;
+    }
+
+    if (manchesTeam1 < manchesToWin && manchesTeam2 < manchesToWin) {
+      return null;
+    }
+
+    final List<Player> winningTeam = manchesTeam1 > manchesTeam2
+        ? widget.team1Players
+        : widget.team2Players;
+
+    if (winningTeam.isEmpty) {
+      return null;
+    }
+
+    return winningTeam.first.id;
+  }
+
+  Future<void> _validateAndFinishGame(GameState gameState, String winnerId) async {
+    widget.partie.scoreEquipeUn = gameState.game.manchesGagneesTeam1;
+    widget.partie.scoreEquipeDeux = gameState.game.manchesGagneesTeam2;
+    widget.partie.winnerId = winnerId;
+    widget.partie.validated = true;
+    _gameState.setGameResult(
+      gameState.game.manchesGagneesTeam1,
+      gameState.game.manchesGagneesTeam2,
+    );
+
     if (!mounted) return;
     await showDialog<void>(
         context: context,
@@ -141,61 +204,115 @@ class _ScoringScreenState extends State<ScoringScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<GameState>(
-      builder: (context, gameState, child) {
-        if (gameState.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (gameState.error != null) {
-          return Center(child: Text(gameState.error!));
-        }
+    return ChangeNotifierProvider<GameState>.value(
+      value: _gameState,
+      child: Consumer<GameState>(
+        builder: (context, gameState, child) {
+          if (gameState.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (gameState.error != null) {
+            return Center(child: Text(gameState.error!));
+          }
 
-        _updateCurrentServer(gameState);
-        final bool isGameStarted = gameStateIsStarted();
+          _updateCurrentServer(gameState);
+          final bool isGameStarted = gameStateIsStarted();
+          final String? designatedWinnerId = _getDesignatedWinnerId(gameState);
+          final bool canValidateGame = designatedWinnerId != null;
 
-        final int mancheIndex = gameState.game.manches.isNotEmpty ? gameState.game.manches.length - 1 : 0;
-        final bool areSidesSwapped = (mancheIndex % 2) == 1;
+          final int mancheIndex = gameState.game.manches.isNotEmpty ? gameState.game.manches.length - 1 : 0;
+          final bool areSidesSwapped = (mancheIndex % 2) == 1;
 
-        final List<Player> leftTeam = areSidesSwapped ? widget.team2Players : widget.team1Players;
-        final List<Player> rightTeam = areSidesSwapped ? widget.team1Players : widget.team2Players;
+          // determine which team appears on the left; combine automatic
+          // swapping per manche with an optional manual override.
+          final bool effectiveSwap = areSidesSwapped ^ _manualSwap;
+          final List<Player> leftTeam = effectiveSwap ? widget.team2Players : widget.team1Players;
+          final List<Player> rightTeam = effectiveSwap ? widget.team1Players : widget.team2Players;
 
-        return SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    children: [
-                      _buildTeamUI(leftTeam, isGameStarted, true),
-                      _buildTeamUI(rightTeam, isGameStarted, false),
-                    ],
+          return Scaffold(
+            appBar: AppBar(
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Partie ${widget.partie.numero}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-                CurrentMancheScore(areSidesSwapped: areSidesSwapped),
-                const SizedBox(height: 20),
-                MancheTable(
-                  team1Players: widget.team1Players,
-                  team2Players: widget.team2Players,
-                ),
-                const SizedBox(height: 20),
-                if (gameState.game.manches.length < 5)
-                  ElevatedButton(
-                    onPressed: gameState.addManche,
-                    child: const Text('Manche suivante'),
-                  ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () => _validateAndFinishGame(gameState),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                  child: const Text('Valider la partie'),
-                ),
-              ],
+                  if (widget.arbitreName.isNotEmpty)
+                    Flexible(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.sports, size: 18),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              widget.arbitreName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildTeamUI(leftTeam, isGameStarted, true),
+                        // swap button placed between the two team buttons
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Tooltip(
+                            message: 'Changement de côté',
+                            child: ElevatedButton(
+                              onPressed: isGameStarted ? null : _toggleManualSwap,
+                              child: const Icon(Icons.swap_horiz),
+                            ),
+                          ),
+                        ),
+                        _buildTeamUI(rightTeam, isGameStarted, false),
+                      ],
+                    ),
+                  ),
+                  // diagramme de la table avec joueurs
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: _buildTableDiagram(leftTeam, rightTeam),
+                  ),
+                  CurrentMancheScore(areSidesSwapped: areSidesSwapped),
+                  const SizedBox(height: 20),
+                  MancheTable(
+                    team1Players: widget.team1Players,
+                    team2Players: widget.team2Players,
+                  ),
+                  if (!widget.partie.validated && canValidateGame) ...[
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () =>
+                          _validateAndFinishGame(gameState, designatedWinnerId),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      child: const Text('Valider la partie'),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ));
+        },
+      ),
     );
   }
 
@@ -225,11 +342,74 @@ class _ScoringScreenState extends State<ScoringScreen> {
     );
   }
 
+  // draw a mini diagram representing the table, with top-left and bottom-right players
+  Widget _buildTableDiagram(List<Player> team1, List<Player> team2) {
+    final String topLeft = team1.isNotEmpty ? team1.first.name : '';
+    final String bottomRight = team2.isNotEmpty ? team2.first.name : '';
+    // determine if left or right player is currently serving
+    bool leftServing = _currentServer == (team1.isNotEmpty ? team1.first : null);
+    bool rightServing = _currentServer == (team2.isNotEmpty ? team2.first : null);
+    return SizedBox(
+      width: double.infinity,
+      height: 120,
+      child: Stack(
+        children: [
+          // use the provided PNG asset as the table background
+          Positioned.fill(
+            child: Image.asset(
+              'assets/icon/Table.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned(
+            top: 8,
+            left: 8,
+            child: Row(
+              children: [
+                Text(topLeft, style: const TextStyle(fontWeight: FontWeight.bold)),
+                if (leftServing) ...[
+                  const SizedBox(width: 4),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Image.asset('assets/icon/Raquette.png', width: 24,
+                      key: ValueKey<bool>(leftServing),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 8,
+            right: 8,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (rightServing) ...[
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: Image.asset('assets/icon/Raquette.png', width: 24,
+                      key: ValueKey<bool>(rightServing),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                ],
+                Text(bottomRight, style: const TextStyle(fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPlayerButton(Player player, bool isGameStarted, bool isPlayerOnLeft) {
     final bool isServeur = player == _currentServer;
     final onPressed = isGameStarted ? null : () => _selectTossWinner(player);
 
-    final icon = isServeur ? Image.asset('assets/icon/Raquette.png', width: 24) : const SizedBox(width: 24);
+    final icon = isServeur
+        ? Image.asset('assets/icon/Raquette.png', width: 24)
+        : const SizedBox(width: 24);
     final label = Text(player.name);
 
     final children = isPlayerOnLeft

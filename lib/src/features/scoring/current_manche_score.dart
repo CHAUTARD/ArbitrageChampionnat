@@ -24,6 +24,7 @@ class CurrentMancheScore extends StatelessWidget {
 
     final score1 = areSidesSwapped ? currentManche.scoreTeam2 : currentManche.scoreTeam1;
     final score2 = areSidesSwapped ? currentManche.scoreTeam1 : currentManche.scoreTeam2;
+    final bool isCurrentMancheWon = _isMancheWon(currentManche.scoreTeam1, currentManche.scoreTeam2);
 
     final teamNumber1 = areSidesSwapped ? 2 : 1;
     final teamNumber2 = areSidesSwapped ? 1 : 2;
@@ -33,42 +34,83 @@ class CurrentMancheScore extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildScoreControl(context, gameState, teamNumber1, score1, mancheIndex),
+          _buildScoreControl(context, gameState, teamNumber1, score1, mancheIndex, isCurrentMancheWon),
           const Text('-', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          _buildScoreControl(context, gameState, teamNumber2, score2, mancheIndex),
+          _buildScoreControl(context, gameState, teamNumber2, score2, mancheIndex, isCurrentMancheWon),
         ],
       ),
     );
   }
 
-  Widget _buildScoreControl(BuildContext context, GameState gameState, int teamNumber, int score, int mancheIndex) {
+  Widget _buildScoreControl(
+    BuildContext context,
+    GameState gameState,
+    int teamNumber,
+    int score,
+    int mancheIndex,
+    bool isCurrentMancheWon,
+  ) {
+    final bool canEdit = !isCurrentMancheWon;
+
     return Column(
       children: [
         Row(
           children: [
-            IconButton(
-              icon: const Icon(Icons.remove),
-              iconSize: 32,
-              onPressed: () {
-                if (score > 0) {
-                  gameState.updateMancheScore(mancheIndex, teamNumber, score - 1);
-                }
-              },
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const CircleBorder(),
+                  padding: EdgeInsets.zero,
+                ),
+                onPressed: canEdit
+                    ? () {
+                        if (score > 0) {
+                          gameState.updateMancheScore(mancheIndex, teamNumber, score - 1);
+                        }
+                      }
+                    : null,
+                child: const Text(
+                  '-',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
+            const SizedBox(width: 8),
             Text(
               score.toString(),
               style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
             ),
-            IconButton(
-              icon: const Icon(Icons.add),
-              iconSize: 32,
-              onPressed: () {
-                gameState.updateMancheScore(mancheIndex, teamNumber, score + 1);
-              },
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 48,
+              height: 48,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const CircleBorder(),
+                  padding: EdgeInsets.zero,
+                ),
+                onPressed: canEdit
+                    ? () {
+                        gameState.updateMancheScore(mancheIndex, teamNumber, score + 1);
+                      }
+                    : null,
+                child: const Text(
+                  '+',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
           ],
         ),
       ],
     );
+  }
+
+  bool _isMancheWon(int scoreTeam1, int scoreTeam2) {
+    final bool team1WinsSet = scoreTeam1 > 10 && (scoreTeam1 - scoreTeam2) >= 2;
+    final bool team2WinsSet = scoreTeam2 > 10 && (scoreTeam2 - scoreTeam1) >= 2;
+    return team1WinsSet || team2WinsSet;
   }
 }

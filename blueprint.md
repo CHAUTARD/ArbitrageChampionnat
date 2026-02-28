@@ -1,53 +1,89 @@
-# Blueprint de l'Application de Suivi de Scores
+# Blueprint de l'application de suivi de scores
 
 ## Aperçu
 
-Cette application Flutter, conçue pour l'arbitrage de championnat, permet de gérer intégralement une rencontre de tennis de table. Elle prend en charge la création de matchs, la saisie des joueurs, la composition automatique et manuelle des parties, et le suivi des scores en temps réel.
+Cette application Flutter, conçue pour l'arbitrage de championnat de tennis de table, couvre tout le cycle d'une rencontre : création des matchs, saisie des joueurs, génération/composition des parties, pointage en temps réel, validation officielle et restitution sur feuille de match.
 
-## Fonctionnalités
+## Fonctionnalités principales
 
-*   **Création de Rencontre :**
-    *   Formulaire simple pour créer une nouvelle rencontre et définir les équipes.
-*   **Gestion des Joueurs :**
-    *   Saisie des joueurs pour chaque équipe avec détection automatique des classements.
-*   **Composition des Parties :**
-    *   **Automatique :** Génère les 14 parties de la rencontre en se basant sur la force des joueurs.
-    *   **Manuelle :** Permet de composer les doubles manuellement si nécessaire.
-*   **Feuille de Match Complète :**
-    *   Affiche la liste des 14 parties de la rencontre.
-    *   Indique le statut de chaque partie avec un code couleur pour une meilleure lisibilité.
-    *   Affiche les noms des joueurs et de l'arbitre pour chaque partie.
-    *   **Affichage des Scores :** Affiche le score final des parties terminées et validées.
-    *   **Raccourci de Modification des Doubles :** Une icône dans la barre d'application permet de retourner à tout moment sur l'écran de configuration des doubles pour ajuster la composition des équipes.
-*   **Écran de Pointage :**
-    *   **Interface de Pointage Intuitive :** Un widget dédié affiche le score de la manche en cours avec de grands chiffres et des boutons `+` / `-` clairs pour une saisie rapide.
-    *   **Tableau Récapitulatif des Manches :** Un tableau distinct, au format feuille de match, affiche l'historique des scores pour toutes les manches (M1 à M5), offrant une vue d'ensemble claire.
-    *   **Gestion du Serveur et du Côté :**
-        *   Affichage automatique du serveur actuel.
-        *   Gestion du changement de côté entre les manches.
-        *   Un bouton de changement de position des joueurs, mis en évidence, est disponible avant le début du match pour faciliter la configuration des doubles.
-    *   **Validation par l'Arbitre :**
-        *   Un bouton "Valider le Vainqueur" apparaît à la fin d'une partie.
-        *   La validation enregistre le score final, le nom du vainqueur et verrouille la partie.
-        *   Un message de confirmation demande à l'arbitre de ramener la tablette à la table d'arbitrage.
+- Création de rencontre et gestion des équipes.
+- Saisie des joueurs par équipe.
+- Composition des 14 parties (simples + doubles), avec gestion spécifique des doubles.
+- Feuille de match complète : liste des parties, arbitre, score final, statut.
+- Écran de scoring dédié pour chaque partie.
 
-## Style et Conception
+## Règles métier de scoring (implémentées)
 
-L'application utilise Material Design pour une interface utilisateur propre, moderne et cohérente. La conception est axée sur la simplicité et l'efficacité pour une utilisation en conditions de match. Les éléments interactifs clés, comme le bouton de changement de position des joueurs, sont mis en évidence pour une meilleure ergonomie.
+### 1) Règles de manche
 
-## Gestion de Version
+- Une manche est gagnée uniquement si :
+    - le score du vainqueur est strictement supérieur à 10,
+    - et l'écart est d'au moins 2 points.
+- Le format de partie est en 3 manches gagnantes (best of 5).
+- Le total de manches est limité à 5 (M1 à M5).
 
-*   **Git & GitHub :** Le projet est suivi avec Git et sauvegardé sur un dépôt distant GitHub pour la sécurité et la collaboration.
+### 2) Passage automatique des manches
 
-## Plan Actuel
+- Dès qu'une manche est gagnée, la manche suivante est créée automatiquement à 0-0.
+- La création automatique s'arrête si la partie est déjà gagnée (3 manches) ou si 5 manches sont déjà atteintes.
+- Une manche terminée n'est plus modifiable : les boutons + / - sont désactivés pour cette manche.
 
-L'objectif est de continuer à améliorer l'expérience utilisateur, de stabiliser l'application et d'ajouter des fonctionnalités de sauvegarde et de partage des résultats.
+### 3) Validation de partie
 
-### Étapes Réalisées
-*   Mise en place de la structure de base de l'application.
-*   Création des écrans de gestion de la rencontre, des joueurs et des parties.
-*   Implémentation de la logique de composition automatique des parties.
-*   Développement de l'écran de pointage avec gestion des manches.
-*   Ajout de la fonctionnalité de validation des parties par l'arbitre.
-*   **Refonte complète de l'interface de scoring pour une meilleure clarté et ergonomie.**
-*   **Sauvegarde du projet sur un dépôt GitHub distant.**
+- Le bouton Valider la partie est activé uniquement lorsqu'un vainqueur est effectivement désigné (3 manches gagnées).
+- À la validation, les données suivantes sont enregistrées :
+    - score équipe 1,
+    - score équipe 2,
+    - identifiant du vainqueur,
+    - statut validé.
+- Une fois la partie validée, le bouton Valider la partie disparaît de l'écran de scoring.
+
+### 4) Verrouillage avant/après démarrage
+
+- Dès que le premier point de la première manche est marqué :
+    - il n'est plus possible de changer le premier serveur,
+    - il n'est plus possible d'inverser les joueurs,
+    - il n'est plus possible d'utiliser l'inversion manuelle des côtés.
+
+### 5) Règles de service et affichage raquette
+
+- Le serveur est défini au départ par le gagnant du toss.
+- Pendant une manche :
+    - le service alterne tous les 2 points tant que le score cumulé est inférieur à 10-10,
+    - puis alterne à chaque point à partir de 10-10.
+- Le nom des joueurs s'inverse visuellement à chaque manche.
+- Le côté du premier serveur alterne également d'une manche à l'autre (cohérent avec l'inversion de côté).
+- L'indicateur raquette se place toujours sur le joueur affiché sur la table pour le côté qui sert.
+
+## Règles UI et ergonomie (implémentées)
+
+### Écran de scoring
+
+- Titre du bandeau :
+    - Partie X à gauche,
+    - arbitre à droite avec pictogramme.
+- Gestion des débordements du bandeau : texte tronqué avec ellipsis pour éviter les overflow.
+- Contrôles de score en boutons ronds + / - pour une interaction tactile claire.
+
+### Tableau des manches
+
+- Tableau prévu sur 5 colonnes de manches (M1 à M5).
+- Scroll horizontal activé pour petits écrans.
+- Version compacte du tableau : marges/espacements réduits, hauteur de ligne compacte, colonne Nom tronquée pour limiter le scroll.
+
+### Liste des parties
+
+- Après validation, le score final est affiché.
+- Le gagnant est mis en gras dans la carte de partie (détection via winnerId).
+
+## Style et conception
+
+L'application suit Material Design avec un objectif de lisibilité en situation d'arbitrage : actions critiques visibles, feedback immédiat, et contraintes métier appliquées directement dans l'interface.
+
+## Gestion de version
+
+- Projet versionné avec Git et synchronisé sur GitHub.
+
+## État actuel
+
+Le socle fonctionnel de scoring et validation est en place et aligné avec les règles métier ci-dessus. Les prochaines évolutions portent prioritairement sur le confort d'utilisation (lisibilité, rapidité de saisie, robustesse en conditions réelles de match).

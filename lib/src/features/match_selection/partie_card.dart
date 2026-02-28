@@ -26,6 +26,12 @@ class PartieCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDouble = partie.isDouble;
+    final bool isValidated = partie.validated;
+    final String? winnerId = partie.winnerId;
+    final bool isTeam1Winner =
+      isValidated && winnerId != null && team1Players.any((p) => p.id == winnerId);
+    final bool isTeam2Winner =
+      isValidated && winnerId != null && team2Players.any((p) => p.id == winnerId);
 
     String getPlayerNames(List<Player> players) {
       if (players.isEmpty || players.any((p) => p.id.isEmpty)) {
@@ -80,7 +86,15 @@ class PartieCard extends StatelessWidget {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(flex: 3, child: _buildTeamColumn(context, getPlayerNames(team1Players), CrossAxisAlignment.start)),
+                  Expanded(
+                    flex: 3,
+                    child: _buildTeamColumn(
+                      context,
+                      getPlayerNames(team1Players),
+                      CrossAxisAlignment.start,
+                      isWinner: isTeam1Winner,
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
@@ -93,7 +107,15 @@ class PartieCard extends StatelessWidget {
                           ),
                     ),
                   ),
-                   Expanded(flex: 3, child: _buildTeamColumn(context, getPlayerNames(team2Players), CrossAxisAlignment.end)),
+                  Expanded(
+                    flex: 3,
+                    child: _buildTeamColumn(
+                      context,
+                      getPlayerNames(team2Players),
+                      CrossAxisAlignment.end,
+                      isWinner: isTeam2Winner,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -103,13 +125,20 @@ class PartieCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTeamColumn(BuildContext context, String playerNames, CrossAxisAlignment alignment) {
+  Widget _buildTeamColumn(
+    BuildContext context,
+    String playerNames,
+    CrossAxisAlignment alignment, {
+    required bool isWinner,
+  }) {
     return Column(
       crossAxisAlignment: alignment,
       children: [
         Text(
           playerNames,
-          style: Theme.of(context).textTheme.bodyLarge,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontWeight: isWinner ? FontWeight.bold : FontWeight.normal,
+              ),
           textAlign: alignment == CrossAxisAlignment.start ? TextAlign.left : TextAlign.right,
           overflow: TextOverflow.ellipsis,
         ),

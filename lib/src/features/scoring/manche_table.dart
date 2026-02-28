@@ -1,4 +1,5 @@
 // Path: lib/src/features/scoring/manche_table.dart
+
 // Rôle: Affiche un tableau récapitulatif des scores de chaque manche pour les deux équipes.
 // Ce widget construit un `DataTable` qui présente les noms des joueurs de chaque équipe et les scores obtenus dans chaque manche (jusqu'à 5).
 // Il écoute les changements de `GameState` pour mettre à jour les scores en temps réel.
@@ -24,35 +25,53 @@ class MancheTable extends StatelessWidget {
     final gameState = context.watch<GameState>();
     final team1Name = team1Players.map((p) => p.name).join(' & ');
     final team2Name = team2Players.map((p) => p.name).join(' & ');
+    final compactTextStyle = Theme.of(context).textTheme.bodySmall;
 
-    return DataTable(
-      columns: const [
-        DataColumn(label: Text('Nom')),
-        DataColumn(label: Text('M1')),
-        DataColumn(label: Text('M2')),
-        DataColumn(label: Text('M3')),
-        DataColumn(label: Text('M4')),
-        DataColumn(label: Text('M5')),
-      ],
-      rows: [
-        _buildPlayerScoreRow(team1Name, gameState, 1),
-        _buildPlayerScoreRow(team2Name, gameState, 2),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        columnSpacing: 10,
+        horizontalMargin: 8,
+        headingRowHeight: 34,
+        dataRowMinHeight: 34,
+        dataRowMaxHeight: 38,
+        columns: [
+          DataColumn(label: Text('Nom', style: compactTextStyle)),
+          DataColumn(label: Text('M1', style: compactTextStyle)),
+          DataColumn(label: Text('M2', style: compactTextStyle)),
+          DataColumn(label: Text('M3', style: compactTextStyle)),
+          DataColumn(label: Text('M4', style: compactTextStyle)),
+          DataColumn(label: Text('M5', style: compactTextStyle)),
+        ],
+        rows: [
+          _buildPlayerScoreRow(team1Name, gameState, 1),
+          _buildPlayerScoreRow(team2Name, gameState, 2),
+        ],
+      ),
     );
   }
 
   DataRow _buildPlayerScoreRow(String playerName, GameState gameState, int teamNumber) {
     return DataRow(
       cells: [
-        DataCell(Text(playerName)),
+        DataCell(
+          SizedBox(
+            width: 120,
+            child: Text(
+              playerName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
         ...List.generate(5, (mancheIndex) {
           if (mancheIndex < gameState.game.manches.length) {
             final score = (teamNumber == 1)
                 ? gameState.game.manches[mancheIndex].scoreTeam1
                 : gameState.game.manches[mancheIndex].scoreTeam2;
-            return DataCell(Text(score.toString()));
+            return DataCell(Center(child: Text(score.toString())));
           } else {
-            return const DataCell(Text('-')); // Placeholder for future sets
+            return const DataCell(Center(child: Text('-'))); // Placeholder for future sets
           }
         }),
       ],
