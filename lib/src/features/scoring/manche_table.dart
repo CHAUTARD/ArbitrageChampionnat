@@ -25,16 +25,16 @@ class MancheTable extends StatelessWidget {
     final gameState = context.watch<GameState>();
     final team1Name = team1Players.map((p) => p.name).join(' & ');
     final team2Name = team2Players.map((p) => p.name).join(' & ');
-    final compactTextStyle = Theme.of(context).textTheme.bodySmall;
+    final compactTextStyle = Theme.of(context).textTheme.bodyMedium;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: DataTable(
-        columnSpacing: 10,
-        horizontalMargin: 8,
-        headingRowHeight: 34,
-        dataRowMinHeight: 34,
-        dataRowMaxHeight: 38,
+        columnSpacing: 18,
+        horizontalMargin: 12,
+        headingRowHeight: 44,
+        dataRowMinHeight: 44,
+        dataRowMaxHeight: 48,
         columns: [
           DataColumn(label: Text('Nom', style: compactTextStyle)),
           DataColumn(label: Text('M1', style: compactTextStyle)),
@@ -56,7 +56,7 @@ class MancheTable extends StatelessWidget {
       cells: [
         DataCell(
           SizedBox(
-            width: 120,
+            width: 135,
             child: Text(
               playerName,
               maxLines: 1,
